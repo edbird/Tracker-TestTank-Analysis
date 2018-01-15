@@ -562,6 +562,7 @@ int main(int argc, char* argv[])
     Long64_t byte_count = 0;
     Long64_t byte_count_entry = 0;
     Long64_t num_entry = t->GetEntries();
+    //std::cout << "num_entry=" << num_entry << std::endl;
     for(Long64_t ix = 0; ix < num_entry; ++ ix)
     {    
         byte_count_entry = t->GetEntry(ix);
@@ -602,8 +603,8 @@ int main(int argc, char* argv[])
 
             mean_anode_time += store.feast_t0;
             
-            std::cout << "Good event" << std::endl;
-            std::cout << "Event index is: " << ix << std::endl;
+            //std::cout << "Good event" << std::endl;
+            //std::cout << "Event index is: " << ix << std::endl;
 
             #if COUT_TIMESTAMP_GOOD
                 std::cout << "cathode               : " << store.cathode_time << "\n"\
