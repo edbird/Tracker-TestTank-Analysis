@@ -1,0 +1,75 @@
+***** RUNNING: EXECUTABLE *****
+ FCN=54.7981 FROM MIGRAD    STATUS=CONVERGED     118 CALLS         119 TOTAL
+                     EDM=1.295e-15    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           1.70338e+01   1.07279e+00   1.32072e-03   9.88030e-08
+   2  p1          -7.23980e+00   5.50146e-01   5.62260e-04   5.67097e-08
+   3  p2          -8.84277e-01   3.73969e-01   2.02574e-04   8.59267e-07
+   4  p3           3.34108e-01   6.88705e-02   6.44092e-05  -5.42760e-07
+   5  p4           6.15512e-02   2.73237e-02   1.81856e-05   1.00112e-05
+ FCN=56.186 FROM MIGRAD    STATUS=CONVERGED      73 CALLS          74 TOTAL
+                     EDM=3.69636e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           2.22414e+02   5.02018e+00   1.44398e-02  -2.00240e-05
+   2  p1          -1.83951e-01   8.23745e-04   3.03042e-06  -3.99757e-02
+   3  p2           6.57019e-02   9.38437e-04   2.69337e-06  -5.60665e-02
+ FCN=57.9707 FROM MIGRAD    STATUS=CONVERGED      99 CALLS         100 TOTAL
+                     EDM=3.12149e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           4.24618e+02   8.91538e+00   2.82359e-02  -2.95139e-05
+   2  p1           1.80181e-01   4.36184e-04   1.60238e-06  -1.50778e+00
+   3  p2           3.38436e-02   3.85556e-04   1.20331e-06   1.01614e+00
+chisq = 1.27437
+p0 = 17.0338 +- 1.07279
+p1 = -7.2398 +- 0.550146
+p2 = -0.884277 +- 0.373969
+p3 = 0.334108 +- 0.0688705
+p4 = 0.0615512 +- 0.0273237
+chisq = 1.44067
+p0 = 222.414 +- 5.02018
+p1 = -0.183951 +- 0.000823745
+p2 = 0.0657019 +- 0.000938437
+chisq=2.76051
+p0 = 424.618 +- 8.91538
+p1 = 0.180181 +- 0.000436184
+p2 = 0.0338436 +- 0.000385556
+ FCN=435.656 FROM MIGRAD    STATUS=CONVERGED     240 CALLS         241 TOTAL
+                     EDM=2.38901e-08    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   2.4 per cent
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           3.34871e+01   1.03549e+00  -2.44369e-05   2.88657e-03
+   2  p1          -1.83547e-01   8.52749e-04  -2.71660e-06   8.20881e-02
+   3  p2           1.79927e-01   4.90873e-04   9.71739e-07   2.25752e-01
+   4  p3           4.58669e-02   7.79212e-04   4.89939e-07  -4.35554e-01
+   5  p4           1.90218e-02   3.47277e-04  -8.33394e-08  -3.06912e+00
+   6  p5          -3.63398e-01   1.10545e-02   1.99389e-05   1.74021e-03
+chisq=1.08642
+p0 = 33.4871 +- 1.03549
+p1 = -0.183547 +- 0.000852749
+p2 = 0.179927 +- 0.000490873
+p3 = 0.0458669 +- 0.000779212
+p4 = 0.0190218 +- 0.000347277
+p5 = -0.363398 +- 0.0110545
+ FCN=282.185 FROM MIGRAD    STATUS=CONVERGED     210 CALLS         211 TOTAL
+                     EDM=1.97784e-07    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   2.7 per cent
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           4.51496e+01   1.19581e+00   5.17226e-06  -4.66312e-02
+   2  p1          -1.81919e-01   7.25097e-04   3.35487e-06  -8.00958e-02
+   3  p2           1.80147e-01   4.10291e-04   1.43600e-06   3.12724e-02
+   4  p3           4.47048e-02   6.62780e-04   1.16519e-07   5.78914e+00
+   5  p4           1.89251e-02   2.78176e-04  -1.27744e-07   2.75292e+00
+   6  p5          -3.66809e-01   1.06870e-02  -9.87244e-06  -1.35531e-02
+chisq=0.760607
+p0 = 45.1496 +- 1.19581
+p1 = -0.181919 +- 0.000725097
+p2 = 0.180147 +- 0.000410291
+p3 = 0.0447048 +- 0.00066278
+p4 = 0.0189251 +- 0.000278176
+p5 = -0.366809 +- 0.010687
+Number of accepted events: 4866
+Number of rejected events: 5148
+Ratio accepted: 0.48592

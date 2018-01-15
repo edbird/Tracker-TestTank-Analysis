@@ -1,0 +1,26 @@
+***** RUNNING: EXECUTABLE *****
+ FCN=47.8385 FROM MIGRAD    STATUS=CONVERGED      78 CALLS          79 TOTAL
+                     EDM=7.0112e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           3.20334e+02   7.21025e+00   1.91626e-02   6.25923e-06
+   2  p1           4.62500e+00   8.60373e-04   2.91261e-06  -1.29550e-01
+   3  p2           6.87337e-02   9.73153e-04   2.57410e-06  -8.98938e-03
+ FCN=37.6425 FROM MIGRAD    STATUS=CONVERGED     259 CALLS         260 TOTAL
+                     EDM=5.38327e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           3.70875e+02   7.87486e+00   1.98940e-02  -1.13432e-04
+   2  p1           4.98849e+00   4.90382e-04   2.37870e-06   1.64140e-01
+   3  p2          -3.90031e-02   4.64442e-04   1.17290e-06  -4.85278e-01
+chisq = 1.44965
+p0 = 320.334 +- 7.21025
+p1 = 4.625 +- 0.000860373
+p2 = 0.0687337 +- 0.000973153
+chisq=1.44779
+p0 = 370.875 +- 7.87486
+p1 = 4.98849 +- 0.000490382
+p2 = -0.0390031 +- 0.000464442
+Number of accepted events: 4866
+Number of rejected events: 5148
+Ratio accepted: 0.48592
