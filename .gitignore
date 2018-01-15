@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# Data
+*.root
+*.brio
+
+# Output
+*.pdf
+*.png
+*.ps
+*.eps
