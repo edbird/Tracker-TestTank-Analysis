@@ -389,10 +389,10 @@ int main(int argc, char* argv[])
     
     //TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, -1.0, 7.0); //4.76, 4.86);
     TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, 4.76, 4.86);
-    TH1F *h_feast_t1 = new TH1F("h_feast_t1", "h_feast_t1", 50, -100.0, 100.0); //0.0, 50.0);
-    TH1F *h_feast_t2 = new TH1F("h_feast_t2", "h_feast_t2", 50, -100.0, 100.0); //0.0, 50.0);
-    TH1F *h_feast_t3 = new TH1F("h_feast_t3", "h_feast_t3", 50, -100.0, 100.0); //0.0, 50.0);
-    TH1F *h_feast_t4 = new TH1F("h_feast_t4", "h_feast_t4", 50, -100.0, 100.0); //0.0, 50.0); 
+    TH1F *h_feast_t1 = new TH1F("h_feast_t1", "h_feast_t1", 50, -10.0, 100.0);
+    TH1F *h_feast_t2 = new TH1F("h_feast_t2", "h_feast_t2", 50, -10.0, 100.0);
+    TH1F *h_feast_t3 = new TH1F("h_feast_t3", "h_feast_t3", 50, -10.0, 100.0);
+    TH1F *h_feast_t4 = new TH1F("h_feast_t4", "h_feast_t4", 50, -10.0, 100.0); 
     
     h_feast_t0->SetStats(0);
     h_feast_t1->SetStats(0);
@@ -428,8 +428,8 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
     
     TH1F *h_t0_smallest = new TH1F("h_t0_smallest", "h_t0_smallest", 50, -5.0, 3.0);
-    TH1F *h_t_smallest = new TH1F("h_t_smallest", "h_t_smallest", 50, -0.4, 0.0); //4.3, 4.9);
-    TH1F *h_t_next_smallest = new TH1F("h_t_next_smallest", "h_t_next_smallest", 50, 0.0, 0.4); //4.8, 5.2);
+    TH1F *h_t_smallest = new TH1F("h_t_smallest", "h_t_smallest", 50, 4.3, 4.9);
+    TH1F *h_t_next_smallest = new TH1F("h_t_next_smallest", "h_t_next_smallest", 50, 4.8, 5.2);
     
     TH1F *h_t_smallest_residual = new TH1F("h_t_smallest_residual", "h_t_smallest_residual", 50, -0.4, 0.0);
     TH1F *h_t_next_smallest_residual = new TH1F("h_t_next_smallest_residual", "h_t_next_smallest_residual", 50, 0.0, 0.4);
@@ -523,8 +523,8 @@ int main(int argc, char* argv[])
     // HISTOGRAMS AND FIT FUNCTIONS (METHOD 2)
     ////////////////////////////////////////////////////////////////////////////
     
-    TH1F *h_t_neg = new TH1F("h_t_neg", "h_t_neg", 50, -2.0, 2.0); //-0.4, 0.0);
-    TH1F *h_t_pos = new TH1F("h_t_pos", "h_t_pos", 50, -2.0, 2.0); //0.0, 0.4);
+    TH1F *h_t_neg = new TH1F("h_t_neg", "h_t_neg", 50, -0.4, 0.0);
+    TH1F *h_t_pos = new TH1F("h_t_pos", "h_t_pos", 50, 0.0, 0.4);
     
     TH1F *h_t_neg_residual = new TH1F("h_t_neg_residual", "h_t_neg_residual", 50, -0.4, 0.0);
     TH1F *h_t_pos_residual = new TH1F("h_t_pos_residual", "h_t_pos_residual", 50, 0.0, 0.4);
