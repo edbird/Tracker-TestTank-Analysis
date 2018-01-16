@@ -94,6 +94,46 @@ Double_t fitf(Double_t *x_, Double_t *par)
     return A * std::exp(-( a_*pow(x-x0, 2.0) + b_*(x-x0)*(y-y0) + c_*pow(y-y0, 2.0) ));
 }
 
+// Fit function for data feast t0 timestamp
+// (Also for MC when MC of this function is implemented in Falaise)
+Double_t feast_t0_fitf(Double_t *x_, Double_t *par)
+{
+    // variables
+    Double_t x{x_[0]};
+
+    // parameters
+    Double_t A{par[0]}; // amplitude / normalization
+    Double_t a{par[1]}; // start ramp up
+    Double_t b{par[2]}; // end ramp up
+    Double_t c{par[3]}; // start ramp down
+    Double_t d{par[4]}; // end ramp down
+
+    if(x <= a)
+    {
+        return 0.0;
+    }
+    else if(a < x && x <= b)
+    {
+        return A * (x - a) / (b - a);
+    }
+    else if(b < x && x <= c)
+    {
+        return A;
+    }
+    else if(c < x && x <= d)
+    {
+        return A * (1 - (x - c) / (d - c));
+    }
+    else
+    {
+        return 0.0;
+    }
+
+
+    std::cerr << "Warning, should not reach this line" << std::endl;
+    return 0.0;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WAVEFORM OUTPUT TO FILE
 ////////////////////////////////////////////////////////////////////////////////
@@ -340,18 +380,19 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
     // HISTOGRAMS GENERIC
     ////////////////////////////////////////////////////////////////////////////
-    
-    TH1F *h_plasma_propagation_time = new TH1F("h_plasma_propagation_time", "h_plasma_propagation_time", 50, 35.0, 45.0);
+
+    TH1F *h_plasma_propagation_time = new TH1F("h_plasma_propagation_time", "h_plasma_propagation_time", 50, 0.0, 500.0); //35.0, 45.0);
     h_plasma_propagation_time->SetStats(0);
     
-    TH1F *h_cathode_time = new TH1F("h_cathode_time", "h_cathode_time", 50, -50, 50.0);
+    TH1F *h_cathode_time = new TH1F("h_cathode_time", "h_cathode_time", 50, -100.0, 100.0); //-50, 50.0);
     h_cathode_time->SetStats(0);
     
+    //TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, -1.0, 7.0); //4.76, 4.86);
     TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, 4.76, 4.86);
-    TH1F *h_feast_t1 = new TH1F("h_feast_t1", "h_feast_t1", 50, 0.0, 50.0);
-    TH1F *h_feast_t2 = new TH1F("h_feast_t2", "h_feast_t2", 50, 0.0, 50.0);
-    TH1F *h_feast_t3 = new TH1F("h_feast_t3", "h_feast_t3", 50, 0.0, 50.0);
-    TH1F *h_feast_t4 = new TH1F("h_feast_t4", "h_feast_t4", 50, 0.0, 50.0); 
+    TH1F *h_feast_t1 = new TH1F("h_feast_t1", "h_feast_t1", 50, -100.0, 100.0); //0.0, 50.0);
+    TH1F *h_feast_t2 = new TH1F("h_feast_t2", "h_feast_t2", 50, -100.0, 100.0); //0.0, 50.0);
+    TH1F *h_feast_t3 = new TH1F("h_feast_t3", "h_feast_t3", 50, -100.0, 100.0); //0.0, 50.0);
+    TH1F *h_feast_t4 = new TH1F("h_feast_t4", "h_feast_t4", 50, -100.0, 100.0); //0.0, 50.0); 
     
     h_feast_t0->SetStats(0);
     h_feast_t1->SetStats(0);
@@ -365,7 +406,23 @@ int main(int argc, char* argv[])
     TH1F *h_feast_t3_diff = new TH1F("h_feast_t3_diff", "h_feast_t3_diff", 50, -50.0, 50.0);
     TH1F *h_feast_t4_diff = new TH1F("h_feast_t4_diff", "h_feast_t4_diff", 50, -50.0, 50.0); 
     
-    
+    h_feast_t0_diff->SetStats(0);
+    h_feast_t1_diff->SetStats(0);
+    h_feast_t2_diff->SetStats(0);
+    h_feast_t3_diff->SetStats(0);
+    h_feast_t4_diff->SetStats(0);
+   
+    ////////////////////////////////////////////////////////////////////////////
+    // FIT FUNCTION FOR FEAST T0
+    ////////////////////////////////////////////////////////////////////////////
+
+    TF1* f_feast_t0 = new TF1("f_feast_t0", feast_t0_fitf, 4.76, 4.86, 5);
+    f_feast_t0->SetParameter(0, 250.0);
+    f_feast_t0->SetParameter(1, 4.780);
+    f_feast_t0->SetParameter(2, 4.790);
+    f_feast_t0->SetParameter(3, 4.829);
+    f_feast_t0->SetParameter(4, 4.836);
+
     ////////////////////////////////////////////////////////////////////////////
     // HISTOGRAMS AND FIT FUNCTIONS (METHOD 1)
     ////////////////////////////////////////////////////////////////////////////
@@ -376,7 +433,14 @@ int main(int argc, char* argv[])
     
     TH1F *h_t_smallest_residual = new TH1F("h_t_smallest_residual", "h_t_smallest_residual", 50, -0.4, 0.0);
     TH1F *h_t_next_smallest_residual = new TH1F("h_t_next_smallest_residual", "h_t_next_smallest_residual", 50, 0.0, 0.4);
-    
+   
+    h_t0_smallest->SetStats(0);
+    h_t_smallest->SetStats(0);
+    h_t_next_smallest->SetStats(0);
+
+    h_t_smallest_residual->SetStats(0);
+    h_t_next_smallest_residual->SetStats(0);
+
     TF1 *f_t0_smallest = new TF1("f_t0_smallest", "[0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x", -5.0, 3.0);
     f_t0_smallest->SetParameter(0, 20.0);
     f_t0_smallest->SetParameter(1, 0.0);
@@ -459,11 +523,17 @@ int main(int argc, char* argv[])
     // HISTOGRAMS AND FIT FUNCTIONS (METHOD 2)
     ////////////////////////////////////////////////////////////////////////////
     
-    TH1F *h_t_neg = new TH1F("h_t_neg", "h_t_neg", 50, -0.4, 0.0);
-    TH1F *h_t_pos = new TH1F("h_t_pos", "h_t_pos", 50, 0.0, 0.4);
+    TH1F *h_t_neg = new TH1F("h_t_neg", "h_t_neg", 50, -2.0, 2.0); //-0.4, 0.0);
+    TH1F *h_t_pos = new TH1F("h_t_pos", "h_t_pos", 50, -2.0, 2.0); //0.0, 0.4);
     
     TH1F *h_t_neg_residual = new TH1F("h_t_neg_residual", "h_t_neg_residual", 50, -0.4, 0.0);
     TH1F *h_t_pos_residual = new TH1F("h_t_pos_residual", "h_t_pos_residual", 50, 0.0, 0.4);
+   
+    h_t_neg->SetStats(0);
+    h_t_pos->SetStats(0);
+    
+    h_t_neg_residual->SetStats(0);
+    h_t_pos_residual->SetStats(0);
     
     TF1 *f_t_neg = new TF1("f_t_neg", "[0]*exp(-pow((x-[1])/[2], 2.0))", 4.3, 4.9);
     f_t_neg->SetParameter(0, 300.0);
@@ -558,7 +628,9 @@ int main(int argc, char* argv[])
 
     Long64_t count_accept{0};
     Long64_t count_reject{0};
-    
+    Long64_t count_accept_timestamp{0};
+    Long64_t count_reject_timestamp{0};
+
     Long64_t byte_count = 0;
     Long64_t byte_count_entry = 0;
     Long64_t num_entry = t->GetEntries();
@@ -606,6 +678,10 @@ int main(int argc, char* argv[])
             //std::cout << "Good event" << std::endl;
             //std::cout << "Event index is: " << ix << std::endl;
 
+            // TODO: shift all the timestamp variables so that they make more logical sense
+            // this is currently done in the falaise module, however should be done here
+            // instead
+
             #if COUT_TIMESTAMP_GOOD
                 std::cout << "cathode               : " << store.cathode_time << "\n"\
                           << "t0                    : " << store.feast_t0 << "\n"\
@@ -614,7 +690,7 @@ int main(int argc, char* argv[])
                           << "t2                    : " << store.feast_t2 << "\n"\
                           << "t4                    : " << store.feast_t4 << "\n"\
                           << "cathode + t0          : " << store.cathode_time + store.feast_t0 << "\n"\
-                          << "t1 - (cathode + t0)   : " << store.feast_t1 - (store.cathode_time + store.feast_t0) << "\n"\
+                          << "(t1 - t0) - cathode   : " << store.feast_t1 - (store.cathode_time + store.feast_t0) << "\n"\
                           << "t3 - (cathode + t0)   : " << store.feast_t3 - (store.cathode_time + store.feast_t0) << "\n"\
                           << "t2 - (cathode + t0)   : " << store.feast_t2 - (store.cathode_time + store.feast_t0) << "\n"\
                           << "t4 - (cathode + t0)   : " << store.feast_t4 - (store.cathode_time + store.feast_t0) << "\n";
@@ -714,6 +790,8 @@ int main(int argc, char* argv[])
             {
                 //std::cout << *sort_me_pos.begin() << ", " << *sort_me_neg.rbegin() << std::endl;
                 
+                ++ count_accept_timestamp;
+
                 h_t_neg->Fill(*sort_me_neg.rbegin());
                 h_t_pos->Fill(*sort_me_pos.begin());
                 
@@ -728,14 +806,17 @@ int main(int argc, char* argv[])
             }
             else
             {
+                ++ count_reject_timestamp; 
+
                 std::string output_file_name("anode_");
                 //canvas_name_counter = ix;
                 Long64_t ix_copy{ix};
                 //waveform_print(ix_copy /*canvas_name_counter*/, cathode_histo, output_file_name);
-#               if WAVEFORM_PRINT_FAIL
+                #if WAVEFORM_PRINT_FAIL
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_fail");
                 #endif
-                
+        
+                // NOTE: This isn't the fail part of the first if statement
                 std::cout << "Rejecting event with no timestamp either side" << std::endl;
                 std::cout << "Event index is: " << ix << std::endl;
                 std::cout << "Printing event to file: " << output_file_name << std::endl;
@@ -755,9 +836,9 @@ int main(int argc, char* argv[])
                           << "t2 - (cathode + t0)   : " << store.feast_t2 - (store.cathode_time + store.feast_t0) << "\n"\
                           << "t4 - (cathode + t0)   : " << store.feast_t4 - (store.cathode_time + store.feast_t0) << "\n";
 
-                #if COUT_TIMESTAMP_WAIT
-                    std::cin.get();
-                #endif
+                    #if COUT_TIMESTAMP_WAIT
+                        std::cin.get();
+                    #endif
                 #endif
                 
             }
@@ -847,14 +928,17 @@ int main(int argc, char* argv[])
         c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.C");
         c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.png");
         c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.pdf");
+        h_plasma_propagation_time->Write();
         delete h_plasma_propagation_time;
         delete c_plasma_propagation_time;
         
         TCanvas *c_feast_t0 = new TCanvas("c_feast_t0", "c_feast_t0", 800, 600);
-        h_feast_t0->Draw();
+        h_feast_t0->Fit("f_feast_t0");
+        h_feast_t0->Draw("E");
         c_feast_t0->SaveAs("c_feast_t0.C");
         c_feast_t0->SaveAs("c_feast_t0.png");
         c_feast_t0->SaveAs("c_feast_t0.pdf");
+        h_feast_t0->Write(); 
         delete h_feast_t0;
         delete c_feast_t0;
         
@@ -863,6 +947,7 @@ int main(int argc, char* argv[])
         c_feast_t1->SaveAs("c_feast_t1.C");
         c_feast_t1->SaveAs("c_feast_t1.png");
         c_feast_t1->SaveAs("c_feast_t1.pdf");
+        h_feast_t1->Write();
         delete h_feast_t1;
         delete c_feast_t1;
         
@@ -871,7 +956,7 @@ int main(int argc, char* argv[])
         c_feast_t2->SaveAs("c_feast_t2.C");
         c_feast_t2->SaveAs("c_feast_t2.png");
         c_feast_t2->SaveAs("c_feast_t2.pdf");
-
+        h_feast_t2->Write();
         delete h_feast_t2;
         delete c_feast_t2;
         
@@ -880,6 +965,7 @@ int main(int argc, char* argv[])
         c_feast_t3->SaveAs("c_feast_t3.C");
         c_feast_t3->SaveAs("c_feast_t3.png");
         c_feast_t3->SaveAs("c_feast_t3.pdf");
+        h_feast_t3->Write();
         delete h_feast_t3;
         delete c_feast_t3;
             
@@ -888,8 +974,17 @@ int main(int argc, char* argv[])
         c_feast_t4->SaveAs("c_feast_t4.C");
         c_feast_t4->SaveAs("c_feast_t4.png");
         c_feast_t4->SaveAs("c_feast_t4.pdf");
+        h_feast_t4->Write();
         delete h_feast_t4;
         delete c_feast_t4;
+    
+        std::cout << "chisq = " << f_feast_t0->GetChisquare() / f_feast_t0->GetNDF() << std::endl;
+        std::cout << "p0 = " << f_feast_t0->GetParameter(0) << " +- " << f_feast_t0->GetParError(0) << std::endl;
+        std::cout << "p1 = " << f_feast_t0->GetParameter(1) << " +- " << f_feast_t0->GetParError(1) << std::endl;
+        std::cout << "p2 = " << f_feast_t0->GetParameter(2) << " +- " << f_feast_t0->GetParError(2) << std::endl;
+        std::cout << "p3 = " << f_feast_t0->GetParameter(3) << " +- " << f_feast_t0->GetParError(3) << std::endl;
+        std::cout << "p4 = " << f_feast_t0->GetParameter(4) << " +- " << f_feast_t0->GetParError(4) << std::endl;
+
     #endif
     
     /*
@@ -898,6 +993,7 @@ int main(int argc, char* argv[])
     c_feast_t0_diff->SaveAs("c_feast_t0_diff.C");
     c_feast_t0_diff->SaveAs("c_feast_t0_diff.png");
     c_feast_t0_diff->SaveAs("c_feast_t0_diff.pdf");
+        h_feast_t0_diff->Write();
     delete h_feast_t0_diff;
     delete c_feast_t0_diff;
     
@@ -906,6 +1002,7 @@ int main(int argc, char* argv[])
     c_feast_t1_diff->SaveAs("c_feast_t1_diff.C");
     c_feast_t1_diff->SaveAs("c_feast_t1_diff.png");
     c_feast_t1_diff->SaveAs("c_feast_t1_diff.pdf");
+        h_feast_t1_diff->Write();
     delete h_feast_t1_diff;
     delete c_feast_t1_diff;
     
@@ -914,6 +1011,7 @@ int main(int argc, char* argv[])
     c_feast_t2_diff->SaveAs("c_feast_t2_diff.C");
     c_feast_t2_diff->SaveAs("c_feast_t2_diff.png");
     c_feast_t2_diff->SaveAs("c_feast_t2_diff.pdf");
+        h_feast_t2_diff->Write();
     delete h_feast_t2_diff;
     delete c_feast_t2_diff;
     
@@ -922,6 +1020,7 @@ int main(int argc, char* argv[])
     c_feast_t3_diff->SaveAs("c_feast_t3_diff.C");
     c_feast_t3_diff->SaveAs("c_feast_t3_diff.png");
     c_feast_t3_diff->SaveAs("c_feast_t3_diff.pdf");
+        h_feast_t3_diff->Write();
     delete h_feast_t3_diff;
     delete c_feast_t3_diff;
         
@@ -930,6 +1029,7 @@ int main(int argc, char* argv[])
     c_feast_t4_diff->SaveAs("c_feast_t4_diff.C");
     c_feast_t4_diff->SaveAs("c_feast_t4_diff.png");
     c_feast_t4_diff->SaveAs("c_feast_t4_diff.pdf");
+        h_feast_t4_diff->Write();
     delete h_feast_t4_diff;
     delete c_feast_t4_diff;
     */
@@ -945,6 +1045,7 @@ int main(int argc, char* argv[])
     c_t0_smallest->SaveAs("c_t0_smallest.C");
     c_t0_smallest->SaveAs("c_t0_smallest.png");
     c_t0_smallest->SaveAs("c_t0_smallest.pdf");
+        h_t0_smallest->Write();
     delete h_t0_smallest;
     delete c_t0_smallest;
     
@@ -955,6 +1056,7 @@ int main(int argc, char* argv[])
     c_t_smallest->SaveAs("c_t_smallest.C");
     c_t_smallest->SaveAs("c_t_smallest.png");
     c_t_smallest->SaveAs("c_t_smallest.pdf");
+        h_t_smallest->Write();
     //delete h_t_smallest;
     delete c_t_smallest;
     
@@ -965,6 +1067,7 @@ int main(int argc, char* argv[])
     c_t_next_smallest->SaveAs("c_t_next_smallest.C");
     c_t_next_smallest->SaveAs("c_t_next_smallest.png");
     c_t_next_smallest->SaveAs("c_t_next_smallest.pdf");
+        h_t_next_smallest->Write();
     //delete h_t_next_smallest;
     delete c_t_next_smallest;
     
@@ -1010,6 +1113,7 @@ int main(int argc, char* argv[])
     c_t_smallest_residual->SaveAs("c_t_smallest_residual.C");
     c_t_smallest_residual->SaveAs("c_t_smallest_residual.png");
     c_t_smallest_residual->SaveAs("c_t_smallest_residual.pdf");
+        h_t_smallest_residual->Write();
     delete h_t_smallest_residual;
     delete c_t_smallest_residual;
     
@@ -1018,6 +1122,7 @@ int main(int argc, char* argv[])
     c_t_next_smallest_residual->SaveAs("c_t_next_smallest_residual.C");
     c_t_next_smallest_residual->SaveAs("c_t_next_smallest_residual.png");
     c_t_next_smallest_residual->SaveAs("c_t_next_smallest_residual.pdf");
+        h_t_next_smallest_residual->Write();
     delete h_t_next_smallest_residual;
     delete c_t_next_smallest_residual;
     
@@ -1036,6 +1141,7 @@ int main(int argc, char* argv[])
     c_t_correlation->SaveAs("c_t_correlation.C");
     c_t_correlation->SaveAs("c_t_correlation.png");
     c_t_correlation->SaveAs("c_t_correlation.pdf");
+        h_t_correlation->Write();
     //delete h_t_correlation;
     delete c_t_correlation;
     
@@ -1058,6 +1164,7 @@ int main(int argc, char* argv[])
     c_t_correlation_residual->SaveAs("c_t_correlation_residual.C");
     c_t_correlation_residual->SaveAs("c_t_correlation_residual.png");
     c_t_correlation_residual->SaveAs("c_t_correlation_residual.pdf");
+        h_t_correlation_residual->Write();
     delete h_t_correlation_residual;
     delete c_t_correlation_residual;
     
@@ -1123,6 +1230,7 @@ int main(int argc, char* argv[])
     c_t_correlation_mc->SaveAs("c_t_correlation_mc.C");
     c_t_correlation_mc->SaveAs("c_t_correlation_mc.png");
     c_t_correlation_mc->SaveAs("c_t_correlation_mc.pdf");
+        h_t_correlation_mc->Write();
     delete h_t_correlation_mc;
     delete c_t_correlation_mc;
     
@@ -1147,6 +1255,7 @@ int main(int argc, char* argv[])
     c_t_pos->SaveAs("c_t_pos.C");
     c_t_pos->SaveAs("c_t_pos.png");
     c_t_pos->SaveAs("c_t_pos.pdf");
+        h_t_pos->Write();
     //delete h_t_pos;
     delete c_t_pos;
     
@@ -1157,6 +1266,7 @@ int main(int argc, char* argv[])
     c_t_neg->SaveAs("c_t_neg.C");
     c_t_neg->SaveAs("c_t_neg.png");
     c_t_neg->SaveAs("c_t_neg.pdf");
+        h_t_neg->Write();
     //delete h_t_neg;
     delete c_t_neg;
     
@@ -1195,6 +1305,7 @@ int main(int argc, char* argv[])
     c_t_pos_residual->SaveAs("c_t_pos_residual.C");
     c_t_pos_residual->SaveAs("c_t_pos_residual.png");
     c_t_pos_residual->SaveAs("c_t_pos_residual.pdf");
+        h_t_pos_residual->Write();
     delete h_t_pos_residual;
     delete c_t_pos_residual;
     
@@ -1203,6 +1314,7 @@ int main(int argc, char* argv[])
     c_t_neg_residual->SaveAs("c_t_neg_residual.C");
     c_t_neg_residual->SaveAs("c_t_neg_residual.png");
     c_t_neg_residual->SaveAs("c_t_neg_residual.pdf");
+        h_t_neg_residual->Write();
     delete h_t_neg_residual;
     delete c_t_neg_residual;
     
@@ -1220,6 +1332,7 @@ int main(int argc, char* argv[])
     c_t_cor->SaveAs("c_t_cor.C");
     c_t_cor->SaveAs("c_t_cor.png");
     c_t_cor->SaveAs("c_t_cor.pdf");
+        h_t_cor->Write();
     //delete h_t_cor;
     delete c_t_cor;
     
@@ -1242,6 +1355,7 @@ int main(int argc, char* argv[])
     c_t_cor_residual->SaveAs("c_t_cor_residual.C");
     c_t_cor_residual->SaveAs("c_t_cor_residual.png");
     c_t_cor_residual->SaveAs("c_t_cor_residual.pdf");
+        h_t_cor_residual->Write();
     delete h_t_cor_residual;
     delete c_t_cor_residual;
     
@@ -1307,6 +1421,7 @@ int main(int argc, char* argv[])
     c_t_cor_mc->SaveAs("c_t_cor_mc.C");
     c_t_cor_mc->SaveAs("c_t_cor_mc.png");
     c_t_cor_mc->SaveAs("c_t_cor_mc.pdf");
+        h_t_cor_mc->Write();
     delete h_t_cor_mc;
     delete c_t_cor_mc;
     
@@ -1335,6 +1450,10 @@ int main(int argc, char* argv[])
     std::cout << "Stats from Preselection Cuts:" << std::endl;
     std::cout << "Number of accepted events: " << count_accept << "\nNumber of rejected events: " << count_reject << std::endl;
     std::cout << "Ratio accepted: " << (Double_t)count_accept / (Double_t)(count_accept + count_reject) << std::endl;
+
+    std::cout << "Stats from Timestamp Selection:" << std::endl;
+    std::cout << "Number of accepted events: " << count_accept_timestamp << "\nNumber of rejected events: " << count_reject_timestamp << std::endl;
+    std::cout << "Ratio accepted: " << (Double_t)count_accept_timestamp / (Double_t)(count_accept_timestamp + count_reject_timestamp) << std::endl;
 
     return 0;
 }

@@ -16,7 +16,7 @@ SRCDIR := src
 INCDIR := include
 BUILDDIR := obj
 TARGETDIR := bin
-RESDIR := res
+#RESDIR := res
 SRCEXT := cpp
 DEPEXT := d
 OBJEXT := o
@@ -44,14 +44,15 @@ OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT))
 
 
 #Defauilt Make
-all: resources $(TARGET)
+#all: resources $(TARGET)
+all: $(TARGET)
 
 #Remake
 remake: cleaner all
 
 #Copy Resources from Resources Directory to Target Directory
-resources: directories
-	@cp $(RESDIR)/* $(TARGETDIR)/
+#resources: directories
+#	@cp $(RESDIR)/* $(TARGETDIR)/
 
 #Make the Directories
 directories:
