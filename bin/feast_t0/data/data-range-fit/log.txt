@@ -1,0 +1,316 @@
+Rejecting event with no timestamp either side
+Event index is: 45
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 341
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with no timestamp either side
+Event index is: 731
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with no timestamp either side
+Event index is: 973
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 1254
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 1980
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 3538
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 3589
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 3960
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 3990
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 5412
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with no timestamp either side
+Event index is: 5796
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with no timestamp either side
+Event index is: 5910
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 6876
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 7022
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 7090
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with no timestamp either side
+Event index is: 8582
+Printing event to file: anode_
+sort_me_neg.size() = 4
+sort_me_pos.size() = 0
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+Rejecting event with close times
+mean_anode_time = 4.808655335
+ FCN=46.8679 FROM MIGRAD    STATUS=CONVERGED     184 CALLS         185 TOTAL
+                     EDM=5.80564e-09    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   1.4 per cent
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           2.02573e+02   3.23406e+00  -2.34562e-03   2.37525e-05
+   2  p1           4.78067e+00   1.29245e-04   9.55701e-08   5.65868e-01
+   3  p2           4.78916e+00   4.16532e-04  -4.33731e-07  -4.42959e-02
+   4  p3           4.82932e+00   4.73951e-04   8.76899e-07   4.86098e-02
+   5  p4           4.83559e+00   1.69932e-04   1.57762e-08  -5.44581e-01
+chisq = 1.80261
+p0 = 202.573 +- 3.23406
+p1 = 4.78067 +- 0.000129245
+p2 = 4.78916 +- 0.000416532
+p3 = 4.82932 +- 0.000473951
+p4 = 4.83559 +- 0.000169932
+
+>>> f_t0_smallest
+ FCN=54.7981 FROM MIGRAD    STATUS=CONVERGED     118 CALLS         119 TOTAL
+                     EDM=1.295e-15    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           1.70338e+01   1.07279e+00   1.32072e-03   9.88030e-08
+   2  p1          -7.23980e+00   5.50146e-01   5.62260e-04   5.67097e-08
+   3  p2          -8.84277e-01   3.73969e-01   2.02574e-04   8.59267e-07
+   4  p3           3.34108e-01   6.88705e-02   6.44092e-05  -5.42760e-07
+   5  p4           6.15512e-02   2.73237e-02   1.81856e-05   1.00112e-05
+
+>>> f_t_smallest
+ FCN=53.1362 FROM MIGRAD    STATUS=CONVERGED      78 CALLS          79 TOTAL
+                     EDM=5.85727e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           2.19806e+02   4.98806e+00   1.39562e-02  -2.51278e-05
+   2  p1          -1.83974e-01   8.29164e-04   2.96847e-06  -3.99125e-02
+   3  p2           6.58052e-02   9.45491e-04   2.63990e-06  -5.11960e-02
+
+>>> f_t_next_smallest
+ FCN=52.0245 FROM MIGRAD    STATUS=CONVERGED     106 CALLS         107 TOTAL
+                     EDM=1.95214e-10    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           4.22851e+02   8.89732e+00   2.67711e-02  -2.01738e-06
+   2  p1           1.80246e-01   4.37787e-04   1.52086e-06   2.95451e-02
+   3  p2           3.37114e-02   3.83731e-04   1.13544e-06  -3.25849e-02
+chisq = 1.27437
+p0 = 17.0338 +- 1.07279
+p1 = -7.2398 +- 0.550146
+p2 = -0.884277 +- 0.373969
+p3 = 0.334108 +- 0.0688705
+p4 = 0.0615512 +- 0.0273237
+chisq = 1.36247
+p0 = 219.806 +- 4.98806
+p1 = -0.183974 +- 0.000829164
+p2 = 0.0658052 +- 0.000945491
+chisq=3.25153
+p0 = 422.851 +- 8.89732
+p1 = 0.180246 +- 0.000437787
+p2 = 0.0337114 +- 0.000383731
+
+>>> f_t_correlation
+ FCN=422.755 FROM MIGRAD    STATUS=CONVERGED     231 CALLS         232 TOTAL
+                     EDM=1.23852e-07    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   3.8 per cent
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           3.32368e+01   1.03405e+00  -1.00808e-05   1.05715e-01
+   2  p1          -1.83609e-01   8.57984e-04   1.76649e-06  -6.34067e-01
+   3  p2           1.79893e-01   4.95345e-04   7.84276e-07   1.18071e+00
+   4  p3           4.59410e-02   8.29753e-04   4.36008e-07   9.20603e-01
+   5  p4           1.90149e-02   3.43124e-04  -2.71409e-07  -1.78995e+00
+   6  p5          -3.62757e-01   1.14843e-02   4.45107e-05   8.94681e-03
+chisq=1.08399
+p0 = 33.2368 +- 1.03405
+p1 = -0.183609 +- 0.000857984
+p2 = 0.179893 +- 0.000495345
+p3 = 0.045941 +- 0.000829753
+p4 = 0.0190149 +- 0.000343124
+p5 = -0.362757 +- 0.0114843
+
+>>> f_t_correlation_mc
+ FCN=343.315 FROM MIGRAD    STATUS=CONVERGED     215 CALLS         216 TOTAL
+                     EDM=4.6625e-08    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   2.1 per cent
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           4.60926e+01   1.21262e+00   1.22960e-06   1.71591e-02
+   2  p1          -1.84181e-01   7.35076e-04  -2.91029e-07   7.27873e-02
+   3  p2           1.79971e-01   4.15588e-04  -5.34867e-07   3.57499e-01
+   4  p3           4.44896e-02   6.49223e-04   3.48413e-08   3.65197e+00
+   5  p4           1.82122e-02   2.83903e-04  -2.65180e-08  -2.08905e+00
+   6  p5          -3.74813e-01   9.71548e-03  -2.24141e-06  -2.93504e-03
+chisq=0.891726
+p0 = 46.0926 +- 1.21262
+p1 = -0.184181 +- 0.000735076
+p2 = 0.179971 +- 0.000415588
+p3 = 0.0444896 +- 0.000649223
+p4 = 0.0182122 +- 0.000283903
+p5 = -0.374813 +- 0.00971548
+
+>>> f_t_pos
+ FCN=8.84193e-10 FROM MIGRAD    STATUS=CONVERGED     109 CALLS         110 TOTAL
+                     EDM=1.7684e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           5.08885e+03   1.51852e+02   3.59077e-02  -3.40561e-07
+   2  p1           1.75342e-01   6.38061e-04   1.98880e-07   8.85367e-02
+   3  p2           4.40518e-02   8.01351e-04   1.80404e-07  -1.50912e-01
+
+>>> f_t_neg
+ FCN=48.4485 FROM MIGRAD    STATUS=CONVERGED     112 CALLS         113 TOTAL
+                     EDM=7.08612e-09    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   2.9 per cent
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           2.81628e+03   5.14880e+01   3.68418e-01  -2.69883e-06
+   2  p1          -1.82516e-01   7.80809e-04   9.04203e-06   9.39327e-02
+   3  p2           7.49181e-02   8.25098e-04  -8.87929e-07  -1.91779e-01
+chisq = inf
+p0 = 5088.85 +- 151.852
+p1 = 0.175342 +- 0.000638061
+p2 = 0.0440518 +- 0.000801351
+chisq=3.2299
+p0 = 2816.28 +- 51.488
+p1 = -0.182516 +- 0.000780809
+p2 = 0.0749181 +- 0.000825098
+
+>>> f_t_cor
+ FCN=500.485 FROM MIGRAD    STATUS=CONVERGED     209 CALLS         210 TOTAL
+                     EDM=1.35791e-07    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   1.9 per cent
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           4.61948e+01   1.15553e+00   7.11923e-06  -1.18623e-01
+   2  p1          -1.82801e-01   7.33364e-04  -6.19078e-07  -4.23566e-01
+   3  p2           1.79404e-01   4.12463e-04   3.75864e-07  -5.34973e-01
+   4  p3           4.68323e-02   6.40368e-04   1.59613e-08  -4.55936e+00
+   5  p4           2.01451e-02   2.81098e-04  -1.41657e-07  -6.86880e+00
+   6  p5          -3.41233e-01   1.00624e-02  -6.61241e-06   1.92315e-02
+chisq=1.09515
+p0 = 46.1948 +- 1.15553
+p1 = -0.182801 +- 0.000733364
+p2 = 0.179404 +- 0.000412463
+p3 = 0.0468323 +- 0.000640368
+p4 = 0.0201451 +- 0.000281098
+p5 = -0.341233 +- 0.0100624
+
+>>> f_t_cor_mc
+ FCN=414.885 FROM MIGRAD    STATUS=CONVERGED     258 CALLS         259 TOTAL
+                     EDM=1.83128e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           4.20266e+01   1.11011e+00   3.50485e-05  -1.25381e-02
+   2  p1          -1.82468e-01   7.51944e-04   6.55745e-06   4.33669e-02
+   3  p2           1.79144e-01   4.09749e-04   3.56964e-06   9.08624e-01
+   4  p3           4.51225e-02   6.74732e-04   7.70250e-07  -4.33253e+00
+   5  p4           1.93861e-02   2.96743e-04   7.44815e-07   2.12949e-01
+   6  p5          -3.36239e-01   9.84290e-03   6.24419e-05   2.93419e-02
+chisq=1.07762
+p0 = 42.0266 +- 1.11011
+p1 = -0.182468 +- 0.000751944
+p2 = 0.179144 +- 0.000409749
+p3 = 0.0451225 +- 0.000674732
+p4 = 0.0193861 +- 0.000296743
+p5 = -0.336239 +- 0.0098429
+Stats from Preselection Cuts:
+Number of accepted events: 4866
+Number of rejected events: 5148
+Ratio accepted: 0.48592
+Stats from Timestamp Selection:
+Number of accepted events: 4849
+Number of rejected events: 17
+Ratio accepted: 0.996506
