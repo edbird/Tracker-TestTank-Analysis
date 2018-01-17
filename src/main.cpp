@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
     // FEAST T0 CORRELATIONS
     ////////////////////////////////////////////////////////////////////////////
 
-    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, -10.0, 100.0); // TODO: change range here
+    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, 50, -10.0, 100.0); // TODO: change range here
     
     h_feast_t0_t1_cor->SetStats(0);
     
