@@ -122,10 +122,10 @@ void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * co
 // PRINT TIMESTAMPS
 ////////////////////////////////////////////////////////////////////////////////
 
-void timestamp_print(std::ostream& os, TestTankStorage * const testtankstorage_)
+void timestamp_print(std::ostream& os, const TestTankStorage & testtankstorage_)
 {
 
-    TestTankStorage &store = *testtankstorage_;
+    const TestTankStorage &store = testtankstorage_;
     
     os << "cathode               : " << store.cathode_time << "\n"\
        << "t0                    : " << store.feast_t0 << "\n"\

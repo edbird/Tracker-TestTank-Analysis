@@ -170,11 +170,11 @@ int main(int argc, char* argv[])
     // HISTOGRAMS AND FIT FUNCTIONS (METHOD 1)
     ////////////////////////////////////////////////////////////////////////////
     
-    TH1F *h_t0_smallest = new TH1F("h_t0_smallest", "h_t0_smallest", 50, -5.0, 3.0);
-    TH1F *h_t_smallest = new TH1F("h_t_smallest", "h_t_smallest", 50, 4.3, 4.9);
-    TH1F *h_t_next_smallest = new TH1F("h_t_next_smallest", "h_t_next_smallest", 50, 4.8, 5.2);
+    TH1F *h_t0_smallest = new TH1F("h_t0_smallest", "h_t0_smallest", 50, -5.0, 3.0); // TODO: changed limits below, do same here?
+    TH1F *h_t_smallest = new TH1F("h_t_smallest", "h_t_smallest", 50, 0.0, 0.4); // 4.3, 4.9);
+    TH1F *h_t_next_smallest = new TH1F("h_t_next_smallest", "h_t_next_smallest", 50, 0.0, 0.4); // 4.8, 5.2); // 2018-01-17 changed
     
-    TH1F *h_t_smallest_residual = new TH1F("h_t_smallest_residual", "h_t_smallest_residual", 50, -0.4, 0.0);
+    TH1F *h_t_smallest_residual = new TH1F("h_t_smallest_residual", "h_t_smallest_residual", 50, 0.0, 4.0);
     TH1F *h_t_next_smallest_residual = new TH1F("h_t_next_smallest_residual", "h_t_next_smallest_residual", 50, 0.0, 0.4);
    
     h_t0_smallest->SetStats(0);
@@ -191,12 +191,12 @@ int main(int argc, char* argv[])
     f_t0_smallest->SetParameter(3, 0.0);
     f_t0_smallest->SetParameter(4, 0.0);
     
-    TF1 *f_t_smallest = new TF1("f_t_smallest", "[0]*exp(-pow((x-[1])/[2], 2.0))", 4.3, 4.9);
+    TF1 *f_t_smallest = new TF1("f_t_smallest", "[0]*exp(-pow((x-[1])/[2], 2.0))", 0.0, 0.4); // 4.3, 4.9);
     f_t_smallest->SetParameter(0, 300.0);
     f_t_smallest->SetParameter(1, -0.2);
     f_t_smallest->SetParameter(2, 0.05);
     
-    TF1 *f_t_next_smallest = new TF1("f_t_next_smallest", "[0]*exp(-pow((x-[1])/[2], 2.0))", 4.8, 5.2);
+    TF1 *f_t_next_smallest = new TF1("f_t_next_smallest", "[0]*exp(-pow((x-[1])/[2], 2.0))", 0.0, 0.4); //4.8, 5.2);
     f_t_next_smallest->SetParameter(0, 350.0);
     f_t_next_smallest->SetParameter(1, 0.2);
     f_t_next_smallest->SetParameter(2, 0.05);
@@ -355,8 +355,8 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
    
     #define COUT_TIMESTAMP_GOOD 0
-    #define COUT_TIMESTAMP_FAIL 0
-    #define COUT_TIMESTAMP_WAIT 0
+    #define COUT_TIMESTAMP_FAIL 1
+    #define COUT_TIMESTAMP_WAIT 1
     #define WAVEFORM_PRINT_GOOD 0
     #define WAVEFORM_PRINT_FAIL 0
 
@@ -416,7 +416,7 @@ int main(int argc, char* argv[])
         {
             ++ count_accept;
 
-            // TODO: this was producing NAN?
+            // Sum anode t0 timestamp times for computation of mean time
             mean_anode_time += store.feast_t0;
             
             //std::cout << "Good event" << std::endl;
@@ -447,10 +447,10 @@ int main(int argc, char* argv[])
             h_feast_t4->Fill(store.feast_t4);
             
             h_feast_t0_diff->Fill(store.feast_t0 - store.cathode_time);
-            h_feast_t1_diff->Fill(store.feast_t1 - store.cathode_time - store.feast_t0);
-            h_feast_t2_diff->Fill(store.feast_t2 - store.cathode_time - store.feast_t0);
-            h_feast_t3_diff->Fill(store.feast_t3 - store.cathode_time - store.feast_t0);
-            h_feast_t4_diff->Fill(store.feast_t4 - store.cathode_time - store.feast_t0);
+            h_feast_t1_diff->Fill(store.feast_t1 - store.feast_t0 - store.cathode_time);
+            h_feast_t2_diff->Fill(store.feast_t2 - store.feast_t0 - store.cathode_time);
+            h_feast_t3_diff->Fill(store.feast_t3 - store.feast_t0 - store.cathode_time);
+            h_feast_t4_diff->Fill(store.feast_t4 - store.feast_t0 - store.cathode_time);
             
             // find a single, or pair of timestamps,
             // which have smallest abs difference to the
@@ -471,17 +471,22 @@ int main(int argc, char* argv[])
             
             // Signed differences
             Double_t t0_diff = store.feast_t0 - (store.cathode_time /*+ feast_t0*/); // TODO: figure out what this is
-            Double_t t1_diff = store.feast_t1 - (store.cathode_time + store.feast_t0);
-            Double_t t2_diff = store.feast_t2 - (store.cathode_time + store.feast_t0);
-            Double_t t3_diff = store.feast_t3 - (store.cathode_time + store.feast_t0);
-            Double_t t4_diff = store.feast_t4 - (store.cathode_time + store.feast_t0); // TODO: maybe these are missleading
+            // TODO: could look at correlation of feast_t0 to cathode time?
+            // Or feast_t0 to feast_t1
+            // Note: cathode_time already has feast_t0 subtracted
+            // Hence code below subtracts feast_t0 from feast_tX before subtracting
+            // cathode time
+            Double_t t1_diff = store.feast_t1 - store.feast_t0 - store.cathode_time;
+            Double_t t2_diff = store.feast_t2 - store.feast_t0 - store.cathode_time;
+            Double_t t3_diff = store.feast_t3 - store.feast_t0 - store.cathode_time;
+            Double_t t4_diff = store.feast_t4 - store.feast_t0 - store.cathode_time; // TODO: maybe these are missleading
             
             // Absolute value differences
             Double_t t0_abs_diff = std::abs(store.feast_t0 - store.cathode_time); // TODO: maybe these are not missleading?
-            Double_t t1_abs_diff = std::abs(store.feast_t1 - store.cathode_time);
-            Double_t t2_abs_diff = std::abs(store.feast_t2 - store.cathode_time);
-            Double_t t3_abs_diff = std::abs(store.feast_t3 - store.cathode_time);
-            Double_t t4_abs_diff = std::abs(store.feast_t4 - store.cathode_time);
+            Double_t t1_abs_diff = std::abs(store.feast_t1 - store.feast_t0 - store.cathode_time); // TODO: I added " - store.feast_t0" on 2018-01-17
+            Double_t t2_abs_diff = std::abs(store.feast_t2 - store.feast_t0 - store.cathode_time);
+            Double_t t3_abs_diff = std::abs(store.feast_t3 - store.feast_t0 - store.cathode_time);
+            Double_t t4_abs_diff = std::abs(store.feast_t4 - store.feast_t0 - store.cathode_time);
             
             // find smallest abs diff of all t 1/2/3/4
             std::vector<Double_t> sort_me;
@@ -576,16 +581,21 @@ int main(int argc, char* argv[])
                 // use only time t0
                 h_t0_smallest->Fill(store.feast_t0 - store.cathode_time);
             }
+            // TODO: can't remember why I chose 0.065 here, so removing
+            // Note: This is in case there is a close 3rd timestamp which
+            // occurs close to the second timestamp - or something like this
+            /*
             else if(std::abs(sort_me.at(2) - small_abs_diff_2) <= 3.0 * 0.065)
             {
                 std::cout << "Rejecting event with close times" << std::endl;
             }
+            */
             else
             {
                 // t0 may still be smaller than small_abs_diff_2
                 // however assume it is not
-                h_t_smallest->Fill(small_abs_diff_1 - store.feast_t0);
-                h_t_next_smallest->Fill(small_abs_diff_2 - store.feast_t0);
+                h_t_smallest->Fill(small_abs_diff_1); // - store.feast_t0);
+                h_t_next_smallest->Fill(small_abs_diff_2); // - store.feast_t0);
                 
                 h_t_correlation->Fill(small_abs_diff_1 - store.feast_t0, small_abs_diff_2 - store.feast_t0);
                 

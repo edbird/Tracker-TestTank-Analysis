@@ -53,6 +53,6 @@ void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * co
 // PRINT TIMESTAMPS
 ////////////////////////////////////////////////////////////////////////////////
 
-void timestamp_print(TestTankStorage & testtankstorage_);
+void timestamp_print(std::ostream& os, const TestTankStorage & testtankstorage_);
 
 #endif
