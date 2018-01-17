@@ -1,8 +1,9 @@
 #ifndef DATATYPES_HPP
 #define DATATYPES_HPP
 
-#include <RTypes.h>
+//#include <ROOT/RTypes.h>
 #include <TH1F.h>
+#include <TTree.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // TEST TANK DATA STRUCTURE
@@ -52,6 +53,6 @@ void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * co
 // PRINT TIMESTAMPS
 ////////////////////////////////////////////////////////////////////////////////
 
-void timestamp_print(TestTankStorage & testtankstorage);
+void timestamp_print(TestTankStorage & testtankstorage_);
 
 #endif

@@ -125,8 +125,22 @@ Double_t feast_t0_fitf(Double_t *x_, Double_t *par)
 void fit_param_print(std::ostream& os, TF1* func, int n_param)
 {
 
-    os << "chisq = " << f_feast_t0->GetChisquare() / func->GetNDF() << "\n";
-    for(int px = 0; px < n_param, ) //++ px)
+    os << "chisq = " << func->GetChisquare() / func->GetNDF() << "\n";
+    for(int px = 0; px < n_param; ) //++ px)
+    {
+        os << "p" << px << " = " << func->GetParameter(px) << " +- " << func->GetParError(px);
+    
+        if(++ px < n_param)
+            os << "\n";
+    }
+
+}
+
+void fit_param_print(std::ostream& os, TF2* func, int n_param)
+{
+
+    os << "chisq = " << func->GetChisquare() / func->GetNDF() << "\n";
+    for(int px = 0; px < n_param; ) //++ px)
     {
         os << "p" << px << " = " << func->GetParameter(px) << " +- " << func->GetParError(px);
     

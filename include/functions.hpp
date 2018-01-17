@@ -2,10 +2,13 @@
 #define FUNCTIONS_HPP
 
 #include <string>
+#include <ostream>
 
-#include <RTypes.h>
+//#include <RTypes.h>
 #include <TH1F.h>
 #include <TF1.h>
+#include <TF2.h>
+#include <TCanvas.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // CUT FUNCTIONS

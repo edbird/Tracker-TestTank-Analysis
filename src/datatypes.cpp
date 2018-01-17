@@ -43,7 +43,7 @@ void TestTankStorage_init(TestTankStorage * const testtankstorage_)
 void TestTankStorage_setbranchaddress(TestTankStorage * const testtankstorage_, TTree * const tree_)
 {
 
-    TTree * t const = tree_;
+    TTree * const t = tree_;
     TestTankStorage &store = *testtankstorage_;
 
     t->SetBranchAddress("time", &store.time);
@@ -82,7 +82,7 @@ void TestTankStorage_setbranchaddress(TestTankStorage * const testtankstorage_, 
 void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * const tree_)
 {
 
-    TTree * t2 const = tree_;
+    TTree * const t2 = tree_;
     TestTankStorage &store = *testtankstorage_;
 
     t2->Branch("time", &store.time);
@@ -122,7 +122,7 @@ void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * co
 // PRINT TIMESTAMPS
 ////////////////////////////////////////////////////////////////////////////////
 
-void timestamp_print(std::ostream& os, TestTankStorage & testtankstorage)
+void timestamp_print(std::ostream& os, TestTankStorage * const testtankstorage_)
 {
 
     TestTankStorage &store = *testtankstorage_;

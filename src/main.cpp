@@ -10,7 +10,7 @@
 #include <fstream>
 #include <random>
 
-#include <RTypes.h>
+//#include <RTypes.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TF1.h>
@@ -105,10 +105,10 @@ int main(int argc, char* argv[])
     TestTankStorage store;
     
     // Set default values
-    TestTankStorage_init(store);
+    TestTankStorage_init(&store);
     
     // SetBranchAddress for TTree t
-    TestTankStorage_setbranchaddress(store, t);
+    TestTankStorage_setbranchaddress(&store, t);
     
     // Output file
     std::string filename_out{filename.substr(0, filename.rfind(".")) + std::string("_out") + filename.substr(filename.rfind("."))};
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
     t2->SetDirectory(f2);
 
     // Branch for TTree t2
-    TestTankStorage_branch(store, t2);
+    TestTankStorage_branch(&store, t2);
     
     ////////////////////////////////////////////////////////////////////////////
     // HISTOGRAMS GENERIC
@@ -795,7 +795,7 @@ int main(int argc, char* argv[])
     //delete h_t_next_smallest;
     delete c_t_next_smallest;
     
-    fit_param_print(std::cout, f_to_smallest, 5);
+    fit_param_print(std::cout, f_t0_smallest, 5);
     std::cout << std::endl;
     
     fit_param_print(std::cout, f_t_smallest, 3);
