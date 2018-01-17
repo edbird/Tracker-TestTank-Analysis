@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
     
     //TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, -1.0, 7.0); //4.76, 4.86);
     TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, 4.76, 4.86);
-    TH1F *h_feast_t1 = new TH1F("h_feast_t1", "h_feast_t1", 50, -10.0, 100.0);
+    TH1F *h_feast_t1 = new TH1F("h_feast_t1", "h_feast_t1", 50, -10.0, 100.0); // TODO: change ranges here
     TH1F *h_feast_t2 = new TH1F("h_feast_t2", "h_feast_t2", 50, -10.0, 100.0);
     TH1F *h_feast_t3 = new TH1F("h_feast_t3", "h_feast_t3", 50, -10.0, 100.0);
     TH1F *h_feast_t4 = new TH1F("h_feast_t4", "h_feast_t4", 50, -10.0, 100.0); 
@@ -165,6 +165,16 @@ int main(int argc, char* argv[])
     f_feast_t0->SetParameter(2, 4.790);
     f_feast_t0->SetParameter(3, 4.829);
     f_feast_t0->SetParameter(4, 4.836);
+    
+    ////////////////////////////////////////////////////////////////////////////
+    // FEAST T0 CORRELATIONS
+    ////////////////////////////////////////////////////////////////////////////
+
+    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, -10.0, 100.0); // TODO: change range here
+    
+    h_feast_t0_t1_cor->SetStats(0);
+    
+    //TF2* f_feast_t0_t1_cor = new TF2("f_feast_t0_t1_cor", NULL, 0.0, 0.0);
 
     ////////////////////////////////////////////////////////////////////////////
     // HISTOGRAMS AND FIT FUNCTIONS (METHOD 1)
@@ -451,6 +461,14 @@ int main(int argc, char* argv[])
             h_feast_t2_diff->Fill(store.feast_t2 - store.feast_t0 - store.cathode_time);
             h_feast_t3_diff->Fill(store.feast_t3 - store.feast_t0 - store.cathode_time);
             h_feast_t4_diff->Fill(store.feast_t4 - store.feast_t0 - store.cathode_time);
+            
+            ////////////////////////////////////////////////////////////////////
+            // Correlations
+            ////////////////////////////////////////////////////////////////////
+            
+            h_feast_t0_t1_cor->Fill(store.feast_t0, store.feast_t1);
+            
+            
             
             // find a single, or pair of timestamps,
             // which have smallest abs difference to the
@@ -767,6 +785,19 @@ int main(int argc, char* argv[])
     delete h_feast_t4_diff;
     delete c_feast_t4_diff;
     */
+    
+    ////////////////////////////////////////////////////////////////////////////
+    // FEAST T0 T1 CORRELATION
+    ////////////////////////////////////////////////////////////////////////////
+    
+    TCanvas *c_feast_t0_t1_cor = new TCanvas("c_feast_t0_t1_cor", "c_feast_t0_t1_cor", 800, 600);
+    h_feast_t0_t1_cor->Draw("colz");
+    c_feast_t0_t1_cor->SaveAs("c_feast_t0_t1_cor.C");
+    c_feast_t0_t1_cor->SaveAs("c_feast_t0_t1_cor.png");
+    c_feast_t0_t1_cor->SaveAs("c_feast_t0_t1_cor.pdf");
+    h_feast_t0_t1_cor->Write();
+    delete h_feast_t0_t1_cor;
+    delete c_feast_t0_t1_cor;
     
     ////////////////////////////////////////////////////////////////////////////
     // CANVAS OUTPUT (METHOD 1)
