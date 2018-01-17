@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 
     // TODO: bug here - if arguments fail then program runs on default data anyway
 
-    TGaxis::SetMaxDigits(2);
+    TGaxis::SetMaxDigits(3);
     
     ////////////////////////////////////////////////////////////////////////////
     // DATA LOAD AND SAVE
@@ -132,10 +132,10 @@ int main(int argc, char* argv[])
     
     //TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, -1.0, 7.0); //4.76, 4.86);
     TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, 4.76, 4.86);
-    TH1F *h_feast_t1 = new TH1F("h_feast_t1", "h_feast_t1", 50, -10.0, 100.0); // TODO: change ranges here
-    TH1F *h_feast_t2 = new TH1F("h_feast_t2", "h_feast_t2", 50, -10.0, 100.0);
-    TH1F *h_feast_t3 = new TH1F("h_feast_t3", "h_feast_t3", 50, -10.0, 100.0);
-    TH1F *h_feast_t4 = new TH1F("h_feast_t4", "h_feast_t4", 50, -10.0, 100.0); 
+    TH1F *h_feast_t1 = new TH1F("h_feast_t1", "h_feast_t1", 50, 0.0, 80.0); // TODO: change ranges here
+    TH1F *h_feast_t2 = new TH1F("h_feast_t2", "h_feast_t2", 50, 0.0, 80.0); // 0.0, 50.0
+    TH1F *h_feast_t3 = new TH1F("h_feast_t3", "h_feast_t3", 50, 0.0, 80.0);
+    TH1F *h_feast_t4 = new TH1F("h_feast_t4", "h_feast_t4", 50, 0.0, 80.0); 
     
     h_feast_t0->SetStats(0);
     h_feast_t1->SetStats(0);
@@ -170,9 +170,15 @@ int main(int argc, char* argv[])
     // FEAST T0 CORRELATIONS
     ////////////////////////////////////////////////////////////////////////////
 
-    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, 50, -10.0, 100.0); // TODO: change range here
+    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, 50, 0.0, 80.0); // TODO: change range here
+    TH2F* h_feast_t0_t2_cor = new TH2F("h_feast_t0_t2_cor", "h_feast_t0_t2_cor", 50, 4.76, 4.86, 50, 0.0, 80.0);
+    TH2F* h_feast_t0_t3_cor = new TH2F("h_feast_t0_t3_cor", "h_feast_t0_t3_cor", 50, 4.76, 4.86, 50, 0.0, 80.0);
+    TH2F* h_feast_t0_t4_cor = new TH2F("h_feast_t0_t4_cor", "h_feast_t0_t4_cor", 50, 4.76, 4.86, 50, 0.0, 80.0);
     
     h_feast_t0_t1_cor->SetStats(0);
+    h_feast_t0_t2_cor->SetStats(0);
+    h_feast_t0_t3_cor->SetStats(0);
+    h_feast_t0_t4_cor->SetStats(0);
     
     //TF2* f_feast_t0_t1_cor = new TF2("f_feast_t0_t1_cor", NULL, 0.0, 0.0);
 
@@ -181,11 +187,11 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
     
     TH1F *h_t0_smallest = new TH1F("h_t0_smallest", "h_t0_smallest", 50, -5.0, 3.0); // TODO: changed limits below, do same here?
-    TH1F *h_t_smallest = new TH1F("h_t_smallest", "h_t_smallest", 50, 0.0, 0.4); // 4.3, 4.9);
-    TH1F *h_t_next_smallest = new TH1F("h_t_next_smallest", "h_t_next_smallest", 50, 0.0, 0.4); // 4.8, 5.2); // 2018-01-17 changed
+    TH1F *h_t_smallest = new TH1F("h_t_smallest", "h_t_smallest", 50, -0.4, 0.0); //4.3, 4.9);
+    TH1F *h_t_next_smallest = new TH1F("h_t_next_smallest", "h_t_next_smallest", 50, 0.0, 0.4); //4.8, 5.2); // 2018-01-17 changed
     
-    TH1F *h_t_smallest_residual = new TH1F("h_t_smallest_residual", "h_t_smallest_residual", 50, 0.0, 4.0);
-    TH1F *h_t_next_smallest_residual = new TH1F("h_t_next_smallest_residual", "h_t_next_smallest_residual", 50, 0.0, 0.4);
+    TH1F *h_t_smallest_residual = new TH1F("h_t_smallest_residual", "h_t_smallest_residual", 50, -0.4, 0.0); //4.3, 4.9);
+    TH1F *h_t_next_smallest_residual = new TH1F("h_t_next_smallest_residual", "h_t_next_smallest_residual", 50, 0.0, 0.4); //4.8, 5.2);
    
     h_t0_smallest->SetStats(0);
     h_t_smallest->SetStats(0);
@@ -201,7 +207,7 @@ int main(int argc, char* argv[])
     f_t0_smallest->SetParameter(3, 0.0);
     f_t0_smallest->SetParameter(4, 0.0);
     
-    TF1 *f_t_smallest = new TF1("f_t_smallest", "[0]*exp(-pow((x-[1])/[2], 2.0))", 0.0, 0.4); // 4.3, 4.9);
+    TF1 *f_t_smallest = new TF1("f_t_smallest", "[0]*exp(-pow((x-[1])/[2], 2.0))", -0.4, 0.0); //4.3, 4.9);
     f_t_smallest->SetParameter(0, 300.0);
     f_t_smallest->SetParameter(1, -0.2);
     f_t_smallest->SetParameter(2, 0.05);
@@ -366,7 +372,7 @@ int main(int argc, char* argv[])
    
     #define COUT_TIMESTAMP_GOOD 0
     #define COUT_TIMESTAMP_FAIL 1
-    #define COUT_TIMESTAMP_WAIT 1
+    #define COUT_TIMESTAMP_WAIT 0
     #define WAVEFORM_PRINT_GOOD 0
     #define WAVEFORM_PRINT_FAIL 0
 
@@ -450,11 +456,12 @@ int main(int argc, char* argv[])
             
             h_cathode_time->Fill(store.cathode_time);
             
-            h_feast_t0->Fill(store.feast_t0);
-            h_feast_t1->Fill(store.feast_t1);
-            h_feast_t2->Fill(store.feast_t2);
-            h_feast_t3->Fill(store.feast_t3);
-            h_feast_t4->Fill(store.feast_t4);
+            // TODO: moved to below
+            //h_feast_t0->Fill(store.feast_t0);
+            //h_feast_t1->Fill(store.feast_t1);
+            //h_feast_t2->Fill(store.feast_t2);
+            //h_feast_t3->Fill(store.feast_t3);
+            //h_feast_t4->Fill(store.feast_t4);
             
             h_feast_t0_diff->Fill(store.feast_t0 - store.cathode_time);
             h_feast_t1_diff->Fill(store.feast_t1 - store.feast_t0 - store.cathode_time);
@@ -467,6 +474,9 @@ int main(int argc, char* argv[])
             ////////////////////////////////////////////////////////////////////
             
             h_feast_t0_t1_cor->Fill(store.feast_t0, store.feast_t1);
+            h_feast_t0_t2_cor->Fill(store.feast_t0, store.feast_t2);
+            h_feast_t0_t3_cor->Fill(store.feast_t0, store.feast_t3);
+            h_feast_t0_t4_cor->Fill(store.feast_t0, store.feast_t4);
             
             
             
@@ -501,10 +511,10 @@ int main(int argc, char* argv[])
             
             // Absolute value differences
             Double_t t0_abs_diff = std::abs(store.feast_t0 - store.cathode_time); // TODO: maybe these are not missleading?
-            Double_t t1_abs_diff = std::abs(store.feast_t1 - store.feast_t0 - store.cathode_time); // TODO: I added " - store.feast_t0" on 2018-01-17
-            Double_t t2_abs_diff = std::abs(store.feast_t2 - store.feast_t0 - store.cathode_time);
-            Double_t t3_abs_diff = std::abs(store.feast_t3 - store.feast_t0 - store.cathode_time);
-            Double_t t4_abs_diff = std::abs(store.feast_t4 - store.feast_t0 - store.cathode_time);
+            Double_t t1_abs_diff = std::abs(store.feast_t1 /*- store.feast_t0*/ - store.cathode_time); // TODO: I added " - store.feast_t0" on 2018-01-17
+            Double_t t2_abs_diff = std::abs(store.feast_t2 /*- store.feast_t0*/ - store.cathode_time);
+            Double_t t3_abs_diff = std::abs(store.feast_t3 /*- store.feast_t0*/ - store.cathode_time);
+            Double_t t4_abs_diff = std::abs(store.feast_t4 /*- store.feast_t0*/ - store.cathode_time);
             
             // find smallest abs diff of all t 1/2/3/4
             std::vector<Double_t> sort_me;
@@ -562,6 +572,16 @@ int main(int argc, char* argv[])
                 #if WAVEFORM_PRINT_GOOD
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
                 #endif
+                
+                // TODO: Note to self, moved fill of timestamps to here to
+                // see if eranious events dissapear
+                h_feast_t0->Fill(store.feast_t0);
+                h_feast_t1->Fill(store.feast_t1);
+                h_feast_t2->Fill(store.feast_t2);
+                h_feast_t3->Fill(store.feast_t3);
+                h_feast_t4->Fill(store.feast_t4);
+                // Note: It does NOT remove the eranious bumps which are seen in
+                // the t3 and t1 histograms
             }
             else
             {
@@ -612,9 +632,10 @@ int main(int argc, char* argv[])
             {
                 // t0 may still be smaller than small_abs_diff_2
                 // however assume it is not
-                h_t_smallest->Fill(small_abs_diff_1); // - store.feast_t0);
-                h_t_next_smallest->Fill(small_abs_diff_2); // - store.feast_t0);
+                h_t_smallest->Fill(small_abs_diff_1 - store.feast_t0); // TODO: no idea if this is supposed to be subtracted or not anymore
+                h_t_next_smallest->Fill(small_abs_diff_2 - store.feast_t0);
                 
+                //h_t_correlation->Fill(small_abs_diff_1 - store.feast_t0, small_abs_diff_2 - store.feast_t0);
                 h_t_correlation->Fill(small_abs_diff_1 - store.feast_t0, small_abs_diff_2 - store.feast_t0);
                 
                 
@@ -798,6 +819,33 @@ int main(int argc, char* argv[])
     h_feast_t0_t1_cor->Write();
     delete h_feast_t0_t1_cor;
     delete c_feast_t0_t1_cor;
+    
+    TCanvas *c_feast_t0_t2_cor = new TCanvas("c_feast_t0_t2_cor", "c_feast_t0_t2_cor", 800, 600);
+    h_feast_t0_t2_cor->Draw("colz");
+    c_feast_t0_t2_cor->SaveAs("c_feast_t0_t2_cor.C");
+    c_feast_t0_t2_cor->SaveAs("c_feast_t0_t2_cor.png");
+    c_feast_t0_t2_cor->SaveAs("c_feast_t0_t2_cor.pdf");
+    h_feast_t0_t2_cor->Write();
+    delete h_feast_t0_t2_cor;
+    delete c_feast_t0_t2_cor;
+    
+    TCanvas *c_feast_t0_t3_cor = new TCanvas("c_feast_t0_t3_cor", "c_feast_t0_t3_cor", 800, 600);
+    h_feast_t0_t3_cor->Draw("colz");
+    c_feast_t0_t3_cor->SaveAs("c_feast_t0_t3_cor.C");
+    c_feast_t0_t3_cor->SaveAs("c_feast_t0_t3_cor.png");
+    c_feast_t0_t3_cor->SaveAs("c_feast_t0_t3_cor.pdf");
+    h_feast_t0_t3_cor->Write();
+    delete h_feast_t0_t3_cor;
+    delete c_feast_t0_t3_cor;
+    
+    TCanvas *c_feast_t0_t4_cor = new TCanvas("c_feast_t0_t4_cor", "c_feast_t0_t4_cor", 800, 600);
+    h_feast_t0_t4_cor->Draw("colz");
+    c_feast_t0_t4_cor->SaveAs("c_feast_t0_t4_cor.C");
+    c_feast_t0_t4_cor->SaveAs("c_feast_t0_t4_cor.png");
+    c_feast_t0_t4_cor->SaveAs("c_feast_t0_t4_cor.pdf");
+    h_feast_t0_t4_cor->Write();
+    delete h_feast_t0_t4_cor;
+    delete c_feast_t0_t4_cor;
     
     ////////////////////////////////////////////////////////////////////////////
     // CANVAS OUTPUT (METHOD 1)
