@@ -35,6 +35,9 @@ Double_t fitf(Double_t *x_, Double_t *par);
 // (Also for MC when MC of this function is implemented in Falaise)
 Double_t feast_t0_fitf(Double_t *x_, Double_t *par);
 
+// Plasma propagation time
+Double_t ppt_fitf(Double_t *x_, Double_t *par);
+
 ////////////////////////////////////////////////////////////////////////////////
 // PRINT FIT FUNCTION OUTPUT PARAMETERS
 ////////////////////////////////////////////////////////////////////////////////

@@ -118,6 +118,38 @@ Double_t feast_t0_fitf(Double_t *x_, Double_t *par)
     return 0.0;
 }
 
+// Plasma propagation time
+Double_t ppt_fitf(Double_t *x_, Double_t *par)
+{
+
+    Double_t x = *x_;
+    
+    // parameters
+    Double_t A{par[0]}; // amplitude
+    Double_t t{par[1]}; // top start
+    Double_t a{par[2]}; // turn on point
+    Double_t b{par[3]}; // decay constant
+    Double_t d{par[4]}; // constant
+    //Double_t c{par[3]}; // x shift
+    //Double_t d{par[4]}; // temp
+    //Double_t l{par[6]}; // top length
+    
+    if(t <= x && x < a)
+    {
+        return A;
+    }
+    else if(a <= x)
+    {
+        //return A * std::exp(-b * (x - c)) + d;
+        return A * std::exp(-b * (x - a)) + d;
+    }
+    else
+    {
+        return 0.0;
+    }
+    
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // PRINT FIT FUNCTION OUTPUT PARAMETERS
 ////////////////////////////////////////////////////////////////////////////////

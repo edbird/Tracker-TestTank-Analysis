@@ -124,9 +124,25 @@ int main(int argc, char* argv[])
     // HISTOGRAMS GENERIC
     ////////////////////////////////////////////////////////////////////////////
 
-    TH1F *h_plasma_propagation_time = new TH1F("h_plasma_propagation_time", "h_plasma_propagation_time", 50, 0.0, 500.0); //35.0, 45.0);
+    TH1F *h_plasma_propagation_time = new TH1F("h_plasma_propagation_time", "h_plasma_propagation_time", 50, 0.0, 70.0); //35.0, 45.0);
     h_plasma_propagation_time->SetStats(0);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // FIT FUNCTION FOR PLASMA PROPAGATION TIME
+    ////////////////////////////////////////////////////////////////////////////
     
+    TF1* f_plasma_propagation_time = new TF1("f_plasma_propagation_time", ppt_fitf, 35.0, 65.0, 5);
+    f_plasma_propagation_time->SetNpx(10000);
+    f_plasma_propagation_time->SetParameter(0, 4000.0);
+    //f_plasma_propagation_time->SetParameter(1, 41.0);
+    //f_plasma_propagation_time->SetParameter(2, 0.3);
+    //f_plasma_propagation_time->SetParameter(3, 41.0);
+    //f_plasma_propagation_time->FixParameter(3, 38.0);
+    f_plasma_propagation_time->SetParameter(1, 37.0);
+    f_plasma_propagation_time->SetParameter(2, 43.0);
+    f_plasma_propagation_time->SetParameter(3, 0.3);
+    f_plasma_propagation_time->SetParameter(4, 0.0);
+
     ////////////////////////////////////////////////////////////////////////////
     // CATHODE HISTOGRAM
     ////////////////////////////////////////////////////////////////////////////
@@ -168,6 +184,7 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
 
     TF1* f_feast_t0 = new TF1("f_feast_t0", feast_t0_fitf, 4.76, 4.86, 5);
+    f_feast_t0->SetNpx(10000);
     f_feast_t0->SetParameter(0, 250.0);
     f_feast_t0->SetParameter(1, 4.780);
     f_feast_t0->SetParameter(2, 4.790);
@@ -178,10 +195,10 @@ int main(int argc, char* argv[])
     // FEAST T0 TO FEAST TX CORRELATIONS
     ////////////////////////////////////////////////////////////////////////////
 
-    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, 50, 0.0, 70.0); // TODO: change range here
-    TH2F* h_feast_t0_t2_cor = new TH2F("h_feast_t0_t2_cor", "h_feast_t0_t2_cor", 50, 4.76, 4.86, 50, 0.0, 70.0);
-    TH2F* h_feast_t0_t3_cor = new TH2F("h_feast_t0_t3_cor", "h_feast_t0_t3_cor", 50, 4.76, 4.86, 50, 0.0, 70.0);
-    TH2F* h_feast_t0_t4_cor = new TH2F("h_feast_t0_t4_cor", "h_feast_t0_t4_cor", 50, 4.76, 4.86, 50, 0.0, 70.0);
+    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, 50, -10.0, 70.0); // TODO: change range here
+    TH2F* h_feast_t0_t2_cor = new TH2F("h_feast_t0_t2_cor", "h_feast_t0_t2_cor", 50, 4.76, 4.86, 50, -10.0, 70.0);
+    TH2F* h_feast_t0_t3_cor = new TH2F("h_feast_t0_t3_cor", "h_feast_t0_t3_cor", 50, 4.76, 4.86, 50, -10.0, 70.0);
+    TH2F* h_feast_t0_t4_cor = new TH2F("h_feast_t0_t4_cor", "h_feast_t0_t4_cor", 50, 4.76, 4.86, 50, -10.0, 70.0);
     
     h_feast_t0_t1_cor->SetStats(0);
     h_feast_t0_t2_cor->SetStats(0);
@@ -221,6 +238,7 @@ int main(int argc, char* argv[])
     h_t_next_smallest_residual->SetStats(0);
 
     TF1 *f_t0_smallest = new TF1("f_t0_smallest", "[0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x", -5.0, 3.0);
+    f_t0_smallest->SetNpx(10000); 
     f_t0_smallest->SetParameter(0, 20.0);
     f_t0_smallest->SetParameter(1, 0.0);
     f_t0_smallest->SetParameter(2, -1.0);
@@ -228,11 +246,13 @@ int main(int argc, char* argv[])
     f_t0_smallest->SetParameter(4, 0.0);
     
     TF1 *f_t_smallest = new TF1("f_t_smallest", "[0]*exp(-pow((x-[1])/[2], 2.0))", -0.4, 0.0); //4.3, 4.9);
-    f_t_smallest->SetParameter(0, 300.0);
+    f_t_smallest->SetNpx(10000); 
+    f_t_smallest->SetParameter(0, 1000.0); // 300.0
     f_t_smallest->SetParameter(1, -0.2);
     f_t_smallest->SetParameter(2, 0.05);
     
     TF1 *f_t_next_smallest = new TF1("f_t_next_smallest", "[0]*exp(-pow((x-[1])/[2], 2.0))", 0.0, 0.4); //4.8, 5.2);
+    f_t_next_smallest->SetNpx(10000); 
     f_t_next_smallest->SetParameter(0, 350.0);
     f_t_next_smallest->SetParameter(1, 0.2);
     f_t_next_smallest->SetParameter(2, 0.05);
@@ -315,11 +335,13 @@ int main(int argc, char* argv[])
     h_t_pos_residual->SetStats(0);
     
     TF1 *f_t_neg = new TF1("f_t_neg", "[0]*exp(-pow((x-[1])/[2], 2.0))", 4.3, 4.9);
+    f_t_neg->SetNpx(10000); 
     f_t_neg->SetParameter(0, 300.0);
     f_t_neg->SetParameter(1, -0.2);
     f_t_neg->SetParameter(2, 0.05);
     
     TF1 *f_t_pos = new TF1("f_t_pos", "[0]*exp(-pow((x-[1])/[2], 2.0))", 4.8, 5.2);
+    f_t_pos->SetNpx(10000); 
     f_t_pos->SetParameter(0, 350.0);
     f_t_pos->SetParameter(1, 0.2);
     f_t_pos->SetParameter(2, 0.05);
@@ -555,22 +577,22 @@ int main(int argc, char* argv[])
             sort_me_neg.clear();
             sort_me_pos.clear();
             
-            if(t1_diff < 0.0)
+            if(t1_diff <= 0.0) // note: added <= instead of <
                 sort_me_neg.push_back(t1_diff);
             else if(t1_diff > 0.0)
                 sort_me_pos.push_back(t1_diff);
             
-            if(t2_diff < 0.0)
+            if(t2_diff <= 0.0)
                 sort_me_neg.push_back(t2_diff);
             else if(t2_diff > 0.0)
                 sort_me_pos.push_back(t2_diff);
             
-            if(t3_diff < 0.0)
+            if(t3_diff <= 0.0)
                 sort_me_neg.push_back(t3_diff);
             else if(t3_diff > 0.0)
                 sort_me_pos.push_back(t3_diff);
             
-            if(t4_diff < 0.0)
+            if(t4_diff <= 0.0)
                 sort_me_neg.push_back(t4_diff);
             else if(t4_diff > 0.0)
                 sort_me_pos.push_back(t4_diff);
@@ -728,7 +750,9 @@ int main(int argc, char* argv[])
     
     #define TIMESTAMP_CANVAS_ENABLE 1 // TODO:move
     #if TIMESTAMP_CANVAS_ENABLE
+        std::cout << "\n>>> f_plasma_propagation_time" << std::endl;
         TCanvas *c_plasma_propagation_time = new TCanvas("c_plasma_propagation_time", "c_plasma_propagation_time", 800, 600);
+        h_plasma_propagation_time->Fit("f_plasma_propagation_time");
         h_plasma_propagation_time->Draw();
         c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.C");
         c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.png");
@@ -737,6 +761,9 @@ int main(int argc, char* argv[])
         delete h_plasma_propagation_time;
         delete c_plasma_propagation_time;
         
+        fit_param_print(std::cout, f_plasma_propagation_time, 5);
+        std::cout << std::endl;
+
         TCanvas *c_cathode_time = new TCanvas("c_cathode_time", "c_cathode_time", 800, 600);
         h_cathode_time->Draw();
         c_cathode_time->SaveAs("c_cathode_time.C");
@@ -746,6 +773,7 @@ int main(int argc, char* argv[])
         delete h_cathode_time;
         delete c_cathode_time;
         
+        std::cout << "\n>>> f_feast_t0" << std::endl;
         TCanvas *c_feast_t0 = new TCanvas("c_feast_t0", "c_feast_t0", 800, 600);
         h_feast_t0->Fit("f_feast_t0");
         h_feast_t0->Draw("E");
@@ -755,7 +783,10 @@ int main(int argc, char* argv[])
         h_feast_t0->Write(); 
         delete h_feast_t0;
         delete c_feast_t0;
-        
+       
+        fit_param_print(std::cout, f_feast_t0, 5);
+        std::cout << std::endl;
+
         TCanvas *c_feast_t1 = new TCanvas("c_feast_t1", "c_feast_t1", 800, 600);
         h_feast_t1->Draw();
         c_feast_t1->SaveAs("c_feast_t1.C");
@@ -802,8 +833,8 @@ int main(int argc, char* argv[])
         delete c_cathode;*/
     
         // Print parameters for feast_t0 fit
-        fit_param_print(std::cout, f_feast_t0, 5);
-        std::cout << std::endl;
+        //fit_param_print(std::cout, f_feast_t0, 5);
+        //std::cout << std::endl;
 
     #endif
     
@@ -932,6 +963,9 @@ int main(int argc, char* argv[])
     delete h_t0_smallest;
     delete c_t0_smallest;
     
+    fit_param_print(std::cout, f_t0_smallest, 5);
+    std::cout << std::endl;
+    
     std::cout << "\n>>> f_t_smallest" << std::endl;
     TCanvas *c_t_smallest = new TCanvas("c_t_smallest", "c_t_smallest", 800, 600);
     h_t_smallest->Fit("f_t_smallest");
@@ -943,6 +977,9 @@ int main(int argc, char* argv[])
     //delete h_t_smallest;
     delete c_t_smallest;
     
+    fit_param_print(std::cout, f_t_smallest, 3);
+    std::cout << std::endl;
+    
     std::cout << "\n>>> f_t_next_smallest" << std::endl;
     TCanvas *c_t_next_smallest = new TCanvas("c_t_next_smallest", "c_t_next_smallest", 800, 600);
     h_t_next_smallest->Fit("f_t_next_smallest");
@@ -953,13 +990,7 @@ int main(int argc, char* argv[])
         h_t_next_smallest->Write();
     //delete h_t_next_smallest;
     delete c_t_next_smallest;
-    
-    fit_param_print(std::cout, f_t0_smallest, 5);
-    std::cout << std::endl;
-    
-    fit_param_print(std::cout, f_t_smallest, 3);
-    std::cout << std::endl;
-    
+        
     fit_param_print(std::cout, f_t_next_smallest, 3);
     std::cout << std::endl;
     
@@ -1161,6 +1192,9 @@ int main(int argc, char* argv[])
     //delete h_t_pos;
     delete c_t_pos;
     
+    fit_param_print(std::cout, f_t_pos, 3);
+    std::cout << std::endl;
+    
     std::cout << "\n>>> f_t_neg" << std::endl;
     TCanvas *c_t_neg = new TCanvas("c_t_neg", "c_t_neg", 800, 600);
     h_t_neg->Fit("f_t_neg");
@@ -1172,8 +1206,6 @@ int main(int argc, char* argv[])
     //delete h_t_neg;
     delete c_t_neg;
     
-    fit_param_print(std::cout, f_t_pos, 3);
-    std::cout << std::endl;
     /*
     std::cout << "chisq = " << f_t_pos->GetChisquare() / f_t_pos->GetNDF() << std::endl;
     std::cout << "p0 = " << f_t_pos->GetParameter(0) << " +- " << f_t_pos->GetParError(0) << std::endl;
@@ -1365,6 +1397,7 @@ int main(int argc, char* argv[])
     f->Close();
     delete f;
 
+    std::cout << "\n";
     std::cout << "Stats from Preselection Cuts:" << std::endl;
     std::cout << "Number of accepted events: " << count_accept << "\nNumber of rejected events: " << count_reject << std::endl;
     std::cout << "Ratio accepted: " << (Double_t)count_accept / (Double_t)(count_accept + count_reject) << std::endl;
