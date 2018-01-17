@@ -127,8 +127,16 @@ int main(int argc, char* argv[])
     TH1F *h_plasma_propagation_time = new TH1F("h_plasma_propagation_time", "h_plasma_propagation_time", 50, 0.0, 500.0); //35.0, 45.0);
     h_plasma_propagation_time->SetStats(0);
     
-    TH1F *h_cathode_time = new TH1F("h_cathode_time", "h_cathode_time", 50, -100.0, 100.0); //-50, 50.0);
+    ////////////////////////////////////////////////////////////////////////////
+    // CATHODE HISTOGRAM
+    ////////////////////////////////////////////////////////////////////////////
+    
+    TH1F *h_cathode_time = new TH1F("h_cathode_time", "h_cathode_time", 50, 0.0, 80.0); //-50, 50.0); // was 40.0 for data
     h_cathode_time->SetStats(0);
+    
+    ////////////////////////////////////////////////////////////////////////////
+    // FEAST TIMESTAMP HISTOGRAMS
+    ////////////////////////////////////////////////////////////////////////////
     
     //TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, -1.0, 7.0); //4.76, 4.86);
     TH1F *h_feast_t0 = new TH1F("h_feast_t0", "h_feast_t0", 50, 4.76, 4.86);
@@ -167,13 +175,13 @@ int main(int argc, char* argv[])
     f_feast_t0->SetParameter(4, 4.836);
     
     ////////////////////////////////////////////////////////////////////////////
-    // FEAST T0 CORRELATIONS
+    // FEAST T0 TO FEAST TX CORRELATIONS
     ////////////////////////////////////////////////////////////////////////////
 
-    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, 50, 0.0, 80.0); // TODO: change range here
-    TH2F* h_feast_t0_t2_cor = new TH2F("h_feast_t0_t2_cor", "h_feast_t0_t2_cor", 50, 4.76, 4.86, 50, 0.0, 80.0);
-    TH2F* h_feast_t0_t3_cor = new TH2F("h_feast_t0_t3_cor", "h_feast_t0_t3_cor", 50, 4.76, 4.86, 50, 0.0, 80.0);
-    TH2F* h_feast_t0_t4_cor = new TH2F("h_feast_t0_t4_cor", "h_feast_t0_t4_cor", 50, 4.76, 4.86, 50, 0.0, 80.0);
+    TH2F* h_feast_t0_t1_cor = new TH2F("h_feast_t0_t1_cor", "h_feast_t0_t1_cor", 50, 4.76, 4.86, 50, 0.0, 70.0); // TODO: change range here
+    TH2F* h_feast_t0_t2_cor = new TH2F("h_feast_t0_t2_cor", "h_feast_t0_t2_cor", 50, 4.76, 4.86, 50, 0.0, 70.0);
+    TH2F* h_feast_t0_t3_cor = new TH2F("h_feast_t0_t3_cor", "h_feast_t0_t3_cor", 50, 4.76, 4.86, 50, 0.0, 70.0);
+    TH2F* h_feast_t0_t4_cor = new TH2F("h_feast_t0_t4_cor", "h_feast_t0_t4_cor", 50, 4.76, 4.86, 50, 0.0, 70.0);
     
     h_feast_t0_t1_cor->SetStats(0);
     h_feast_t0_t2_cor->SetStats(0);
@@ -181,7 +189,19 @@ int main(int argc, char* argv[])
     h_feast_t0_t4_cor->SetStats(0);
     
     //TF2* f_feast_t0_t1_cor = new TF2("f_feast_t0_t1_cor", NULL, 0.0, 0.0);
-
+    
+    ////////////////////////////////////////////////////////////////////////////
+    // FEAST T0 TO CATHODE CORRELATION AND FEAST T1 TO CATHODE CORRELATION
+    ////////////////////////////////////////////////////////////////////////////
+    
+    TH2F* h_feast_t0_cathode_time_cor = new TH2F("h_feast_t0_cathode_time_cor", "h_feast_t0_cathode_time_cor", 50, 4.76, 4.86, 50, -10.0, 70.0); // TODO: change range here
+    h_feast_t0_cathode_time_cor->SetStats(0);
+    
+    /*
+    TH2F* h_feast_t1_cathode_time_cor = new TH2F("h_feast_t1_cathode_time_cor", "h_feast_t1_cathode_time_cor", 50, 0.0, 70.0, 50, -10.0, 70.0); // TODO: change range here
+    h_feast_t1_cathode_time_cor->SetStats(0);
+    */
+    
     ////////////////////////////////////////////////////////////////////////////
     // HISTOGRAMS AND FIT FUNCTIONS (METHOD 1)
     ////////////////////////////////////////////////////////////////////////////
@@ -454,7 +474,7 @@ int main(int argc, char* argv[])
             //std::cout << "fill " << ix << std::endl;
             t2->Fill();
             
-            h_cathode_time->Fill(store.cathode_time);
+            //h_cathode_time->Fill(store.cathode_time);
             
             // TODO: moved to below
             //h_feast_t0->Fill(store.feast_t0);
@@ -462,6 +482,8 @@ int main(int argc, char* argv[])
             //h_feast_t2->Fill(store.feast_t2);
             //h_feast_t3->Fill(store.feast_t3);
             //h_feast_t4->Fill(store.feast_t4);
+            
+            //h_cathode->Fill(store.cathode_time);
             
             h_feast_t0_diff->Fill(store.feast_t0 - store.cathode_time);
             h_feast_t1_diff->Fill(store.feast_t1 - store.feast_t0 - store.cathode_time);
@@ -478,7 +500,8 @@ int main(int argc, char* argv[])
             h_feast_t0_t3_cor->Fill(store.feast_t0, store.feast_t3);
             h_feast_t0_t4_cor->Fill(store.feast_t0, store.feast_t4);
             
-            
+            h_feast_t0_cathode_time_cor->Fill(store.feast_t0, store.cathode_time);
+            //h_feast_t1_cathode_time_cor->Fill(store.feast_t1, store.cathode_time);
             
             // find a single, or pair of timestamps,
             // which have smallest abs difference to the
@@ -573,13 +596,19 @@ int main(int argc, char* argv[])
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
                 #endif
                 
+                
                 // TODO: Note to self, moved fill of timestamps to here to
                 // see if eranious events dissapear
+                h_cathode_time->Fill(store.cathode_time);
+                
                 h_feast_t0->Fill(store.feast_t0);
                 h_feast_t1->Fill(store.feast_t1);
                 h_feast_t2->Fill(store.feast_t2);
                 h_feast_t3->Fill(store.feast_t3);
                 h_feast_t4->Fill(store.feast_t4);
+            
+                //h_cathode->Fill(store.cathode_time);
+            
                 // Note: It does NOT remove the eranious bumps which are seen in
                 // the t3 and t1 histograms
             }
@@ -708,6 +737,15 @@ int main(int argc, char* argv[])
         delete h_plasma_propagation_time;
         delete c_plasma_propagation_time;
         
+        TCanvas *c_cathode_time = new TCanvas("c_cathode_time", "c_cathode_time", 800, 600);
+        h_cathode_time->Draw();
+        c_cathode_time->SaveAs("c_cathode_time.C");
+        c_cathode_time->SaveAs("c_cathode_time.png");
+        c_cathode_time->SaveAs("c_cathode_time.pdf");
+        h_cathode_time->Write();
+        delete h_cathode_time;
+        delete c_cathode_time;
+        
         TCanvas *c_feast_t0 = new TCanvas("c_feast_t0", "c_feast_t0", 800, 600);
         h_feast_t0->Fit("f_feast_t0");
         h_feast_t0->Draw("E");
@@ -753,6 +791,15 @@ int main(int argc, char* argv[])
         h_feast_t4->Write();
         delete h_feast_t4;
         delete c_feast_t4;
+        
+        /*TCanvas *c_cathode = new TCanvas("c_cathode", "c_cathode", 800, 600);
+        h_cathode->Draw();
+        c_cathode->SaveAs("c_cathode.C");
+        c_cathode->SaveAs("c_cathode.png");
+        c_cathode->SaveAs("c_cathode.pdf");
+        h_cathode->Write();
+        delete h_cathode;
+        delete c_cathode;*/
     
         // Print parameters for feast_t0 fit
         fit_param_print(std::cout, f_feast_t0, 5);
@@ -846,6 +893,29 @@ int main(int argc, char* argv[])
     h_feast_t0_t4_cor->Write();
     delete h_feast_t0_t4_cor;
     delete c_feast_t0_t4_cor;
+    
+    ////////////////////////////////////////////////////////////////////////////
+    // FEAST T0 TO CATHODE CORRELATION AND FEAST T1 TO CATHODE CORRELATION
+    ////////////////////////////////////////////////////////////////////////////
+    
+    TCanvas *c_feast_t0_cathode_time_cor = new TCanvas("c_feast_t0_cathode_time_cor", "c_feast_t0_cathode_time_cor", 800, 600);
+    h_feast_t0_cathode_time_cor->Draw("colz");
+    c_feast_t0_cathode_time_cor->SaveAs("c_feast_t0_cathode_time_cor.C");
+    c_feast_t0_cathode_time_cor->SaveAs("c_feast_t0_cathode_time_cor.png");
+    c_feast_t0_cathode_time_cor->SaveAs("c_feast_t0_cathode_time_cor.pdf");
+    h_feast_t0_cathode_time_cor->Write();
+    delete h_feast_t0_cathode_time_cor;
+    delete c_feast_t0_cathode_time_cor;
+    /*
+    TCanvas *c_feast_t1_cathode_time_cor = new TCanvas("c_feast_t1_cathode_time_cor", "c_feast_t1_cathode_time_cor", 800, 600);
+    h_feast_t1_cathode_time_cor->Draw("colz");
+    c_feast_t1_cathode_time_cor->SaveAs("c_feast_t1_cathode_time_cor.C");
+    c_feast_t1_cathode_time_cor->SaveAs("c_feast_t1_cathode_time_cor.png");
+    c_feast_t1_cathode_time_cor->SaveAs("c_feast_t1_cathode_time_cor.pdf");
+    h_feast_t1_cathode_time_cor->Write();
+    delete h_feast_t1_cathode_time_cor;
+    delete c_feast_t1_cathode_time_cor;
+    */
     
     ////////////////////////////////////////////////////////////////////////////
     // CANVAS OUTPUT (METHOD 1)
