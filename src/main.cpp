@@ -1,4 +1,7 @@
 
+#include "functions.hpp"
+#include "datatypes.hpp"
+
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -7,6 +10,7 @@
 #include <fstream>
 #include <random>
 
+#include <RTypes.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TF1.h>
@@ -17,183 +21,6 @@
 #include <TChain.h>
 #include <TGaxis.h>
 
-////////////////////////////////////////////////////////////////////////////////
-// CUT FUNCTIONS
-////////////////////////////////////////////////////////////////////////////////
-
-bool cut(const Double_t val, const Double_t low, const Double_t high)
-{
-    if(low <= val)
-    {
-        if(val <= high)
-            return true;
-    }
-    return false;
-}
-
-bool cut_l(const Double_t val, const Double_t low)
-{
-    if(low <= val)
-    {
-        return true;
-    }
-    return false;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// CONVERSION FUNCTIONS
-////////////////////////////////////////////////////////////////////////////////
-
-std::string int_to_string(const Long64_t value, int width)
-{
-    std::string value_string = std::to_string(value);
-    int string_width = value_string.size();
-    if(string_width < width)
-    {
-        std::string pad;
-        for(int w{string_width}; w < width; ++ w)
-        {
-            pad.push_back('0');
-        }
-        return std::string(pad + value_string);
-    }
-    return value_string;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// FIT FUNCTIONS
-////////////////////////////////////////////////////////////////////////////////
-
-Double_t fitf(Double_t *x_, Double_t *par)
-{
-    Double_t x{x_[0]};
-    Double_t y{x_[1]};
-
-    Double_t A{par[0]};
-    Double_t x0{par[1]};
-    Double_t y0{par[2]};
-    Double_t sigma_x{par[3]};
-    Double_t sigma_y{par[4]};
-    Double_t theta{par[5]};
-    
-    Double_t c{std::cos(theta)};
-    Double_t s{std::sin(theta)};
-    
-    Double_t s2{std::sin(2.0 * theta)};
-    
-    Double_t cc{std::pow(c, 2.0)};
-    Double_t ss{std::pow(s, 2.0)};
-    
-    Double_t sigma_x_2{std::pow(sigma_x, 2.0)};
-    Double_t sigma_y_2{std::pow(sigma_y, 2.0)};
-    
-    Double_t a_{cc / (2.0 * sigma_x_2) + ss / (2.0 * sigma_y_2)};
-    Double_t b_{(s2 / 2.0) * (1.0 / sigma_y_2 - 1.0 / sigma_x_2)};
-    Double_t c_{ss / (2.0 * sigma_x_2) + cc / (2.0 * sigma_y_2)};
-    
-    return A * std::exp(-( a_*pow(x-x0, 2.0) + b_*(x-x0)*(y-y0) + c_*pow(y-y0, 2.0) ));
-}
-
-// Fit function for data feast t0 timestamp
-// (Also for MC when MC of this function is implemented in Falaise)
-Double_t feast_t0_fitf(Double_t *x_, Double_t *par)
-{
-    // variables
-    Double_t x{x_[0]};
-
-    // parameters
-    Double_t A{par[0]}; // amplitude / normalization
-    Double_t a{par[1]}; // start ramp up
-    Double_t b{par[2]}; // end ramp up
-    Double_t c{par[3]}; // start ramp down
-    Double_t d{par[4]}; // end ramp down
-
-    if(x <= a)
-    {
-        return 0.0;
-    }
-    else if(a < x && x <= b)
-    {
-        return A * (x - a) / (b - a);
-    }
-    else if(b < x && x <= c)
-    {
-        return A;
-    }
-    else if(c < x && x <= d)
-    {
-        return A * (1 - (x - c) / (d - c));
-    }
-    else
-    {
-        return 0.0;
-    }
-
-
-    std::cerr << "Warning, should not reach this line" << std::endl;
-    return 0.0;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// WAVEFORM OUTPUT TO FILE
-////////////////////////////////////////////////////////////////////////////////
-
-void waveform_print(TH1F* histo, Long64_t &canvas_name_counter, std::string &output_file_name, const std::string &output_file_directory)
-{
-
-    if(histo != nullptr)
-    {
-        // print out the waveform of the t0 events for inspection
-        //const std::string canvas_name_base("cathode_event_");
-        const std::string canvas_name_base(output_file_name);
-        std::string canvas_name(canvas_name_base + int_to_string(canvas_name_counter, 6));
-        TCanvas *c = new TCanvas(canvas_name.c_str(), canvas_name.c_str(), 800, 600);
-        histo->Draw();
-        output_file_name = std::string("./") + output_file_directory + std::string("/") + canvas_name + std::string(".png");
-        c->SaveAs(output_file_name.c_str());
-        delete c;
-        ++ canvas_name_counter;
-    }
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// TEST TANK DATA STRUCTURE
-////////////////////////////////////////////////////////////////////////////////
-
-typedef struct TestTankStorage
-{
-    Float_t time = 0;
-    Float_t delay = 0;
-    Float_t delay_since_good_trigger = 0;
-    Int_t duration = 0;
-    Float_t plasma_propagation_time = 0;
-    Bool_t good_trigger = 0;
-    Bool_t prev_good_trigger = 0;
-    Bool_t with_cathode = 0;
-    Float_t anode_peak = 0;
-    Float_t anode_time = 0;
-    Float_t cathode_peak = 0;
-    Float_t cathode_time = 0;
-    Float_t position = 0;
-    Float_t half_position = 0;
-    Float_t stop1 = 0;
-    Float_t stop1_peak = 0;
-    Float_t stop1_type = 0;
-    Float_t stop2 = 0;
-    Float_t stop2_peak = 0;
-    Float_t stop2_type = 0;
-    Int_t stopA = 0;
-    Float_t deriv_rms = 0;
-    Float_t feast_t0 = 0;
-    Float_t feast_t1 = 0;
-    Float_t feast_t2 = 0;
-    Float_t feast_t3 = 0;
-    Float_t feast_t4 = 0;
-    TH1F *anode_histo = (TH1F*)0;
-    TH1F *deriv_histo = (TH1F*)0;
-    TH1F *cathode_histo = (TH1F*)0;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // PROGRAM ARGUMENTS HELP
@@ -220,6 +47,10 @@ void print_general_help(std::ostream& os, char* argv[])
 
 int main(int argc, char* argv[])
 {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // PROCESS PROGRAM ARGUMENTS
+    ////////////////////////////////////////////////////////////////////////////
 
     bool falaise_mc_ = false; // data is falaise mc type if set to true
 
@@ -264,6 +95,7 @@ int main(int argc, char* argv[])
     // DATA LOAD AND SAVE
     ////////////////////////////////////////////////////////////////////////////
     
+    // Input file
     TFile *f = new TFile(filename.c_str()); //("cell8.root");
     f->cd();
     TTree *t = (TTree*)f->Get("histo");
@@ -272,110 +104,21 @@ int main(int argc, char* argv[])
     // Local storage, testtank format (origional C++ analysis code - this code)
     TestTankStorage store;
     
-    // Default values
-    store.time = 0;
-    store.delay = 0;
-    store.delay_since_good_trigger = 0;
-    store.duration = 0;
-    store.plasma_propagation_time = 0;
-    store.good_trigger = 0;
-    store.prev_good_trigger = 0;
-    store.with_cathode = 0;
-    store.anode_peak = 0;
-    store.anode_time = 0;
-    store.cathode_peak = 0;
-    store.cathode_time = 0;
-    store.position = 0;
-    store.half_position = 0;
-    store.stop1 = 0;
-    store.stop1_peak = 0;
-    store.stop1_type = 0;
-    store.stop2 = 0;
-    store.stop2_peak = 0;
-    store.stop2_type = 0;
-    store.stopA = 0;
-    store.deriv_rms = 0;
-    store.feast_t0 = 0;
-    store.feast_t1 = 0;
-    store.feast_t2 = 0;
-    store.feast_t3 = 0;
-    store.feast_t4 = 0;
-    store.anode_histo = (TH1F*)0;
-    store.deriv_histo = (TH1F*)0;
-    store.cathode_histo = (TH1F*)0;
+    // Set default values
+    TestTankStorage_init(store);
     
+    // SetBranchAddress for TTree t
+    TestTankStorage_setbranchaddress(store, t);
     
-    t->SetBranchAddress("time", &store.time);
-    t->SetBranchAddress("delay", &store.delay);
-    t->SetBranchAddress("delay_since_good_trigger", &store.delay_since_good_trigger);
-    t->SetBranchAddress("duration", &store.duration);
-    t->SetBranchAddress("plasma_propagation_time", &store.plasma_propagation_time);
-    t->SetBranchAddress("good_trigger", &store.good_trigger);
-    t->SetBranchAddress("prev_good_trigger", &store.prev_good_trigger);
-    t->SetBranchAddress("with_cathode", &store.with_cathode);
-    t->SetBranchAddress("anode_peak", &store.anode_peak);
-    t->SetBranchAddress("anode_time", &store.anode_time);
-    t->SetBranchAddress("cathode_peak", &store.cathode_peak);
-    t->SetBranchAddress("cathode_time", &store.cathode_time);
-    t->SetBranchAddress("position", &store.position);
-    t->SetBranchAddress("half_position", &store.half_position);
-    t->SetBranchAddress("stop1", &store.stop1);
-    t->SetBranchAddress("stop1_peak", &store.stop1_peak);
-    t->SetBranchAddress("stop1_type", &store.stop1_type);
-    t->SetBranchAddress("stop2", &store.stop2);
-    t->SetBranchAddress("stop2_peak", &store.stop2_peak);
-    t->SetBranchAddress("stop2_type", &store.stop2_type);
-    t->SetBranchAddress("stopA", &store.stopA);
-    t->SetBranchAddress("deriv_rms", &store.deriv_rms);
-    t->SetBranchAddress("feast_t0", &store.feast_t0);
-    t->SetBranchAddress("feast_t1", &store.feast_t1);
-    t->SetBranchAddress("feast_t2", &store.feast_t2);
-    t->SetBranchAddress("feast_t3", &store.feast_t3);
-    t->SetBranchAddress("feast_t4", &store.feast_t4);
-    //t->SetBranchAddress("anode_histo", &anode_histo);
-    //t->SetBranchAddress("deriv_histo", &deriv_histo);
-    //t->SetBranchAddress("cathode_histo", &cathode_histo);
-    t->SetBranchAddress("anode_histo", &store.anode_histo);
-    t->SetBranchAddress("deriv_histo", &store.deriv_histo);
-    t->SetBranchAddress("cathode_histo", &store.cathode_histo);
-    
+    // Output file
     std::string filename_out{filename.substr(0, filename.rfind(".")) + std::string("_out") + filename.substr(filename.rfind("."))};
     TFile *f2 = new TFile(filename_out.c_str(), "RECREATE"); //("cell8_out.root", "RECREATE");
     f2->cd();
     TTree *t2 = new TTree("histo", "");
     t2->SetDirectory(f2);
 
-    t2->Branch("time", &store.time);
-    t2->Branch("delay", &store.delay);
-    t2->Branch("delay_since_good_trigger", &store.delay_since_good_trigger);
-    t2->Branch("duration", &store.duration);
-    t2->Branch("plasma_propagation_time", &store.plasma_propagation_time);
-    t2->Branch("good_trigger", &store.good_trigger);
-    t2->Branch("prev_good_trigger", &store.prev_good_trigger);
-    t2->Branch("with_cathode", &store.with_cathode);
-    t2->Branch("anode_peak", &store.anode_peak);
-    t2->Branch("anode_time", &store.anode_time);
-    t2->Branch("cathode_peak", &store.cathode_peak);
-    t2->Branch("cathode_time", &store.cathode_time);
-    t2->Branch("position", &store.position);
-    t2->Branch("half_position", &store.half_position);
-    t2->Branch("stop1", &store.stop1);
-    t2->Branch("stop1_peak", &store.stop1_peak);
-    t2->Branch("stop1_type", &store.stop1_type);
-    t2->Branch("stop2", &store.stop2);
-    t2->Branch("stop2_peak", &store.stop2_peak);
-    t2->Branch("stop2_type", &store.stop2_type);
-    t2->Branch("stopA", &store.stopA);
-    t2->Branch("deriv_rms", &store.deriv_rms);
-    t2->Branch("feast_t0", &store.feast_t0);
-    t2->Branch("feast_t1", &store.feast_t1);
-    t2->Branch("feast_t2", &store.feast_t2);
-    t2->Branch("feast_t3", &store.feast_t3);
-    t2->Branch("feast_t4", &store.feast_t4);
-    t2->Branch("anode_histo", &store.anode_histo);
-    t2->Branch("deriv_histo", &store.deriv_histo);
-    t2->Branch("cathode_histo", &store.cathode_histo);
-    
+    // Branch for TTree t2
+    TestTankStorage_branch(store, t2);
     
     ////////////////////////////////////////////////////////////////////////////
     // HISTOGRAMS GENERIC
@@ -673,6 +416,7 @@ int main(int argc, char* argv[])
         {
             ++ count_accept;
 
+            // TODO: this was producing NAN?
             mean_anode_time += store.feast_t0;
             
             //std::cout << "Good event" << std::endl;
@@ -683,17 +427,9 @@ int main(int argc, char* argv[])
             // instead
 
             #if COUT_TIMESTAMP_GOOD
-                std::cout << "cathode               : " << store.cathode_time << "\n"\
-                          << "t0                    : " << store.feast_t0 << "\n"\
-                          << "t1                    : " << store.feast_t1 << "\n"\
-                          << "t3                    : " << store.feast_t3 << "\n"\
-                          << "t2                    : " << store.feast_t2 << "\n"\
-                          << "t4                    : " << store.feast_t4 << "\n"\
-                          << "cathode + t0          : " << store.cathode_time + store.feast_t0 << "\n"\
-                          << "(t1 - t0) - cathode   : " << store.feast_t1 - (store.cathode_time + store.feast_t0) << "\n"\
-                          << "t3 - (cathode + t0)   : " << store.feast_t3 - (store.cathode_time + store.feast_t0) << "\n"\
-                          << "t2 - (cathode + t0)   : " << store.feast_t2 - (store.cathode_time + store.feast_t0) << "\n"\
-                          << "t4 - (cathode + t0)   : " << store.feast_t4 - (store.cathode_time + store.feast_t0) << "\n";
+                timestamp_print(std::cout, store);
+                std::cout << std::endl;
+                
                 #if COUT_TIMESTAMP_WAIT
                     std::cin.get();
                 #endif
@@ -824,17 +560,8 @@ int main(int argc, char* argv[])
                 std::cout << "sort_me_pos.size() = " << sort_me_pos.size() << std::endl;
                 
                 #if COUT_TIMESTAMP_FAIL
-                std::cout << "cathode               : " << store.cathode_time << "\n"\
-                          << "t0                    : " << store.feast_t0 << "\n"\
-                          << "t1                    : " << store.feast_t1 << "\n"\
-                          << "t3                    : " << store.feast_t3 << "\n"\
-                          << "t2                    : " << store.feast_t2 << "\n"\
-                          << "t4                    : " << store.feast_t4 << "\n"\
-                          << "cathode + t0          : " << store.cathode_time + store.feast_t0 << "\n"\
-                          << "t1 - (cathode + t0)   : " << store.feast_t1 - (store.cathode_time + store.feast_t0) << "\n"\
-                          << "t3 - (cathode + t0)   : " << store.feast_t3 - (store.cathode_time + store.feast_t0) << "\n"\
-                          << "t2 - (cathode + t0)   : " << store.feast_t2 - (store.cathode_time + store.feast_t0) << "\n"\
-                          << "t4 - (cathode + t0)   : " << store.feast_t4 - (store.cathode_time + store.feast_t0) << "\n";
+                    timestamp_print(std::cout, store);
+                    std::cout << std::endl;
 
                     #if COUT_TIMESTAMP_WAIT
                         std::cin.get();
@@ -978,12 +705,9 @@ int main(int argc, char* argv[])
         delete h_feast_t4;
         delete c_feast_t4;
     
-        std::cout << "chisq = " << f_feast_t0->GetChisquare() / f_feast_t0->GetNDF() << std::endl;
-        std::cout << "p0 = " << f_feast_t0->GetParameter(0) << " +- " << f_feast_t0->GetParError(0) << std::endl;
-        std::cout << "p1 = " << f_feast_t0->GetParameter(1) << " +- " << f_feast_t0->GetParError(1) << std::endl;
-        std::cout << "p2 = " << f_feast_t0->GetParameter(2) << " +- " << f_feast_t0->GetParError(2) << std::endl;
-        std::cout << "p3 = " << f_feast_t0->GetParameter(3) << " +- " << f_feast_t0->GetParError(3) << std::endl;
-        std::cout << "p4 = " << f_feast_t0->GetParameter(4) << " +- " << f_feast_t0->GetParError(4) << std::endl;
+        // Print parameters for feast_t0 fit
+        fit_param_print(std::cout, f_feast_t0, 5);
+        std::cout << std::endl;
 
     #endif
     
@@ -1071,6 +795,16 @@ int main(int argc, char* argv[])
     //delete h_t_next_smallest;
     delete c_t_next_smallest;
     
+    fit_param_print(std::cout, f_to_smallest, 5);
+    std::cout << std::endl;
+    
+    fit_param_print(std::cout, f_t_smallest, 3);
+    std::cout << std::endl;
+    
+    fit_param_print(std::cout, f_t_next_smallest, 3);
+    std::cout << std::endl;
+    
+    /*
     std::cout << "chisq = " << f_t0_smallest->GetChisquare() / f_t0_smallest->GetNDF() << std::endl;
     std::cout << "p0 = " << f_t0_smallest->GetParameter(0) << " +- " << f_t0_smallest->GetParError(0) << std::endl;
     std::cout << "p1 = " << f_t0_smallest->GetParameter(1) << " +- " << f_t0_smallest->GetParError(1) << std::endl;
@@ -1087,6 +821,7 @@ int main(int argc, char* argv[])
     std::cout << "p0 = " << f_t_next_smallest->GetParameter(0) << " +- " << f_t_next_smallest->GetParError(0) << std::endl;
     std::cout << "p1 = " << f_t_next_smallest->GetParameter(1) << " +- " << f_t_next_smallest->GetParError(1) << std::endl;
     std::cout << "p2 = " << f_t_next_smallest->GetParameter(2) << " +- " << f_t_next_smallest->GetParError(2) << std::endl;
+    */
     
     // create residuals plot
     for(Int_t i = 1; i <= h_t_smallest->GetNbinsX(); ++ i)
@@ -1188,6 +923,9 @@ int main(int argc, char* argv[])
     Double_t c{f_t_correlation->GetParameter(5)};
     */
     
+    fit_param_print(std::cout, f_t_correlation, 6);
+    std::cout << std::endl;
+    /*
     std::cout << "chisq=" << f_t_correlation->GetChisquare() / f_t_correlation->GetNDF() << std::endl;
     std::cout << "p0 = " << f_t_correlation->GetParameter(0) << " +- " << f_t_correlation->GetParError(0) << std::endl;
     std::cout << "p1 = " << f_t_correlation->GetParameter(1) << " +- " << f_t_correlation->GetParError(1) << std::endl;
@@ -1195,7 +933,8 @@ int main(int argc, char* argv[])
     std::cout << "p3 = " << f_t_correlation->GetParameter(3) << " +- " << f_t_correlation->GetParError(3) << std::endl;
     std::cout << "p4 = " << f_t_correlation->GetParameter(4) << " +- " << f_t_correlation->GetParError(4) << std::endl;
     std::cout << "p5 = " << f_t_correlation->GetParameter(5) << " +- " << f_t_correlation->GetParError(5) << std::endl;
-
+    */
+    
     Double_t A{f_t_correlation->GetParameter(0)};
     Double_t x0{f_t_correlation->GetParameter(1)};
     Double_t y0{f_t_correlation->GetParameter(2)};
@@ -1234,6 +973,9 @@ int main(int argc, char* argv[])
     delete h_t_correlation_mc;
     delete c_t_correlation_mc;
     
+    fit_param_print(std::cout, f_t_correlation_mc, 6);
+    std::cout << std::endl;
+    /*
     std::cout << "chisq=" << f_t_correlation_mc->GetChisquare() / f_t_correlation_mc->GetNDF() << std::endl;
     std::cout << "p0 = " << f_t_correlation_mc->GetParameter(0) << " +- " << f_t_correlation_mc->GetParError(0) << std::endl;
     std::cout << "p1 = " << f_t_correlation_mc->GetParameter(1) << " +- " << f_t_correlation_mc->GetParError(1) << std::endl;
@@ -1241,6 +983,7 @@ int main(int argc, char* argv[])
     std::cout << "p3 = " << f_t_correlation_mc->GetParameter(3) << " +- " << f_t_correlation_mc->GetParError(3) << std::endl;
     std::cout << "p4 = " << f_t_correlation_mc->GetParameter(4) << " +- " << f_t_correlation_mc->GetParError(4) << std::endl;
     std::cout << "p5 = " << f_t_correlation_mc->GetParameter(5) << " +- " << f_t_correlation_mc->GetParError(5) << std::endl;
+    */
     
     delete f_t_correlation_mc;
     
@@ -1270,15 +1013,23 @@ int main(int argc, char* argv[])
     //delete h_t_neg;
     delete c_t_neg;
     
+    fit_param_print(std::cout, f_t_pos, 3);
+    std::cout << std::endl;
+    /*
     std::cout << "chisq = " << f_t_pos->GetChisquare() / f_t_pos->GetNDF() << std::endl;
     std::cout << "p0 = " << f_t_pos->GetParameter(0) << " +- " << f_t_pos->GetParError(0) << std::endl;
     std::cout << "p1 = " << f_t_pos->GetParameter(1) << " +- " << f_t_pos->GetParError(1) << std::endl;
     std::cout << "p2 = " << f_t_pos->GetParameter(2) << " +- " << f_t_pos->GetParError(2) << std::endl;
+    */
     
+    fit_param_print(std::cout, f_t_neg, 3);
+    std::cout << std::endl;
+    /*
     std::cout << "chisq=" << f_t_neg->GetChisquare() / f_t_neg->GetNDF() << std::endl;
     std::cout << "p0 = " << f_t_neg->GetParameter(0) << " +- " << f_t_neg->GetParError(0) << std::endl;
     std::cout << "p1 = " << f_t_neg->GetParameter(1) << " +- " << f_t_neg->GetParError(1) << std::endl;
     std::cout << "p2 = " << f_t_neg->GetParameter(2) << " +- " << f_t_neg->GetParError(2) << std::endl;
+    */
     
     // create residuals plot
     for(Int_t i = 1; i <= h_t_pos->GetNbinsX(); ++ i)
@@ -1379,6 +1130,9 @@ int main(int argc, char* argv[])
     Double_t c{f_t_cor->GetParameter(5)};
     */
     
+    fit_param_print(std::cout, f_t_cor, 6);
+    std::cout << std::endl;
+    /*
     std::cout << "chisq=" << f_t_cor->GetChisquare() / f_t_cor->GetNDF() << std::endl;
     std::cout << "p0 = " << f_t_cor->GetParameter(0) << " +- " << f_t_cor->GetParError(0) << std::endl;
     std::cout << "p1 = " << f_t_cor->GetParameter(1) << " +- " << f_t_cor->GetParError(1) << std::endl;
@@ -1386,7 +1140,8 @@ int main(int argc, char* argv[])
     std::cout << "p3 = " << f_t_cor->GetParameter(3) << " +- " << f_t_cor->GetParError(3) << std::endl;
     std::cout << "p4 = " << f_t_cor->GetParameter(4) << " +- " << f_t_cor->GetParError(4) << std::endl;
     std::cout << "p5 = " << f_t_cor->GetParameter(5) << " +- " << f_t_cor->GetParError(5) << std::endl;
-
+    */
+    
     Double_t A_cor{f_t_cor->GetParameter(0)};
     Double_t x0_cor{f_t_cor->GetParameter(1)};
     Double_t y0_cor{f_t_cor->GetParameter(2)};
@@ -1425,6 +1180,9 @@ int main(int argc, char* argv[])
     delete h_t_cor_mc;
     delete c_t_cor_mc;
     
+    fit_param_print(std::cout, f_t_cor_mc, 6);
+    std::cout << std::endl;
+    /*
     std::cout << "chisq=" << f_t_cor_mc->GetChisquare() / f_t_cor_mc->GetNDF() << std::endl;
     std::cout << "p0 = " << f_t_cor_mc->GetParameter(0) << " +- " << f_t_cor_mc->GetParError(0) << std::endl;
     std::cout << "p1 = " << f_t_cor_mc->GetParameter(1) << " +- " << f_t_cor_mc->GetParError(1) << std::endl;
@@ -1432,6 +1190,7 @@ int main(int argc, char* argv[])
     std::cout << "p3 = " << f_t_cor_mc->GetParameter(3) << " +- " << f_t_cor_mc->GetParError(3) << std::endl;
     std::cout << "p4 = " << f_t_cor_mc->GetParameter(4) << " +- " << f_t_cor_mc->GetParError(4) << std::endl;
     std::cout << "p5 = " << f_t_cor_mc->GetParameter(5) << " +- " << f_t_cor_mc->GetParError(5) << std::endl;
+    */
     
     delete f_t_cor_mc;
     
