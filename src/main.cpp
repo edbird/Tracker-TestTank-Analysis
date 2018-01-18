@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
     
     TF1* f_plasma_propagation_time = new TF1("f_plasma_propagation_time", ppt_fitf, 35.0, 65.0, 5);
     f_plasma_propagation_time->SetNpx(10000);
-    f_plasma_propagation_time->SetParameter(0, 4000.0);
+    f_plasma_propagation_time->SetParameter(0, 1.0); //4000.0);
     //f_plasma_propagation_time->SetParameter(1, 41.0);
     //f_plasma_propagation_time->SetParameter(2, 0.3);
     //f_plasma_propagation_time->SetParameter(3, 41.0);
@@ -151,12 +151,20 @@ int main(int argc, char* argv[])
     f_plasma_propagation_time->SetParameter(4, 0.0);
 
     ////////////////////////////////////////////////////////////////////////////
-    // CATHODE HISTOGRAM
+    // CATHODE HISTOGRAM AND FIT FUNCTION
     ////////////////////////////////////////////////////////////////////////////
     
-    TH1F *h_cathode_time = new TH1F("h_cathode_time", "h_cathode_time", 50, 0.0, 80.0); //-50, 50.0); // was 40.0 for data
+    TH1F *h_cathode_time = new TH1F("h_cathode_time", "h_cathode_time", 50, -20.0, 80.0); //-50, 50.0); // was 40.0 for data
     h_cathode_time->SetStats(0);
     
+    TF1 *f_cathode_time = new TF1("f_cathode_time", cathode_time_fitf, -20.0, 80.0, 5);
+    f_cathode_time->SetNpx(10000);
+    f_cathode_time->SetParameter(0, 30.0e-3); // TODO: need to normalize
+    f_cathode_time->SetParameter(1, 0.0);
+    f_cathode_time->SetParameter(2, 10.0);
+    f_cathode_time->SetParameter(3, 30.0);
+    f_cathode_time->SetParameter(4, 50.0);
+
     ////////////////////////////////////////////////////////////////////////////
     // FEAST TIMESTAMP HISTOGRAMS
     ////////////////////////////////////////////////////////////////////////////
@@ -192,7 +200,7 @@ int main(int argc, char* argv[])
 
     TF1* f_feast_t0 = new TF1("f_feast_t0", feast_t0_fitf, 4.76, 4.86, 5);
     f_feast_t0->SetNpx(10000);
-    f_feast_t0->SetParameter(0, 250.0);
+    f_feast_t0->SetParameter(0, 45.0e-3); // 250.0
     f_feast_t0->SetParameter(1, 4.780);
     f_feast_t0->SetParameter(2, 4.790);
     f_feast_t0->SetParameter(3, 4.829);
@@ -473,7 +481,7 @@ int main(int argc, char* argv[])
             // if using MC, apply the "MC cut" to PPT
             (
                 (falaise_mc_ == true) &&
-                cut(store.plasma_propagation_time, 57.0, 59.0) && // TODO: these are temp. test values
+                cut(store.plasma_propagation_time, 0.1, 9999.9) && //57.0, 59.0) && // TODO: these are temp. test values
                 cut(store.position, -0.95, 0.95) &&
                 event_check_flag
             )
@@ -755,12 +763,16 @@ int main(int argc, char* argv[])
     t2->Write();
     //f2->Close();
     
+    Double_t integral;
+
     #define TIMESTAMP_CANVAS_ENABLE 1 // TODO:move
     #if TIMESTAMP_CANVAS_ENABLE
         std::cout << "\n>>> f_plasma_propagation_time" << std::endl;
         TCanvas *c_plasma_propagation_time = new TCanvas("c_plasma_propagation_time", "c_plasma_propagation_time", 800, 600);
+        integral = h_plasma_propagation_time->Integral();
+        h_plasma_propagation_time->Scale(1.0 / integral); 
         h_plasma_propagation_time->Fit("f_plasma_propagation_time");
-        h_plasma_propagation_time->Draw();
+        h_plasma_propagation_time->Draw("E");
         c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.C");
         c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.png");
         c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.pdf");
@@ -771,8 +783,12 @@ int main(int argc, char* argv[])
         fit_param_print(std::cout, f_plasma_propagation_time, 5);
         std::cout << std::endl;
 
+        std::cout << "\n>>> f_cathode_time" << std::endl;
         TCanvas *c_cathode_time = new TCanvas("c_cathode_time", "c_cathode_time", 800, 600);
-        h_cathode_time->Draw();
+        integral = h_cathode_time->Integral();
+        h_cathode_time->Scale(1.0 / integral);
+        h_cathode_time->Fit("f_cathode_time");
+        h_cathode_time->Draw("E");
         c_cathode_time->SaveAs("c_cathode_time.C");
         c_cathode_time->SaveAs("c_cathode_time.png");
         c_cathode_time->SaveAs("c_cathode_time.pdf");
@@ -780,8 +796,13 @@ int main(int argc, char* argv[])
         delete h_cathode_time;
         delete c_cathode_time;
         
+        fit_param_print(std::cout, f_cathode_time, 5);
+        std::cout << std::endl;
+
         std::cout << "\n>>> f_feast_t0" << std::endl;
         TCanvas *c_feast_t0 = new TCanvas("c_feast_t0", "c_feast_t0", 800, 600);
+        integral = h_feast_t0->Integral();
+        h_feast_t0->Scale(1.0 / integral);
         h_feast_t0->Fit("f_feast_t0");
         h_feast_t0->Draw("E");
         c_feast_t0->SaveAs("c_feast_t0.C");

@@ -118,6 +118,45 @@ Double_t feast_t0_fitf(Double_t *x_, Double_t *par)
     return 0.0;
 }
 
+// Fit function for cathode time
+Double_t cathode_time_fitf(Double_t *x_, Double_t *par)
+{
+    // variables
+    Double_t x{x_[0]};
+
+    // parameters
+    Double_t A{par[0]}; // amplitude / normalization
+    Double_t a{par[1]}; // start ramp up
+    Double_t b{par[2]}; // end ramp up
+    Double_t c{par[3]}; // start ramp down
+    Double_t d{par[4]}; // end ramp down
+
+    if(x <= a)
+    {
+        return 0.0;
+    }
+    else if(a < x && x <= b)
+    {
+        return A * (x - a) / (b - a);
+    }
+    else if(b < x && x <= c)
+    {
+        return A;
+    }
+    else if(c < x && x <= d)
+    {
+        return A * (1 - (x - c) / (d - c));
+    }
+    else
+    {
+        return 0.0;
+    }
+
+
+    std::cerr << "Warning, should not reach this line" << std::endl;
+    return 0.0;
+}
+
 // Plasma propagation time
 Double_t ppt_fitf(Double_t *x_, Double_t *par)
 {
