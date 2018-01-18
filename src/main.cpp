@@ -1,4 +1,11 @@
 
+/*
+ *  Everything was essentially trivial. The only reason that I did
+ *  not finish sooner was that I did not posess the required
+ *  informations at the start.
+ *
+ */
+
 #include "functions.hpp"
 #include "datatypes.hpp"
 
