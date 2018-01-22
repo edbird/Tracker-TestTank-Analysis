@@ -436,9 +436,9 @@ int main(int argc, char* argv[])
     // DATA LOOP
     ////////////////////////////////////////////////////////////////////////////
    
-    #define COUT_TIMESTAMP_GOOD 0
-    #define COUT_TIMESTAMP_FAIL 1
-    #define COUT_TIMESTAMP_WAIT 0
+    #define COUT_TIMESTAMP_GOOD 1 // 0
+    #define COUT_TIMESTAMP_FAIL 0 // 1
+    #define COUT_TIMESTAMP_WAIT 1 // 0
     #define WAVEFORM_PRINT_GOOD 0
     #define WAVEFORM_PRINT_FAIL 0
 
