@@ -140,13 +140,13 @@ int main(int argc, char* argv[])
     
     TF1* f_plasma_propagation_time = new TF1("f_plasma_propagation_time", ppt_fitf, 35.0, 65.0, 5);
     f_plasma_propagation_time->SetNpx(10000);
-    f_plasma_propagation_time->SetParameter(0, 1.0); //4000.0);
+    f_plasma_propagation_time->SetParameter(0, 0.3); //4000.0);
     //f_plasma_propagation_time->SetParameter(1, 41.0);
     //f_plasma_propagation_time->SetParameter(2, 0.3);
     //f_plasma_propagation_time->SetParameter(3, 41.0);
     //f_plasma_propagation_time->FixParameter(3, 38.0);
-    f_plasma_propagation_time->SetParameter(1, 37.0);
-    f_plasma_propagation_time->SetParameter(2, 43.0);
+    f_plasma_propagation_time->SetParameter(1, 39.0);
+    f_plasma_propagation_time->SetParameter(2, 41.0);
     f_plasma_propagation_time->SetParameter(3, 0.3);
     f_plasma_propagation_time->SetParameter(4, 0.0);
 
@@ -159,11 +159,12 @@ int main(int argc, char* argv[])
     
     TF1 *f_cathode_time = new TF1("f_cathode_time", cathode_time_fitf, -20.0, 80.0, 5);
     f_cathode_time->SetNpx(10000);
-    f_cathode_time->SetParameter(0, 30.0e-3); // TODO: need to normalize
+    f_cathode_time->SetParameter(0, 70.0e-3); // TODO: need to normalize
     f_cathode_time->SetParameter(1, 0.0);
+    f_cathode_time->SetParLimits(1, 0.0, 1.0e1);
     f_cathode_time->SetParameter(2, 10.0);
     f_cathode_time->SetParameter(3, 30.0);
-    f_cathode_time->SetParameter(4, 50.0);
+    f_cathode_time->SetParameter(4, 45.0);
 
     ////////////////////////////////////////////////////////////////////////////
     // FEAST TIMESTAMP HISTOGRAMS
@@ -370,6 +371,14 @@ int main(int argc, char* argv[])
     h_t_cor_residual->SetStats(0);
     h_t_cor_mc->SetStats(0);
     
+
+    // Raw correlation histograms
+    TH2F *h_t1_t3 = new TH2F("h_t1_t3", "h_t1_t3", 50, 0.0, 80.0, 50, 0.0, 80.0);
+    TH2F *h_t2_t4 = new TH2F("h_t2_t4", "h_t2_t4", 50, 0.0, 80.0, 50, 0.0, 80.0);
+
+    h_t1_t3 -> SetStats(0);
+    h_t2_t4 -> SetStats(0);
+
     /*
     TF2 *f_t_correlation = new TF2("f_t_correlation", "[0]*exp(-([3]*pow(x-[1], 2.0) + 2.0*[4]*(x-[1])*(y-[2]) + [5]*pow(y-[2], 2.0)))", -0.4, 0.0, 0.0, 0.4);
     f_t_correlation->SetParameter(0, 1.0);
@@ -638,12 +647,30 @@ int main(int argc, char* argv[])
                 // see if eranious events dissapear
                 h_cathode_time->Fill(store.cathode_time);
                 
-                h_feast_t0->Fill(store.feast_t0);
-                h_feast_t1->Fill(store.feast_t1);
-                h_feast_t2->Fill(store.feast_t2);
-                h_feast_t3->Fill(store.feast_t3);
-                h_feast_t4->Fill(store.feast_t4);
-            
+                //if((store.feast_t0 == *sort_me_neg.rbegin()) || (store.feast_t0 == *sort_me_pos.begin()))
+                //{
+                    h_feast_t0->Fill(store.feast_t0);
+                //}
+                //if((t1_diff == *sort_me_neg.rbegin()) || (t1_diff == *sort_me_pos.begin()))
+                //{
+                    h_feast_t1->Fill(store.feast_t1);
+                //}
+                //if((t2_diff == *sort_me_neg.rbegin()) || (t2_diff == *sort_me_pos.begin()))
+                //{
+                    h_feast_t2->Fill(store.feast_t2);
+                //}
+                //if((t3_diff == *sort_me_neg.rbegin()) || (t3_diff == *sort_me_pos.begin()))
+                //{
+                    h_feast_t3->Fill(store.feast_t3);
+                //}
+                //if((t4_diff == *sort_me_neg.rbegin()) || (t4_diff == *sort_me_pos.begin()))
+                //{
+                    h_feast_t4->Fill(store.feast_t4);
+                //}
+           
+                h_t1_t3->Fill(store.feast_t1, store.feast_t3);
+                h_t2_t4->Fill(store.feast_t2, store.feast_t4);
+
                 //h_cathode->Fill(store.cathode_time);
             
                 // Note: It does NOT remove the eranious bumps which are seen in
@@ -787,7 +814,7 @@ int main(int argc, char* argv[])
         TCanvas *c_cathode_time = new TCanvas("c_cathode_time", "c_cathode_time", 800, 600);
         integral = h_cathode_time->Integral();
         h_cathode_time->Scale(1.0 / integral);
-        h_cathode_time->Fit("f_cathode_time");
+        h_cathode_time->Fit("f_cathode_time", "B");
         h_cathode_time->Draw("E");
         c_cathode_time->SaveAs("c_cathode_time.C");
         c_cathode_time->SaveAs("c_cathode_time.png");
@@ -850,6 +877,24 @@ int main(int argc, char* argv[])
         h_feast_t4->Write();
         delete h_feast_t4;
         delete c_feast_t4;
+        
+        TCanvas *c_t1_t3 = new TCanvas("c_t1_t3", "c_t1_t3", 800, 600);
+        h_t1_t3->Draw("colz");
+        c_t1_t3->SaveAs("c_t1_t3.C");
+        c_t1_t3->SaveAs("c_t1_t3.png");
+        c_t1_t3->SaveAs("c_t1_t3.pdf");
+        c_t1_t3->Write();
+        delete h_t1_t3;
+        delete c_t1_t3;
+
+        TCanvas *c_t2_t4 = new TCanvas("c_t2_t4", "c_t2_t4", 800, 600);
+        h_t2_t4->Draw("colz");
+        c_t2_t4->SaveAs("c_t2_t4.C");
+        c_t2_t4->SaveAs("c_t2_t4.png");
+        c_t2_t4->SaveAs("c_t2_t4.pdf");
+        c_t2_t4->Write();
+        delete h_t2_t4;
+        delete c_t2_t4;
         
         /*TCanvas *c_cathode = new TCanvas("c_cathode", "c_cathode", 800, 600);
         h_cathode->Draw();

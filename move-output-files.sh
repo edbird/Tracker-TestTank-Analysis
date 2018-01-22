@@ -50,15 +50,22 @@ move_function()
 # main function
 main()
 {
-    if [ "$#" -eq 2 ]
+    if [ "$#" -eq 3 ]
     then
         # syntax is move-output-files.sh [before/after] [mc/data]
 
         FROM="./bin" # from dir is always default output dir
         TO="./bin" # to dir is changed later
         
-        TIME="$1" # before/after (changing the PPT)
-        TYPE="$2" # data/mc
+        BASE_DIR="$1"
+        TO="$TO/$BASE_DIR" # location of base directory (eg; 2018-01-22)
+
+        # enable / disable this line depending on whether BASE_DIR should be
+        # automatically created
+        mkdir -p "$TO"
+
+        TIME="$2" # before/after (changing the PPT)
+        TYPE="$3" # data/mc
 
         #DATAFILE=""
 
@@ -108,7 +115,12 @@ main()
             # can't be anything else, already performed this check
             fi
         
-            mv "$FROM/$DATAFILE" "$TO/$DATAFILE"
+            if [ -d "$TO" ]
+            then
+                mv "$FROM/$DATAFILE" "$TO/$DATAFILE"
+            else
+                echo "$TO does not exist or is not a directory"    
+            fi
             move_function "$FROM" "$TO"
         fi
 
@@ -125,7 +137,7 @@ main()
         #    echo "Error incorrect TYPE $TYPE"
         #fi
     else
-        echo "Usage $0 TIME TYPE"
+        echo "Usage $0 BASE_DIR TIME TYPE"
     fi
 }
 

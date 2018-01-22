@@ -175,7 +175,7 @@ Double_t ppt_fitf(Double_t *x_, Double_t *par)
     
     if(t <= x && x < a)
     {
-        return A;
+        return A + d;
     }
     else if(a <= x)
     {
@@ -184,7 +184,7 @@ Double_t ppt_fitf(Double_t *x_, Double_t *par)
     }
     else
     {
-        return 0.0;
+        return 0.0 + d;
     }
     
 }
