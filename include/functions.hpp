@@ -41,6 +41,12 @@ Double_t cathode_time_fitf(Double_t *x_, Double_t *par);
 // Plasma propagation time
 Double_t ppt_fitf(Double_t *x_, Double_t *par);
 
+// Z Position Cathode Time
+Double_t zpos_cathode_time_fitf(Double_t *x_, Double_t *par);
+
+// Z Position Cathode Time Profile (non-fit)
+Double_t zpos_cathode_time_profilef(Double_t x, Double_t mean, Double_t theta);
+
 ////////////////////////////////////////////////////////////////////////////////
 // PRINT FIT FUNCTION OUTPUT PARAMETERS
 ////////////////////////////////////////////////////////////////////////////////

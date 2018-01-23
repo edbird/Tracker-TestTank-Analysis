@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
     f_t_correlation->SetParLimits(4, 0.0, 1000.0);
     f_t_correlation->SetParLimits(5, -1.6, 1.6);
     
-    f_t_correlation->SetNpy(1000);
+    f_t_correlation->SetNpy(10000);
     f_t_correlation->SetContour(10);
     
     
@@ -330,7 +330,7 @@ int main(int argc, char* argv[])
     f_t_correlation_mc->SetParLimits(4, 0.0, 1000.0);
     f_t_correlation_mc->SetParLimits(5, -1.6, 1.6);
     
-    f_t_correlation_mc->SetNpy(1000);
+    f_t_correlation_mc->SetNpy(10000);
     f_t_correlation_mc->SetContour(10);
     
     
@@ -371,8 +371,9 @@ int main(int argc, char* argv[])
     h_t_cor_residual->SetStats(0);
     h_t_cor_mc->SetStats(0);
     
-
+    ////////////////////////////////////////////////////////////////////////////
     // Raw correlation histograms
+    ////////////////////////////////////////////////////////////////////////////
     TH2F *h_t1_t3 = new TH2F("h_t1_t3", "h_t1_t3", 50, 0.0, 80.0, 50, 0.0, 80.0);
     TH2F *h_t2_t4 = new TH2F("h_t2_t4", "h_t2_t4", 50, 0.0, 80.0, 50, 0.0, 80.0);
 
@@ -408,7 +409,7 @@ int main(int argc, char* argv[])
     f_t_cor->SetParLimits(4, 0.0, 1000.0);
     f_t_cor->SetParLimits(5, -1.6, 1.6);
     
-    f_t_cor->SetNpy(1000);
+    f_t_cor->SetNpy(10000);
     f_t_cor->SetContour(10);
     
     
@@ -428,16 +429,52 @@ int main(int argc, char* argv[])
     f_t_cor_mc->SetParLimits(4, 0.0, 1000.0);
     f_t_cor_mc->SetParLimits(5, -1.6, 1.6);
     
-    f_t_cor_mc->SetNpy(1000);
+    f_t_cor_mc->SetNpy(10000);
     f_t_cor_mc->SetContour(10);
     
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Z POSITION CATHODE TIME CORRELATION HISTOGRAMS
+    ////////////////////////////////////////////////////////////////////////////
+
+    TH1F *h_position = new TH1F("h_position", "h_position", 50, -1.0, 1.0);
+    TH1F *h_half_position = new TH1F("h_half_position", "h_half_position", 50, 0.0, 1.0);
+
+    h_position->SetStats(0);
+    h_half_position->SetStats(0);
+
+    TH2F *h_zpos_cathode_time = new TH2F("h_zpos_cathode_time", "h_zpos_cathode_time", 20, -1.0, 1.0, 200, 0.0, 45.0);
+    TH2F *h_zpos_cathode_time_residual = new TH2F("h_zpos_cathode_time_residual", "h_zpos_cathode_time_residual", 20, -1.0, 1.0, 200, 0.0, 45.0);
     
+    h_zpos_cathode_time->SetStats(0);
+    h_zpos_cathode_time_residual->SetStats(0);
+    
+    TF2 *f_zpos_cathode_time = new TF2("f_zpos_cathode_time", zpos_cathode_time_fitf, -1.0, 1.0, 0.0, 45.0, 4, 2);
+
+    f_zpos_cathode_time->SetParameter(0, 285.0);
+    f_zpos_cathode_time->SetParameter(1, 1.0); // 1.18
+    f_zpos_cathode_time->SetParameter(2, 0.05);
+    f_zpos_cathode_time->SetParameter(3, -0.051);
+
+    f_zpos_cathode_time->SetParLimits(2, 0.0, 1000.0);
+ 
+    f_zpos_cathode_time->SetNpy(10000);
+    f_zpos_cathode_time->SetContour(10);
+
+    // "profile" histogram
+
+    TH1F *h_zpos_cathode_time_profile = new TH1F("h_zpos_cathode_time_profile", "h_zpos_cathode_time_profile", 50, 0.0, 50.0); // TODO
+
+    h_zpos_cathode_time_profile->SetStats(0);
+
+    // TODO fit function
+
     ////////////////////////////////////////////////////////////////////////////
     // DATA LOOP
     ////////////////////////////////////////////////////////////////////////////
    
     #define COUT_TIMESTAMP_GOOD 0 // 0
-    #define COUT_TIMESTAMP_FAIL 1 // 1
+    #define COUT_TIMESTAMP_FAIL 0 // 1
     #define COUT_TIMESTAMP_WAIT 0 // 0
     #define WAVEFORM_PRINT_GOOD 0
     #define WAVEFORM_PRINT_FAIL 0
@@ -475,6 +512,41 @@ int main(int argc, char* argv[])
         if(falaise_mc_ == false)
         {
             event_check_flag = cut_l(store.anode_peak, 250.0) && cut_l(store.cathode_peak, 350.0);
+        }
+
+
+        bool event_check_flag_position = false;
+        if(falaise_mc_ == false)
+        {
+            if(
+                cut(store.plasma_propagation_time, 38.5, 42.0) &&
+                cut(store.position, -0.95, 0.95)
+                )
+            {
+                event_check_flag_position = true;
+            }
+        }
+        else
+        {
+            if(
+                cut(store.plasma_propagation_time, 0.1, 9999.9) && // TODO: these are temp. test values
+                cut(store.position, -0.95, 0.95)
+                )
+            {
+                event_check_flag_position = true;
+            }
+        }
+        if(event_check_flag_position == true)
+        {
+
+            ////////////////////////////////////////////////////////////////////
+            // Z POSITION CATHODE TIME CORRELATION HISTOGRAMS
+            ////////////////////////////////////////////////////////////////////
+
+            h_position->Fill(store.position);
+            h_half_position->Fill(store.half_position);
+
+            h_zpos_cathode_time->Fill(store.position, store.cathode_time);
         }
 
         if
@@ -520,6 +592,12 @@ int main(int argc, char* argv[])
             //std::cout << "fill " << ix << std::endl;
             t2->Fill();
             
+
+
+            ////////////////////////////////////////////////////////////////////
+            // FEAST TIME DIFFERENCES
+            ////////////////////////////////////////////////////////////////////
+
             //h_cathode_time->Fill(store.cathode_time);
             
             // TODO: moved to below
@@ -1134,7 +1212,7 @@ int main(int argc, char* argv[])
     
     std::cout << "\n>>> f_t_correlation" << std::endl;
     TCanvas *c_t_correlation = new TCanvas("c_t_correlation", "c_t_correlation", 800, 600);
-    h_t_correlation->Fit("f_t_correlation");
+    h_t_correlation->Fit("f_t_correlation", "B");
     h_t_correlation->Draw("colz");
     c_t_correlation->SaveAs("c_t_correlation.C");
     c_t_correlation->SaveAs("c_t_correlation.png");
@@ -1148,12 +1226,15 @@ int main(int argc, char* argv[])
     {
         for(Int_t i = 1; i <= h_t_correlation->GetNbinsX(); ++ i)
         {
-            Double_t func_x = h_t_correlation_residual->GetXaxis()->GetBinCenter(i);
-            Double_t func_y = h_t_correlation_residual->GetYaxis()->GetBinCenter(j);
-            Double_t func_eval = f_t_correlation->Eval(func_x, func_y);
-            
-            h_t_correlation_residual->SetBinContent(i, j, h_t_correlation->GetBinContent(i, j) - func_eval);
-            h_t_correlation_residual->SetBinError(i, j, h_t_correlation->GetBinError(i, j));
+            if(h_zpos_cathode_time->GetBinError(i, j) > 0.0) // check "empty"
+            {
+                Double_t func_x = h_t_correlation_residual->GetXaxis()->GetBinCenter(i);
+                Double_t func_y = h_t_correlation_residual->GetYaxis()->GetBinCenter(j);
+                Double_t func_eval = f_t_correlation->Eval(func_x, func_y);
+                
+                h_t_correlation_residual->SetBinContent(i, j, h_t_correlation->GetBinContent(i, j) - func_eval);
+                h_t_correlation_residual->SetBinError(i, j, h_t_correlation->GetBinError(i, j));
+            }
         }
     }
     
@@ -1227,7 +1308,7 @@ int main(int argc, char* argv[])
     
     std::cout << "\n>>> f_t_correlation_mc" << std::endl;
     TCanvas *c_t_correlation_mc = new TCanvas("c_t_correlation_mc", "c_t_correlation_mc", 800, 600);
-    h_t_correlation_mc->Fit("f_t_correlation_mc");
+    h_t_correlation_mc->Fit("f_t_correlation_mc", "B");
     h_t_correlation_mc->Draw("colz");
     c_t_correlation_mc->SaveAs("c_t_correlation_mc.C");
     c_t_correlation_mc->SaveAs("c_t_correlation_mc.png");
@@ -1342,7 +1423,7 @@ int main(int argc, char* argv[])
     
     std::cout << "\n>>> f_t_cor" << std::endl;
     TCanvas *c_t_cor = new TCanvas("c_t_cor", "c_t_cor", 800, 600);
-    h_t_cor->Fit("f_t_cor");
+    h_t_cor->Fit("f_t_cor", "B");
     h_t_cor->Draw("colz");
     c_t_cor->SaveAs("c_t_cor.C");
     c_t_cor->SaveAs("c_t_cor.png");
@@ -1356,12 +1437,15 @@ int main(int argc, char* argv[])
     {
         for(Int_t i = 1; i <= h_t_cor->GetNbinsX(); ++ i)
         {
-            Double_t func_x = h_t_cor_residual->GetXaxis()->GetBinCenter(i);
-            Double_t func_y = h_t_cor_residual->GetYaxis()->GetBinCenter(j);
-            Double_t func_eval = f_t_cor->Eval(func_x, func_y);
-            
-            h_t_cor_residual->SetBinContent(i, j, h_t_cor->GetBinContent(i, j) - func_eval);
-            h_t_cor_residual->SetBinError(i, j, h_t_cor->GetBinError(i, j));
+            if(h_t_cor->GetBinError(i, j) > 0.0) // check "empty"
+            {
+                Double_t func_x = h_t_cor_residual->GetXaxis()->GetBinCenter(i);
+                Double_t func_y = h_t_cor_residual->GetYaxis()->GetBinCenter(j);
+                Double_t func_eval = f_t_cor->Eval(func_x, func_y);
+                
+                h_t_cor_residual->SetBinContent(i, j, h_t_cor->GetBinContent(i, j) - func_eval);
+                h_t_cor_residual->SetBinError(i, j, h_t_cor->GetBinError(i, j));
+            }
         }
     }
     
@@ -1435,7 +1519,7 @@ int main(int argc, char* argv[])
     
     std::cout << "\n>>> f_t_cor_mc" << std::endl;
     TCanvas *c_t_cor_mc = new TCanvas("c_t_cor_mc", "c_t_cor_mc", 800, 600);
-    h_t_cor_mc->Fit("f_t_cor_mc");
+    h_t_cor_mc->Fit("f_t_cor_mc", "B");
     h_t_cor_mc->Draw("colz");
     c_t_cor_mc->SaveAs("c_t_cor_mc.C");
     c_t_cor_mc->SaveAs("c_t_cor_mc.png");
@@ -1459,10 +1543,111 @@ int main(int argc, char* argv[])
     delete f_t_cor_mc;
     
     
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Z POSITION CATHODE TIME CORRELATION HISTOGRAMS
+    ////////////////////////////////////////////////////////////////////////////
+
+    TCanvas *c_position = new TCanvas("c_position", "c_position", 800, 600);
+    h_position->Draw();
+    c_position->SaveAs("c_position.C");
+    c_position->SaveAs("c_position.png");
+    c_position->SaveAs("c_position.pdf");
+    h_position->Write();
+    delete h_position;
+    delete c_position;
+
+    TCanvas *c_half_position = new TCanvas("c_half_position", "c_half_position", 800, 600);
+    h_half_position->Draw();
+    c_half_position->SaveAs("c_half_position.C");
+    c_half_position->SaveAs("c_half_position.png");
+    c_half_position->SaveAs("c_half_position.pdf");
+    h_half_position->Write();
+    delete h_half_position;
+    delete c_half_position;
+
+    std::cout << "\n>>> f_zpos_cathode_time" << std::endl;
+    TCanvas *c_zpos_cathode_time = new TCanvas("c_zpos_cathode_time", "c_zpos_cathode_time", 800, 600);
+    h_zpos_cathode_time->Fit("f_zpos_cathode_time", "B");
+    h_zpos_cathode_time->Draw("colz"); 
+    c_zpos_cathode_time->SaveAs("c_zpos_cathode_time.C");
+    c_zpos_cathode_time->SaveAs("c_zpos_cathode_time.png");
+    c_zpos_cathode_time->SaveAs("c_zpos_cathode_time.pdf");
+    h_zpos_cathode_time->Write(); 
+    //delete h_zpos_cathode_time;
+    delete c_zpos_cathode_time;
+
+    fit_param_print(std::cout, f_zpos_cathode_time, 4);
+    std::cout << std::endl;
+
+    // create residuals plot
+    for(Int_t j = 1; j <= h_zpos_cathode_time->GetNbinsY(); ++ j)
+    {
+        for(Int_t i = 1; i <= h_zpos_cathode_time->GetNbinsX(); ++ i)
+        {
+            if(h_zpos_cathode_time->GetBinError(i, j) > 0.0) // check "empty"
+            {
+                //std::cout << "error > 0.0" << std::endl;
+
+                Double_t func_x = h_zpos_cathode_time_residual->GetXaxis()->GetBinCenter(i);
+                Double_t func_y = h_zpos_cathode_time_residual->GetYaxis()->GetBinCenter(j);
+                Double_t func_eval = f_zpos_cathode_time->Eval(func_x, func_y);
+               
+                // TODO: this isn't working with fill for some reason
+                //std::cout << h_zpos_cathode_time->GetBinContent(i, j) - func_eval << std::endl;
+
+                h_zpos_cathode_time_residual->SetBinContent(i, j, h_zpos_cathode_time->GetBinContent(i, j) - func_eval);
+                //h_zpos_cathode_time_residual->Fill(i, j, h_zpos_cathode_time->GetBinContent(i, j) - func_eval);
+                //h_zpos_cathode_time_residual->SetBinError(i, j, h_zpos_cathode_time->GetBinError(i, j));
+            }
+        }
+    }
+
+    // create profile
+    Double_t zpos_cathode_time_mean = f_zpos_cathode_time->GetParameter(1);
+    Double_t zpos_cathode_time_theta = f_zpos_cathode_time->GetParameter(3);
+    for(Int_t i = 1; i <= h_zpos_cathode_time->GetNbinsX(); ++ i)
+    {
+        Double_t func_x = h_zpos_cathode_time->GetXaxis()->GetBinCenter(i);
+        Double_t profile_func_eval = zpos_cathode_time_profilef(func_x, zpos_cathode_time_mean, zpos_cathode_time_theta);
+
+        for(Int_t j = 1; j <= h_zpos_cathode_time->GetNbinsY(); ++ j)
+        {
+            Double_t func_y = h_zpos_cathode_time->GetYaxis()->GetBinCenter(j);
+            Double_t content = h_zpos_cathode_time->GetBinContent(i, j);
+
+            if(content > 0.0)
+            {
+                h_zpos_cathode_time_profile->Fill(func_y, content);
+            }
+
+        }
+    }
+
+    delete h_zpos_cathode_time;
+    delete f_zpos_cathode_time;
+
+    TCanvas *c_zpos_cathode_time_residual = new TCanvas("c_zpos_cathode_time_residual", "c_zpos_cathode_time_residual", 800, 600);
+    h_zpos_cathode_time_residual->Draw("colz");
+    c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.C");
+    c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.png");
+    c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.pdf");
+        h_zpos_cathode_time_residual->Write();
+    delete h_zpos_cathode_time_residual;
+    delete c_zpos_cathode_time_residual;
     
-    
-    
-    
+    TCanvas *c_zpos_cathode_time_profile = new TCanvas("c_zpos_cathode_time_profile", "c_zpos_cathode_time_profile", 800, 600);
+    h_zpos_cathode_time_profile->Draw();
+    c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.C");
+    c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.png");
+    c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.pdf");
+    h_zpos_cathode_time_profile->Write();
+    delete h_zpos_cathode_time_profile;
+    delete c_zpos_cathode_time_profile;
+
+    //delete h_t_cor;
+
+
     //delete t2;
     f2->Close();
     delete f2;

@@ -189,6 +189,47 @@ Double_t ppt_fitf(Double_t *x_, Double_t *par)
     
 }
 
+// Z Position Cathode Time
+Double_t zpos_cathode_time_fitf(Double_t *x_, Double_t *par)
+{
+    Double_t A{par[0]}; // amplitude
+    Double_t mean{par[1]};
+    Double_t sigma{par[2]};
+    Double_t theta{par[3]}; // rotation
+
+    Double_t x{x_[0]};
+    Double_t y{x_[1]};
+
+    // Reject central region, and edges
+    if(x <= -0.95)
+    {
+        TF1::RejectPoint();
+        return 0;
+    }
+    else if(-0.05 <= x && x <= 0.05)
+    {
+        TF1::RejectPoint();
+        return 0;
+    }
+    else if(0.95 <= x)
+    {
+        TF1::RejectPoint();
+        return 0;
+    }
+
+    Double_t xx{x * std::cos(theta) - y * std::sin(theta)};
+    return A * std::exp(-std::pow((xx - mean) / sigma, 2.0));
+
+}
+
+// Z Position Cathode Time Profile
+
+// Z Position Cathode Time Profile (non-fit)
+Double_t zpos_cathode_time_profilef(Double_t x, Double_t mean, Double_t theta)
+{
+    return (x * std::cos(theta) - mean) / std::sin(theta);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // PRINT FIT FUNCTION OUTPUT PARAMETERS
 ////////////////////////////////////////////////////////////////////////////////
