@@ -230,13 +230,37 @@ Double_t zpos_cathode_time_profilef(Double_t x, Double_t mean, Double_t theta)
     return (x * std::cos(theta) - mean) / std::sin(theta);
 }
 
+// Gaussian distribution
+Double_t gaussian_fitf(Double_t *x_, Double_t *par)
+{
+    Double_t x{x_[0]};
+    Double_t A{par[0]};
+    Double_t mean{par[1]};
+    Double_t sigma{par[2]};
+    return A * std::exp(-std::pow((x - mean) / sigma, 2.0));
+}
+
+// Double Gaussian distribution
+Double_t double_gaussian_fitf(Double_t *x_, Double_t *par)
+{
+    Double_t x{x_[0]};
+    Double_t A{par[0]};
+    Double_t mean{par[1]};
+    Double_t sigma{par[2]};
+    Double_t A2{par[3]};
+    Double_t mean2{par[4]};
+    Double_t sigma2{par[5]};
+    return A * std::exp(-std::pow((x - mean) / sigma, 2.0)) + A2 * std::exp(-std::pow((x - mean2) / sigma2, 2.0));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // PRINT FIT FUNCTION OUTPUT PARAMETERS
 ////////////////////////////////////////////////////////////////////////////////
 
-void fit_param_print(std::ostream& os, TF1* func, int n_param)
+void fit_param_print(std::ostream& os, TF1* func)
 {
-
+    int n_param = func->GetNpar();
+    
     os << "chisq = " << func->GetChisquare() / func->GetNDF() << "\n";
     for(int px = 0; px < n_param; ) //++ px)
     {
@@ -248,8 +272,9 @@ void fit_param_print(std::ostream& os, TF1* func, int n_param)
 
 }
 
-void fit_param_print(std::ostream& os, TF2* func, int n_param)
+void fit_param_print(std::ostream& os, TF2* func)
 {
+    int n_param = func->GetNpar();
 
     os << "chisq = " << func->GetChisquare() / func->GetNDF() << "\n";
     for(int px = 0; px < n_param; ) //++ px)

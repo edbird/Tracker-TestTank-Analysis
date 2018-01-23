@@ -47,13 +47,19 @@ Double_t zpos_cathode_time_fitf(Double_t *x_, Double_t *par);
 // Z Position Cathode Time Profile (non-fit)
 Double_t zpos_cathode_time_profilef(Double_t x, Double_t mean, Double_t theta);
 
+// Gaussian distribution
+Double_t gaussian_fitf(Double_t *x_, Double_t *par);
+
+// Double Gaussian distribution
+Double_t double_gaussian_fitf(Double_t *x_, Double_t *par);
+
 ////////////////////////////////////////////////////////////////////////////////
 // PRINT FIT FUNCTION OUTPUT PARAMETERS
 ////////////////////////////////////////////////////////////////////////////////
 
-void fit_param_print(std::ostream& os, TF1* func, int n_param);
+void fit_param_print(std::ostream& os, TF1* func);
 
-void fit_param_print(std::ostream& os, TF2* func, int n_param);
+void fit_param_print(std::ostream& os, TF2* func);
 
 ////////////////////////////////////////////////////////////////////////////////
 // WAVEFORM OUTPUT TO FILE

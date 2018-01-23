@@ -463,11 +463,45 @@ int main(int argc, char* argv[])
 
     // "profile" histogram
 
-    TH1F *h_zpos_cathode_time_profile = new TH1F("h_zpos_cathode_time_profile", "h_zpos_cathode_time_profile", 50, 0.0, 50.0); // TODO
+    TH1F *h_zpos_cathode_time_profile = new TH1F("h_zpos_cathode_time_profile", "h_zpos_cathode_time_profile", 30, -3.0, 3.0); // TODO
 
     h_zpos_cathode_time_profile->SetStats(0);
+    h_zpos_cathode_time_profile->Sumw2(kTRUE);
 
-    // TODO fit function
+    TF1 *f_zpos_cathode_time_profile_1 = new TF1("f_zpos_cathode_time_profile_1", gaussian_fitf, -3.0, 3.0, 3);
+
+    f_zpos_cathode_time_profile_1->SetParameter(0, 650.0);
+    f_zpos_cathode_time_profile_1->SetParameter(1, 0.0);
+    f_zpos_cathode_time_profile_1->SetParameter(2, 0.5);
+
+    f_zpos_cathode_time_profile_1->SetParLimits(2, 0.0, 999.9);
+
+    f_zpos_cathode_time_profile_1->SetNpx(1000);
+    
+    TF1 *f_zpos_cathode_time_profile_2 = new TF1("f_zpos_cathode_time_profile_2", gaussian_fitf, -3.0, 3.0, 3);
+
+    f_zpos_cathode_time_profile_2->SetParameter(0, 100.0);
+    f_zpos_cathode_time_profile_2->SetParameter(1, 0.0);
+    f_zpos_cathode_time_profile_2->SetParameter(2, 0.5);
+
+    f_zpos_cathode_time_profile_2->SetParLimits(2, 0.0, 999.9);
+
+    f_zpos_cathode_time_profile_2->SetNpx(1000);
+
+    TF1 *f_zpos_cathode_time_profile = new TF1("f_zpos_cathode_time_profile", double_gaussian_fitf, -3.0, 3.0, 6);
+
+    f_zpos_cathode_time_profile->SetParameter(0, 400.0);
+    f_zpos_cathode_time_profile->SetParameter(1, -1.0);
+    f_zpos_cathode_time_profile->SetParameter(2, 0.5);
+    f_zpos_cathode_time_profile->FixParameter(3, 0.0);
+    f_zpos_cathode_time_profile->SetParameter(4, 1.0);
+    f_zpos_cathode_time_profile->SetParameter(5, 0.5);
+    
+    f_zpos_cathode_time_profile->SetParLimits(2, 0.0, 999.9);
+    f_zpos_cathode_time_profile->SetParLimits(5, 0.0, 999.9);
+    
+    f_zpos_cathode_time_profile->SetNpx(1000);
+
 
     ////////////////////////////////////////////////////////////////////////////
     // DATA LOOP
@@ -885,14 +919,14 @@ int main(int argc, char* argv[])
         delete h_plasma_propagation_time;
         delete c_plasma_propagation_time;
         
-        fit_param_print(std::cout, f_plasma_propagation_time, 5);
+        fit_param_print(std::cout, f_plasma_propagation_time);
         std::cout << std::endl;
 
         std::cout << "\n>>> f_cathode_time" << std::endl;
         TCanvas *c_cathode_time = new TCanvas("c_cathode_time", "c_cathode_time", 800, 600);
         integral = h_cathode_time->Integral();
         h_cathode_time->Scale(1.0 / integral);
-        h_cathode_time->Fit("f_cathode_time", "B");
+        h_cathode_time->Fit("f_cathode_time");
         h_cathode_time->Draw("E");
         c_cathode_time->SaveAs("c_cathode_time.C");
         c_cathode_time->SaveAs("c_cathode_time.png");
@@ -901,7 +935,7 @@ int main(int argc, char* argv[])
         delete h_cathode_time;
         delete c_cathode_time;
         
-        fit_param_print(std::cout, f_cathode_time, 5);
+        fit_param_print(std::cout, f_cathode_time);
         std::cout << std::endl;
 
         std::cout << "\n>>> f_feast_t0" << std::endl;
@@ -917,7 +951,7 @@ int main(int argc, char* argv[])
         delete h_feast_t0;
         delete c_feast_t0;
        
-        fit_param_print(std::cout, f_feast_t0, 5);
+        fit_param_print(std::cout, f_feast_t0);
         std::cout << std::endl;
 
         TCanvas *c_feast_t1 = new TCanvas("c_feast_t1", "c_feast_t1", 800, 600);
@@ -1114,7 +1148,7 @@ int main(int argc, char* argv[])
     delete h_t0_smallest;
     delete c_t0_smallest;
     
-    fit_param_print(std::cout, f_t0_smallest, 5);
+    fit_param_print(std::cout, f_t0_smallest);
     std::cout << std::endl;
     
     std::cout << "\n>>> f_t_smallest" << std::endl;
@@ -1128,7 +1162,7 @@ int main(int argc, char* argv[])
     //delete h_t_smallest;
     delete c_t_smallest;
     
-    fit_param_print(std::cout, f_t_smallest, 3);
+    fit_param_print(std::cout, f_t_smallest);
     std::cout << std::endl;
     
     std::cout << "\n>>> f_t_next_smallest" << std::endl;
@@ -1142,7 +1176,7 @@ int main(int argc, char* argv[])
     //delete h_t_next_smallest;
     delete c_t_next_smallest;
         
-    fit_param_print(std::cout, f_t_next_smallest, 3);
+    fit_param_print(std::cout, f_t_next_smallest);
     std::cout << std::endl;
     
     /*
@@ -1212,7 +1246,7 @@ int main(int argc, char* argv[])
     
     std::cout << "\n>>> f_t_correlation" << std::endl;
     TCanvas *c_t_correlation = new TCanvas("c_t_correlation", "c_t_correlation", 800, 600);
-    h_t_correlation->Fit("f_t_correlation", "B");
+    h_t_correlation->Fit("f_t_correlation");
     h_t_correlation->Draw("colz");
     c_t_correlation->SaveAs("c_t_correlation.C");
     c_t_correlation->SaveAs("c_t_correlation.png");
@@ -1267,7 +1301,7 @@ int main(int argc, char* argv[])
     Double_t c{f_t_correlation->GetParameter(5)};
     */
     
-    fit_param_print(std::cout, f_t_correlation, 6);
+    fit_param_print(std::cout, f_t_correlation);
     std::cout << std::endl;
     /*
     std::cout << "chisq=" << f_t_correlation->GetChisquare() / f_t_correlation->GetNDF() << std::endl;
@@ -1308,7 +1342,7 @@ int main(int argc, char* argv[])
     
     std::cout << "\n>>> f_t_correlation_mc" << std::endl;
     TCanvas *c_t_correlation_mc = new TCanvas("c_t_correlation_mc", "c_t_correlation_mc", 800, 600);
-    h_t_correlation_mc->Fit("f_t_correlation_mc", "B");
+    h_t_correlation_mc->Fit("f_t_correlation_mc");
     h_t_correlation_mc->Draw("colz");
     c_t_correlation_mc->SaveAs("c_t_correlation_mc.C");
     c_t_correlation_mc->SaveAs("c_t_correlation_mc.png");
@@ -1317,7 +1351,7 @@ int main(int argc, char* argv[])
     delete h_t_correlation_mc;
     delete c_t_correlation_mc;
     
-    fit_param_print(std::cout, f_t_correlation_mc, 6);
+    fit_param_print(std::cout, f_t_correlation_mc);
     std::cout << std::endl;
     /*
     std::cout << "chisq=" << f_t_correlation_mc->GetChisquare() / f_t_correlation_mc->GetNDF() << std::endl;
@@ -1346,7 +1380,7 @@ int main(int argc, char* argv[])
     //delete h_t_pos;
     delete c_t_pos;
     
-    fit_param_print(std::cout, f_t_pos, 3);
+    fit_param_print(std::cout, f_t_pos);
     std::cout << std::endl;
     
     std::cout << "\n>>> f_t_neg" << std::endl;
@@ -1367,7 +1401,7 @@ int main(int argc, char* argv[])
     std::cout << "p2 = " << f_t_pos->GetParameter(2) << " +- " << f_t_pos->GetParError(2) << std::endl;
     */
     
-    fit_param_print(std::cout, f_t_neg, 3);
+    fit_param_print(std::cout, f_t_neg);
     std::cout << std::endl;
     /*
     std::cout << "chisq=" << f_t_neg->GetChisquare() / f_t_neg->GetNDF() << std::endl;
@@ -1423,7 +1457,7 @@ int main(int argc, char* argv[])
     
     std::cout << "\n>>> f_t_cor" << std::endl;
     TCanvas *c_t_cor = new TCanvas("c_t_cor", "c_t_cor", 800, 600);
-    h_t_cor->Fit("f_t_cor", "B");
+    h_t_cor->Fit("f_t_cor");
     h_t_cor->Draw("colz");
     c_t_cor->SaveAs("c_t_cor.C");
     c_t_cor->SaveAs("c_t_cor.png");
@@ -1478,7 +1512,7 @@ int main(int argc, char* argv[])
     Double_t c{f_t_cor->GetParameter(5)};
     */
     
-    fit_param_print(std::cout, f_t_cor, 6);
+    fit_param_print(std::cout, f_t_cor);
     std::cout << std::endl;
     /*
     std::cout << "chisq=" << f_t_cor->GetChisquare() / f_t_cor->GetNDF() << std::endl;
@@ -1519,7 +1553,7 @@ int main(int argc, char* argv[])
     
     std::cout << "\n>>> f_t_cor_mc" << std::endl;
     TCanvas *c_t_cor_mc = new TCanvas("c_t_cor_mc", "c_t_cor_mc", 800, 600);
-    h_t_cor_mc->Fit("f_t_cor_mc", "B");
+    h_t_cor_mc->Fit("f_t_cor_mc");
     h_t_cor_mc->Draw("colz");
     c_t_cor_mc->SaveAs("c_t_cor_mc.C");
     c_t_cor_mc->SaveAs("c_t_cor_mc.png");
@@ -1528,7 +1562,7 @@ int main(int argc, char* argv[])
     delete h_t_cor_mc;
     delete c_t_cor_mc;
     
-    fit_param_print(std::cout, f_t_cor_mc, 6);
+    fit_param_print(std::cout, f_t_cor_mc);
     std::cout << std::endl;
     /*
     std::cout << "chisq=" << f_t_cor_mc->GetChisquare() / f_t_cor_mc->GetNDF() << std::endl;
@@ -1568,7 +1602,7 @@ int main(int argc, char* argv[])
 
     std::cout << "\n>>> f_zpos_cathode_time" << std::endl;
     TCanvas *c_zpos_cathode_time = new TCanvas("c_zpos_cathode_time", "c_zpos_cathode_time", 800, 600);
-    h_zpos_cathode_time->Fit("f_zpos_cathode_time", "B");
+    h_zpos_cathode_time->Fit("f_zpos_cathode_time");
     h_zpos_cathode_time->Draw("colz"); 
     c_zpos_cathode_time->SaveAs("c_zpos_cathode_time.C");
     c_zpos_cathode_time->SaveAs("c_zpos_cathode_time.png");
@@ -1577,7 +1611,7 @@ int main(int argc, char* argv[])
     //delete h_zpos_cathode_time;
     delete c_zpos_cathode_time;
 
-    fit_param_print(std::cout, f_zpos_cathode_time, 4);
+    fit_param_print(std::cout, f_zpos_cathode_time);
     std::cout << std::endl;
 
     // create residuals plot
@@ -1618,7 +1652,7 @@ int main(int argc, char* argv[])
 
             if(content > 0.0)
             {
-                h_zpos_cathode_time_profile->Fill(func_y, content);
+                h_zpos_cathode_time_profile->Fill(func_y - profile_func_eval, content);
             }
 
         }
@@ -1635,8 +1669,10 @@ int main(int argc, char* argv[])
         h_zpos_cathode_time_residual->Write();
     delete h_zpos_cathode_time_residual;
     delete c_zpos_cathode_time_residual;
-    
+   
+    std::cout << "\n>>> f_zpos_cathode_time_profile" << std::endl;
     TCanvas *c_zpos_cathode_time_profile = new TCanvas("c_zpos_cathode_time_profile", "c_zpos_cathode_time_profile", 800, 600);
+    h_zpos_cathode_time_profile->Fit("f_zpos_cathode_time_profile");
     h_zpos_cathode_time_profile->Draw();
     c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.C");
     c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.png");
@@ -1644,6 +1680,9 @@ int main(int argc, char* argv[])
     h_zpos_cathode_time_profile->Write();
     delete h_zpos_cathode_time_profile;
     delete c_zpos_cathode_time_profile;
+
+    fit_param_print(std::cout, f_zpos_cathode_time_profile);
+    std::cout << std::endl;
 
     //delete h_t_cor;
 
