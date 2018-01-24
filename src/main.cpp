@@ -461,7 +461,40 @@ int main(int argc, char* argv[])
     f_zpos_cathode_time->SetNpy(10000);
     f_zpos_cathode_time->SetContour(10);
 
+    ////////////////////////////////////////////////////////////////////////////
+    // "2 dimensional shifted profile histogram"
+    // 2 dimensional histogram where y values are shifted towards the mean
+    // of the 2-d fit above
+    ////////////////////////////////////////////////////////////////////////////
+    
+    Double_t actual_x_low = 0.0;
+    Double_t actual_x_high = 1.0;
+    Int_t actual_bins = 1;
+    {
+        // compute number of bins and limits
+        Double_t x_low = 0.0; Double_t x_high = 45.0;
+        Int_t n_bins = 200;
+        Double_t bin_width = (x_high - x_low) / (Double_t) n_bins;
+        Double_t target_range = (4.0) - (-4.0);
+        Int_t target_bins = (Int_t)std::ceil(target_range / bin_width);
+        Int_t actual_range = (Double_t)target_bins * bin_width;
+        actual_x_low = 0.0 - 0.5 * actual_range;
+        actual_x_high = 0.0 + 0.5 * actual_range;
+        actual_bins = target_bins;
+        std::cout << "actual_bins=" << actual_bins << std::endl;
+    }
+    TH2F *h_zpos_cathode_time_shift = new TH2F("h_zpos_cathode_time_shift", "h_zpos_cathode_time_shift", 20, -1.0, 1.0, actual_bins, actual_x_low, actual_x_high);
+    
+    h_zpos_cathode_time_shift->SetStats(0);
+
+    //TH2F *h_zpos_cathode_time_shift_residual = new TH2F("h_zpos_cathode_time_shift_residual", "h_zpos_cathode_time_shift_residual", 20, -1.0, 1.0, actual_bins, actual_x_low, actual_x_high);
+
+    //h_zpos_cathode_time_shift->SetStats(0);
+    
+    ////////////////////////////////////////////////////////////////////////////
     // "profile" histogram
+    // 1 dimension collapsed (in y direction) histogram
+    ////////////////////////////////////////////////////////////////////////////
 
     TH1F *h_zpos_cathode_time_profile = new TH1F("h_zpos_cathode_time_profile", "h_zpos_cathode_time_profile", 30, -3.0, 3.0); // TODO
 
@@ -581,6 +614,20 @@ int main(int argc, char* argv[])
             h_half_position->Fill(store.half_position);
 
             h_zpos_cathode_time->Fill(store.position, store.cathode_time);
+        
+            // Note: Parameters MUST be entered correctly here 
+            Double_t zpos_cathode_time_mean = 1.00427; //f_zpos_cathode_time->GetParameter(1);
+            Double_t zpos_cathode_time_theta = -0.0506056; //f_zpos_cathode_time->GetParameter(3);
+            Double_t func_x = store.position;
+            Double_t func_y = store.cathode_time;
+            Double_t profile_func_eval = zpos_cathode_time_profilef(func_x, zpos_cathode_time_mean, zpos_cathode_time_theta);
+            
+            // create shifted histogram
+            h_zpos_cathode_time_shift->Fill(func_x, func_y - profile_func_eval);
+             
+            // create collapsed profile
+            h_zpos_cathode_time_profile->Fill(func_y - profile_func_eval);
+
         }
 
         if
@@ -1637,9 +1684,40 @@ int main(int argc, char* argv[])
         }
     }
 
-    // create profile
+    // create shifted histogram
+    // Note: Moved to new data loop
+    // Note: Not actually moved to new loop - to save processing
+    // time parameters are manually entered into above data loop
+    /*
     Double_t zpos_cathode_time_mean = f_zpos_cathode_time->GetParameter(1);
     Double_t zpos_cathode_time_theta = f_zpos_cathode_time->GetParameter(3);
+    for(Int_t i = 1; i <= h_zpos_cathode_time->GetNbinsX(); ++ i)
+    {
+        Double_t func_x = h_zpos_cathode_time->GetXaxis()->GetBinCenter(i);
+        Double_t profile_func_eval = zpos_cathode_time_profilef(func_x, zpos_cathode_time_mean, zpos_cathode_time_theta);
+
+        for(Int_t j = 1; j <= h_zpos_cathode_time->GetNbinsY(); ++ j)
+        {
+            Double_t func_y = h_zpos_cathode_time->GetYaxis()->GetBinCenter(j);
+            Double_t content = h_zpos_cathode_time->GetBinContent(i, j);
+
+            if(content > 0.0)
+            {
+                h_zpos_cathode_time_shift->Fill(func_x, func_y - profile_func_eval, content);
+            }
+
+        }
+    }
+    */
+    
+
+    // create collapsed profile
+    // Note: Moved to new data loop
+    // Note: Not actually moved to new loop - to save processing
+    // time parameters are manually entered into above data loop
+    //Double_t zpos_cathode_time_mean = f_zpos_cathode_time->GetParameter(1);
+    //Double_t zpos_cathode_time_theta = f_zpos_cathode_time->GetParameter(3);
+    /*
     for(Int_t i = 1; i <= h_zpos_cathode_time->GetNbinsX(); ++ i)
     {
         Double_t func_x = h_zpos_cathode_time->GetXaxis()->GetBinCenter(i);
@@ -1657,10 +1735,20 @@ int main(int argc, char* argv[])
 
         }
     }
+    */
 
     delete h_zpos_cathode_time;
     delete f_zpos_cathode_time;
-
+    
+    TCanvas *c_zpos_cathode_time_shift = new TCanvas("c_zpos_cathode_time_shift", "c_zpos_cathode_time_shift", 800, 600);
+    h_zpos_cathode_time_shift->Draw("colz");
+    c_zpos_cathode_time_shift->SaveAs("c_zpos_cathode_time_shift.C");
+    c_zpos_cathode_time_shift->SaveAs("c_zpos_cathode_time_shift.png");
+    c_zpos_cathode_time_shift->SaveAs("c_zpos_cathode_time_shift.pdf");
+        h_zpos_cathode_time_shift->Write();
+    delete h_zpos_cathode_time_shift;
+    delete c_zpos_cathode_time_shift;
+   
     TCanvas *c_zpos_cathode_time_residual = new TCanvas("c_zpos_cathode_time_residual", "c_zpos_cathode_time_residual", 800, 600);
     h_zpos_cathode_time_residual->Draw("colz");
     c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.C");
