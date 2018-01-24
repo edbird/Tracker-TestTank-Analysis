@@ -1748,26 +1748,28 @@ int main(int argc, char* argv[])
         h_zpos_cathode_time_shift->Write();
     delete h_zpos_cathode_time_shift;
     delete c_zpos_cathode_time_shift;
-   
-    TCanvas *c_zpos_cathode_time_residual = new TCanvas("c_zpos_cathode_time_residual", "c_zpos_cathode_time_residual", 800, 600);
-    h_zpos_cathode_time_residual->Draw("colz");
-    c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.C");
-    c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.png");
-    c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.pdf");
-        h_zpos_cathode_time_residual->Write();
+   //here HERE
+    canvas(h_zpos_cathode_time_residual, "c_z_pos_cathode_time_residual", 
+    //TCanvas *c_zpos_cathode_time_residual = new TCanvas("c_zpos_cathode_time_residual", "c_zpos_cathode_time_residual", 800, 600);
+    //h_zpos_cathode_time_residual->Draw("colz");
+    //c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.C");
+    //c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.png");
+    //c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.pdf");
+    //h_zpos_cathode_time_residual->Write();
     delete h_zpos_cathode_time_residual;
-    delete c_zpos_cathode_time_residual;
+    //delete c_zpos_cathode_time_residual;
    
     std::cout << "\n>>> f_zpos_cathode_time_profile" << std::endl;
-    TCanvas *c_zpos_cathode_time_profile = new TCanvas("c_zpos_cathode_time_profile", "c_zpos_cathode_time_profile", 800, 600);
-    h_zpos_cathode_time_profile->Fit("f_zpos_cathode_time_profile");
-    h_zpos_cathode_time_profile->Draw();
-    c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.C");
-    c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.png");
-    c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.pdf");
-    h_zpos_cathode_time_profile->Write();
+    canvas_fit(h_zpos_cathode_time_profile, "c_zpos_cathode_time_profile", "f_zpos_cathode_time_profile");
+    //TCanvas *c_zpos_cathode_time_profile = new TCanvas("c_zpos_cathode_time_profile", "c_zpos_cathode_time_profile", 800, 600);
+    //h_zpos_cathode_time_profile->Fit("f_zpos_cathode_time_profile");
+    //h_zpos_cathode_time_profile->Draw();
+    //c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.C");
+    //c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.png");
+    //c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.pdf");
+    //h_zpos_cathode_time_profile->Write();
     delete h_zpos_cathode_time_profile;
-    delete c_zpos_cathode_time_profile;
+    //delete c_zpos_cathode_time_profile;
 
     fit_param_print(std::cout, f_zpos_cathode_time_profile);
     std::cout << std::endl;
