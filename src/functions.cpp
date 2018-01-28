@@ -261,7 +261,9 @@ Double_t double_gaussian_fitf(Double_t *x_, Double_t *par)
 // TCANVAS FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-void canvas(const TH1F* const histogram_, const std::string& canvas_name_)
+// TODO: get histogram name auto
+
+void canvas(TH1F* const histogram_, const std::string& canvas_name_)
 {
     TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
     histogram_->Draw();
@@ -275,7 +277,7 @@ void canvas(const TH1F* const histogram_, const std::string& canvas_name_)
     return;
 }
 
-void canvas(const TH2F* const histogram_, const std::string& canvas_name_)
+void canvas(TH2F* const histogram_, const std::string& canvas_name_)
 {
     TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
     histogram_->Draw();
@@ -289,7 +291,7 @@ void canvas(const TH2F* const histogram_, const std::string& canvas_name_)
     return;
 }
 
-void canvas_fit(const TH1F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_)
+void canvas_fit(TH1F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_)
 {
     TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
     histogram_->Fit(fit_name_.c_str());
@@ -304,11 +306,43 @@ void canvas_fit(const TH1F* const histogram_, const std::string& canvas_name_, c
     return;
 }
 
-void canvas_fit(const TH2F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_)
+void canvas_fit(TH2F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_)
 {
-    // get histogram name 
-
     TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
+    histogram_->Fit(fit_name_.c_str());
+    histogram_->Draw();
+    c_c->SaveAs((canvas_name_ + std::string(".C")).c_str());
+    c_c->SaveAs((canvas_name_ + std::string(".eps")).c_str());
+    c_c->SaveAs((canvas_name_ + std::string(".png")).c_str());
+    c_c->SaveAs((canvas_name_ + std::string(".pdf")).c_str());
+    histogram_->Write();
+    delete c_c;
+
+    return;
+}
+
+void canvas_scale_fit(TH1F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_)
+{
+    TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
+    Double_t integral = histogram_->Integral();
+    histogram_->Scale(1.0 / integral);
+    histogram_->Fit(fit_name_.c_str());
+    histogram_->Draw();
+    c_c->SaveAs((canvas_name_ + std::string(".C")).c_str());
+    c_c->SaveAs((canvas_name_ + std::string(".eps")).c_str());
+    c_c->SaveAs((canvas_name_ + std::string(".png")).c_str());
+    c_c->SaveAs((canvas_name_ + std::string(".pdf")).c_str());
+    histogram_->Write();
+    delete c_c;
+
+    return;
+}
+
+void canvas_scale_fit(TH2F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_)
+{
+    TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
+    Double_t integral = histogram_->Integral();
+    histogram_->Scale(1.0 / integral);
     histogram_->Fit(fit_name_.c_str());
     histogram_->Draw();
     c_c->SaveAs((canvas_name_ + std::string(".C")).c_str());

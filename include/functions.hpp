@@ -6,6 +6,7 @@
 
 //#include <RTypes.h>
 #include <TH1F.h>
+#include <TH2F.h>
 #include <TF1.h>
 #include <TF2.h>
 #include <TCanvas.h>
@@ -61,13 +62,17 @@ Double_t double_gaussian_fitf(Double_t *x_, Double_t *par);
 // TCANVAS FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-void canvas(const TH1F* const histogram_, const std::string& canvas_name_);
+void canvas(TH1F* const histogram_, const std::string& canvas_name_);
 
-void canvas(const TH2F* const histogram_, const std::string& canvas_name_);
+void canvas(TH2F* const histogram_, const std::string& canvas_name_);
 
-void canvas_fit(const TH1F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_);
+void canvas_fit(TH1F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_);
 
-void canvas_fit(const TH2F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_);
+void canvas_fit(TH2F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_);
+
+void canvas_scale_fit(TH1F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_);
+
+void canvas_scale_fit(TH2F* const histogram_, const std::string& canvas_name_, const std::string& fit_name_);
 
 
 ////////////////////////////////////////////////////////////////////////////////

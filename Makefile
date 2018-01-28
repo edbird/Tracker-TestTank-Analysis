@@ -65,7 +65,7 @@ clean:
 
 #Full Clean, Objects and Binaries
 cleaner: clean
-	@$(RM) -rf $(TARGETDIR)
+#	@$(RM) -rf $(TARGETDIR)
 
 #Pull in dependency info for *existing* .o files
 -include $(OBJECTS:.$(OBJEXT)=.$(DEPEXT))

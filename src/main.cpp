@@ -949,111 +949,49 @@ int main(int argc, char* argv[])
     t2->Write();
     //f2->Close();
     
-    Double_t integral;
+    //Double_t integral;
 
     #define TIMESTAMP_CANVAS_ENABLE 1 // TODO:move
     #if TIMESTAMP_CANVAS_ENABLE
         std::cout << "\n>>> f_plasma_propagation_time" << std::endl;
-        TCanvas *c_plasma_propagation_time = new TCanvas("c_plasma_propagation_time", "c_plasma_propagation_time", 800, 600);
-        integral = h_plasma_propagation_time->Integral();
-        h_plasma_propagation_time->Scale(1.0 / integral); 
-        h_plasma_propagation_time->Fit("f_plasma_propagation_time");
-        h_plasma_propagation_time->Draw("E");
-        c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.C");
-        c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.png");
-        c_plasma_propagation_time->SaveAs("c_plasma_propagation_time.pdf");
-        h_plasma_propagation_time->Write();
+        canvas_scale_fit(h_plasma_propagation_time, "h_plasma_propagation_time", "f_plasma_propagation_time");
         delete h_plasma_propagation_time;
-        delete c_plasma_propagation_time;
         
         fit_param_print(std::cout, f_plasma_propagation_time);
         std::cout << std::endl;
 
         std::cout << "\n>>> f_cathode_time" << std::endl;
-        TCanvas *c_cathode_time = new TCanvas("c_cathode_time", "c_cathode_time", 800, 600);
-        integral = h_cathode_time->Integral();
-        h_cathode_time->Scale(1.0 / integral);
-        h_cathode_time->Fit("f_cathode_time");
-        h_cathode_time->Draw("E");
-        c_cathode_time->SaveAs("c_cathode_time.C");
-        c_cathode_time->SaveAs("c_cathode_time.png");
-        c_cathode_time->SaveAs("c_cathode_time.pdf");
-        h_cathode_time->Write();
+        canvas_scale_fit(h_cathode_time, "c_cathode_time", "f_cathode_time");
         delete h_cathode_time;
-        delete c_cathode_time;
         
         fit_param_print(std::cout, f_cathode_time);
         std::cout << std::endl;
 
         std::cout << "\n>>> f_feast_t0" << std::endl;
-        TCanvas *c_feast_t0 = new TCanvas("c_feast_t0", "c_feast_t0", 800, 600);
-        integral = h_feast_t0->Integral();
-        h_feast_t0->Scale(1.0 / integral);
-        h_feast_t0->Fit("f_feast_t0");
-        h_feast_t0->Draw("E");
-        c_feast_t0->SaveAs("c_feast_t0.C");
-        c_feast_t0->SaveAs("c_feast_t0.png");
-        c_feast_t0->SaveAs("c_feast_t0.pdf");
-        h_feast_t0->Write(); 
+        canvas_scale_fit(h_feast_t0, "c_feast_t0", "f_feast_t0");
         delete h_feast_t0;
-        delete c_feast_t0;
        
+        // Print parameters for feast_t0 fit
         fit_param_print(std::cout, f_feast_t0);
         std::cout << std::endl;
 
-        TCanvas *c_feast_t1 = new TCanvas("c_feast_t1", "c_feast_t1", 800, 600);
-        h_feast_t1->Draw();
-        c_feast_t1->SaveAs("c_feast_t1.C");
-        c_feast_t1->SaveAs("c_feast_t1.png");
-        c_feast_t1->SaveAs("c_feast_t1.pdf");
-        h_feast_t1->Write();
+        canvas(h_feast_t1, "c_feast_t1");
         delete h_feast_t1;
-        delete c_feast_t1;
         
-        TCanvas *c_feast_t2 = new TCanvas("c_feast_t2", "c_feast_t2", 800, 600);
-        h_feast_t2->Draw();
-        c_feast_t2->SaveAs("c_feast_t2.C");
-        c_feast_t2->SaveAs("c_feast_t2.png");
-        c_feast_t2->SaveAs("c_feast_t2.pdf");
-        h_feast_t2->Write();
+        canvas(h_feast_t2, "c_feast_t2");
         delete h_feast_t2;
-        delete c_feast_t2;
         
-        TCanvas *c_feast_t3 = new TCanvas("c_feast_t3", "c_feast_t3", 800, 600);
-        h_feast_t3->Draw();
-        c_feast_t3->SaveAs("c_feast_t3.C");
-        c_feast_t3->SaveAs("c_feast_t3.png");
-        c_feast_t3->SaveAs("c_feast_t3.pdf");
-        h_feast_t3->Write();
+        canvas(h_feast_t3, "c_feast_t3");
         delete h_feast_t3;
-        delete c_feast_t3;
             
-        TCanvas *c_feast_t4 = new TCanvas("c_feast_t4", "c_feast_t4", 800, 600);
-        h_feast_t4->Draw();
-        c_feast_t4->SaveAs("c_feast_t4.C");
-        c_feast_t4->SaveAs("c_feast_t4.png");
-        c_feast_t4->SaveAs("c_feast_t4.pdf");
-        h_feast_t4->Write();
+        canvas(h_feast_t4, "c_feast_t4");
         delete h_feast_t4;
-        delete c_feast_t4;
         
-        TCanvas *c_t1_t3 = new TCanvas("c_t1_t3", "c_t1_t3", 800, 600);
-        h_t1_t3->Draw("colz");
-        c_t1_t3->SaveAs("c_t1_t3.C");
-        c_t1_t3->SaveAs("c_t1_t3.png");
-        c_t1_t3->SaveAs("c_t1_t3.pdf");
-        c_t1_t3->Write();
+        canvas(h_t1_t3, "c_t1_t3");
         delete h_t1_t3;
-        delete c_t1_t3;
 
-        TCanvas *c_t2_t4 = new TCanvas("c_t2_t4", "c_t2_t4", 800, 600);
-        h_t2_t4->Draw("colz");
-        c_t2_t4->SaveAs("c_t2_t4.C");
-        c_t2_t4->SaveAs("c_t2_t4.png");
-        c_t2_t4->SaveAs("c_t2_t4.pdf");
-        c_t2_t4->Write();
+        canvas(h_t2_t4, "c_t2_t4");
         delete h_t2_t4;
-        delete c_t2_t4;
         
         /*TCanvas *c_cathode = new TCanvas("c_cathode", "c_cathode", 800, 600);
         h_cathode->Draw();
@@ -1120,55 +1058,26 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
     // FEAST T0 T1 CORRELATION
     ////////////////////////////////////////////////////////////////////////////
-    
-    TCanvas *c_feast_t0_t1_cor = new TCanvas("c_feast_t0_t1_cor", "c_feast_t0_t1_cor", 800, 600);
-    h_feast_t0_t1_cor->Draw("colz");
-    c_feast_t0_t1_cor->SaveAs("c_feast_t0_t1_cor.C");
-    c_feast_t0_t1_cor->SaveAs("c_feast_t0_t1_cor.png");
-    c_feast_t0_t1_cor->SaveAs("c_feast_t0_t1_cor.pdf");
-    h_feast_t0_t1_cor->Write();
+
+    canvas(h_feast_t0_t1_cor, "c_feast_t0_t1_cor");
     delete h_feast_t0_t1_cor;
-    delete c_feast_t0_t1_cor;
     
-    TCanvas *c_feast_t0_t2_cor = new TCanvas("c_feast_t0_t2_cor", "c_feast_t0_t2_cor", 800, 600);
-    h_feast_t0_t2_cor->Draw("colz");
-    c_feast_t0_t2_cor->SaveAs("c_feast_t0_t2_cor.C");
-    c_feast_t0_t2_cor->SaveAs("c_feast_t0_t2_cor.png");
-    c_feast_t0_t2_cor->SaveAs("c_feast_t0_t2_cor.pdf");
-    h_feast_t0_t2_cor->Write();
+    canvas(h_feast_t0_t2_cor, "c_feast_t0_t2_cor");
     delete h_feast_t0_t2_cor;
-    delete c_feast_t0_t2_cor;
     
-    TCanvas *c_feast_t0_t3_cor = new TCanvas("c_feast_t0_t3_cor", "c_feast_t0_t3_cor", 800, 600);
-    h_feast_t0_t3_cor->Draw("colz");
-    c_feast_t0_t3_cor->SaveAs("c_feast_t0_t3_cor.C");
-    c_feast_t0_t3_cor->SaveAs("c_feast_t0_t3_cor.png");
-    c_feast_t0_t3_cor->SaveAs("c_feast_t0_t3_cor.pdf");
-    h_feast_t0_t3_cor->Write();
+    canvas(h_feast_t0_t3_cor, "c_feast_t0_t3_cor");
     delete h_feast_t0_t3_cor;
-    delete c_feast_t0_t3_cor;
     
-    TCanvas *c_feast_t0_t4_cor = new TCanvas("c_feast_t0_t4_cor", "c_feast_t0_t4_cor", 800, 600);
-    h_feast_t0_t4_cor->Draw("colz");
-    c_feast_t0_t4_cor->SaveAs("c_feast_t0_t4_cor.C");
-    c_feast_t0_t4_cor->SaveAs("c_feast_t0_t4_cor.png");
-    c_feast_t0_t4_cor->SaveAs("c_feast_t0_t4_cor.pdf");
-    h_feast_t0_t4_cor->Write();
+    canvas(h_feast_t0_t4_cor, "c_feast_t0_t4_cor");
     delete h_feast_t0_t4_cor;
-    delete c_feast_t0_t4_cor;
     
     ////////////////////////////////////////////////////////////////////////////
     // FEAST T0 TO CATHODE CORRELATION AND FEAST T1 TO CATHODE CORRELATION
     ////////////////////////////////////////////////////////////////////////////
     
-    TCanvas *c_feast_t0_cathode_time_cor = new TCanvas("c_feast_t0_cathode_time_cor", "c_feast_t0_cathode_time_cor", 800, 600);
-    h_feast_t0_cathode_time_cor->Draw("colz");
-    c_feast_t0_cathode_time_cor->SaveAs("c_feast_t0_cathode_time_cor.C");
-    c_feast_t0_cathode_time_cor->SaveAs("c_feast_t0_cathode_time_cor.png");
-    c_feast_t0_cathode_time_cor->SaveAs("c_feast_t0_cathode_time_cor.pdf");
-    h_feast_t0_cathode_time_cor->Write();
+    canvas(h_feast_t0_cathode_time_cor, "c_feast_t0_cathode_time_cor");
     delete h_feast_t0_cathode_time_cor;
-    delete c_feast_t0_cathode_time_cor;
+    
     /*
     TCanvas *c_feast_t1_cathode_time_cor = new TCanvas("c_feast_t1_cathode_time_cor", "c_feast_t1_cathode_time_cor", 800, 600);
     h_feast_t1_cathode_time_cor->Draw("colz");
@@ -1185,43 +1094,22 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
     
     std::cout << "\n>>> f_t0_smallest" << std::endl;
-    TCanvas *c_t0_smallest = new TCanvas("c_t0_smallest", "c_t0_smallest", 800, 600);
-    h_t0_smallest->Fit("f_t0_smallest");
-    h_t0_smallest->Draw("E");
-    c_t0_smallest->SaveAs("c_t0_smallest.C");
-    c_t0_smallest->SaveAs("c_t0_smallest.png");
-    c_t0_smallest->SaveAs("c_t0_smallest.pdf");
-        h_t0_smallest->Write();
+    canvas_fit(h_t0_smallest, "c_t0_smallest", "f_t0_smallest");
     delete h_t0_smallest;
-    delete c_t0_smallest;
     
     fit_param_print(std::cout, f_t0_smallest);
     std::cout << std::endl;
     
     std::cout << "\n>>> f_t_smallest" << std::endl;
-    TCanvas *c_t_smallest = new TCanvas("c_t_smallest", "c_t_smallest", 800, 600);
-    h_t_smallest->Fit("f_t_smallest");
-    h_t_smallest->Draw("E");
-    c_t_smallest->SaveAs("c_t_smallest.C");
-    c_t_smallest->SaveAs("c_t_smallest.png");
-    c_t_smallest->SaveAs("c_t_smallest.pdf");
-        h_t_smallest->Write();
+    canvas_fit(h_t_smallest, "c_t_smallest", "f_t_smallest");
     //delete h_t_smallest;
-    delete c_t_smallest;
     
     fit_param_print(std::cout, f_t_smallest);
     std::cout << std::endl;
     
     std::cout << "\n>>> f_t_next_smallest" << std::endl;
-    TCanvas *c_t_next_smallest = new TCanvas("c_t_next_smallest", "c_t_next_smallest", 800, 600);
-    h_t_next_smallest->Fit("f_t_next_smallest");
-    h_t_next_smallest->Draw("E");
-    c_t_next_smallest->SaveAs("c_t_next_smallest.C");
-    c_t_next_smallest->SaveAs("c_t_next_smallest.png");
-    c_t_next_smallest->SaveAs("c_t_next_smallest.pdf");
-        h_t_next_smallest->Write();
+    canvas_fit(h_t_next_smallest, "c_t_next_smallest", "f_t_next_smallest");
     //delete h_t_next_smallest;
-    delete c_t_next_smallest;
         
     fit_param_print(std::cout, f_t_next_smallest);
     std::cout << std::endl;
@@ -1265,23 +1153,11 @@ int main(int argc, char* argv[])
     }
     
     
-    TCanvas *c_t_smallest_residual = new TCanvas("c_t_smallest_residual", "c_t_smallest_residual", 800, 600);
-    h_t_smallest_residual->Draw("E");
-    c_t_smallest_residual->SaveAs("c_t_smallest_residual.C");
-    c_t_smallest_residual->SaveAs("c_t_smallest_residual.png");
-    c_t_smallest_residual->SaveAs("c_t_smallest_residual.pdf");
-        h_t_smallest_residual->Write();
+    canvas(h_t_smallest_residual, "c_t_smallest_residual");
     delete h_t_smallest_residual;
-    delete c_t_smallest_residual;
     
-    TCanvas *c_t_next_smallest_residual = new TCanvas("c_t_next_smallest_residual", "c_t_next_smallest_residual", 800, 600);
-    h_t_next_smallest_residual->Draw("E");
-    c_t_next_smallest_residual->SaveAs("c_t_next_smallest_residual.C");
-    c_t_next_smallest_residual->SaveAs("c_t_next_smallest_residual.png");
-    c_t_next_smallest_residual->SaveAs("c_t_next_smallest_residual.pdf");
-        h_t_next_smallest_residual->Write();
+    canvas(h_t_next_smallest_residual, "c_t_next_smallest_residual");
     delete h_t_next_smallest_residual;
-    delete c_t_next_smallest_residual;
     
     
     delete h_t_smallest;
@@ -1292,15 +1168,8 @@ int main(int argc, char* argv[])
     delete f_t_next_smallest;
     
     std::cout << "\n>>> f_t_correlation" << std::endl;
-    TCanvas *c_t_correlation = new TCanvas("c_t_correlation", "c_t_correlation", 800, 600);
-    h_t_correlation->Fit("f_t_correlation");
-    h_t_correlation->Draw("colz");
-    c_t_correlation->SaveAs("c_t_correlation.C");
-    c_t_correlation->SaveAs("c_t_correlation.png");
-    c_t_correlation->SaveAs("c_t_correlation.pdf");
-        h_t_correlation->Write();
+    canvas_fit(h_t_correlation, "c_t_correlation", "f_t_correlation");
     //delete h_t_correlation;
-    delete c_t_correlation;
     
     // create residuals plot
     for(Int_t j = 1; j <= h_t_correlation->GetNbinsY(); ++ j)
@@ -1319,27 +1188,13 @@ int main(int argc, char* argv[])
         }
     }
     
-    TCanvas *c_t_correlation_residual = new TCanvas("c_t_correlation_residual", "c_t_correlation_residual", 800, 600);
-    h_t_correlation_residual->Draw("colz");
-    c_t_correlation_residual->SaveAs("c_t_correlation_residual.C");
-    c_t_correlation_residual->SaveAs("c_t_correlation_residual.png");
-    c_t_correlation_residual->SaveAs("c_t_correlation_residual.pdf");
-        h_t_correlation_residual->Write();
+    canvas(h_t_correlation_residual, "c_t_correlation_residual");
     delete h_t_correlation_residual;
-    delete c_t_correlation_residual;
     
     delete h_t_correlation;
     
     
     /*
-    std::cout << "chisq=" << f_t_correlation->GetChisquare() / f_t_correlation->GetNDF() << std::endl;
-    std::cout << "p0 = " << f_t_correlation->GetParameter(0) << " +- " << f_t_correlation->GetParError(0) << std::endl;
-    std::cout << "p1 = " << f_t_correlation->GetParameter(1) << " +- " << f_t_correlation->GetParError(1) << std::endl;
-    std::cout << "p2 = " << f_t_correlation->GetParameter(2) << " +- " << f_t_correlation->GetParError(2) << std::endl;
-    std::cout << "p3 = " << f_t_correlation->GetParameter(3) << " +- " << f_t_correlation->GetParError(3) << std::endl;
-    std::cout << "p4 = " << f_t_correlation->GetParameter(4) << " +- " << f_t_correlation->GetParError(4) << std::endl;
-    std::cout << "p5 = " << f_t_correlation->GetParameter(5) << " +- " << f_t_correlation->GetParError(5) << std::endl;
-
     Double_t A{f_t_correlation->GetParameter(0)};
     Double_t x0{f_t_correlation->GetParameter(1)};
     Double_t y0{f_t_correlation->GetParameter(2)};
@@ -1350,15 +1205,6 @@ int main(int argc, char* argv[])
     
     fit_param_print(std::cout, f_t_correlation);
     std::cout << std::endl;
-    /*
-    std::cout << "chisq=" << f_t_correlation->GetChisquare() / f_t_correlation->GetNDF() << std::endl;
-    std::cout << "p0 = " << f_t_correlation->GetParameter(0) << " +- " << f_t_correlation->GetParError(0) << std::endl;
-    std::cout << "p1 = " << f_t_correlation->GetParameter(1) << " +- " << f_t_correlation->GetParError(1) << std::endl;
-    std::cout << "p2 = " << f_t_correlation->GetParameter(2) << " +- " << f_t_correlation->GetParError(2) << std::endl;
-    std::cout << "p3 = " << f_t_correlation->GetParameter(3) << " +- " << f_t_correlation->GetParError(3) << std::endl;
-    std::cout << "p4 = " << f_t_correlation->GetParameter(4) << " +- " << f_t_correlation->GetParError(4) << std::endl;
-    std::cout << "p5 = " << f_t_correlation->GetParameter(5) << " +- " << f_t_correlation->GetParError(5) << std::endl;
-    */
     
     Double_t A{f_t_correlation->GetParameter(0)};
     Double_t x0{f_t_correlation->GetParameter(1)};
@@ -1388,27 +1234,11 @@ int main(int argc, char* argv[])
     }
     
     std::cout << "\n>>> f_t_correlation_mc" << std::endl;
-    TCanvas *c_t_correlation_mc = new TCanvas("c_t_correlation_mc", "c_t_correlation_mc", 800, 600);
-    h_t_correlation_mc->Fit("f_t_correlation_mc");
-    h_t_correlation_mc->Draw("colz");
-    c_t_correlation_mc->SaveAs("c_t_correlation_mc.C");
-    c_t_correlation_mc->SaveAs("c_t_correlation_mc.png");
-    c_t_correlation_mc->SaveAs("c_t_correlation_mc.pdf");
-        h_t_correlation_mc->Write();
+    canvas_fit(h_t_correlation_mc, "c_t_correlation_mc", "f_t_correlation_mc");
     delete h_t_correlation_mc;
-    delete c_t_correlation_mc;
     
     fit_param_print(std::cout, f_t_correlation_mc);
     std::cout << std::endl;
-    /*
-    std::cout << "chisq=" << f_t_correlation_mc->GetChisquare() / f_t_correlation_mc->GetNDF() << std::endl;
-    std::cout << "p0 = " << f_t_correlation_mc->GetParameter(0) << " +- " << f_t_correlation_mc->GetParError(0) << std::endl;
-    std::cout << "p1 = " << f_t_correlation_mc->GetParameter(1) << " +- " << f_t_correlation_mc->GetParError(1) << std::endl;
-    std::cout << "p2 = " << f_t_correlation_mc->GetParameter(2) << " +- " << f_t_correlation_mc->GetParError(2) << std::endl;
-    std::cout << "p3 = " << f_t_correlation_mc->GetParameter(3) << " +- " << f_t_correlation_mc->GetParError(3) << std::endl;
-    std::cout << "p4 = " << f_t_correlation_mc->GetParameter(4) << " +- " << f_t_correlation_mc->GetParError(4) << std::endl;
-    std::cout << "p5 = " << f_t_correlation_mc->GetParameter(5) << " +- " << f_t_correlation_mc->GetParError(5) << std::endl;
-    */
     
     delete f_t_correlation_mc;
     
@@ -1417,45 +1247,19 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
     
     std::cout << "\n>>> f_t_pos" << std::endl;
-    TCanvas *c_t_pos = new TCanvas("c_t_pos", "c_t_pos", 800, 600);
-    h_t_pos->Fit("f_t_pos");
-    h_t_pos->Draw("E");
-    c_t_pos->SaveAs("c_t_pos.C");
-    c_t_pos->SaveAs("c_t_pos.png");
-    c_t_pos->SaveAs("c_t_pos.pdf");
-        h_t_pos->Write();
+    canvas_fit(h_t_pos, "c_t_pos", "f_t_pos");
     //delete h_t_pos;
-    delete c_t_pos;
     
     fit_param_print(std::cout, f_t_pos);
     std::cout << std::endl;
     
     std::cout << "\n>>> f_t_neg" << std::endl;
-    TCanvas *c_t_neg = new TCanvas("c_t_neg", "c_t_neg", 800, 600);
-    h_t_neg->Fit("f_t_neg");
-    h_t_neg->Draw("E");
-    c_t_neg->SaveAs("c_t_neg.C");
-    c_t_neg->SaveAs("c_t_neg.png");
-    c_t_neg->SaveAs("c_t_neg.pdf");
-        h_t_neg->Write();
+    canvas_fit(h_t_neg, "c_t_neg", "f_t_neg");
     //delete h_t_neg;
-    delete c_t_neg;
     
-    /*
-    std::cout << "chisq = " << f_t_pos->GetChisquare() / f_t_pos->GetNDF() << std::endl;
-    std::cout << "p0 = " << f_t_pos->GetParameter(0) << " +- " << f_t_pos->GetParError(0) << std::endl;
-    std::cout << "p1 = " << f_t_pos->GetParameter(1) << " +- " << f_t_pos->GetParError(1) << std::endl;
-    std::cout << "p2 = " << f_t_pos->GetParameter(2) << " +- " << f_t_pos->GetParError(2) << std::endl;
-    */
     
     fit_param_print(std::cout, f_t_neg);
     std::cout << std::endl;
-    /*
-    std::cout << "chisq=" << f_t_neg->GetChisquare() / f_t_neg->GetNDF() << std::endl;
-    std::cout << "p0 = " << f_t_neg->GetParameter(0) << " +- " << f_t_neg->GetParError(0) << std::endl;
-    std::cout << "p1 = " << f_t_neg->GetParameter(1) << " +- " << f_t_neg->GetParError(1) << std::endl;
-    std::cout << "p2 = " << f_t_neg->GetParameter(2) << " +- " << f_t_neg->GetParError(2) << std::endl;
-    */
     
     // create residuals plot
     for(Int_t i = 1; i <= h_t_pos->GetNbinsX(); ++ i)
@@ -1477,23 +1281,11 @@ int main(int argc, char* argv[])
     }
     
     
-    TCanvas *c_t_pos_residual = new TCanvas("c_t_pos_residual", "c_t_pos_residual", 800, 600);
-    h_t_pos_residual->Draw("E");
-    c_t_pos_residual->SaveAs("c_t_pos_residual.C");
-    c_t_pos_residual->SaveAs("c_t_pos_residual.png");
-    c_t_pos_residual->SaveAs("c_t_pos_residual.pdf");
-        h_t_pos_residual->Write();
+    canvas(h_t_pos_residual, "c_t_pos_residual");
     delete h_t_pos_residual;
-    delete c_t_pos_residual;
-    
-    TCanvas *c_t_neg_residual = new TCanvas("c_t_neg_residual", "c_t_neg_residual", 800, 600);
-    h_t_neg_residual->Draw("E");
-    c_t_neg_residual->SaveAs("c_t_neg_residual.C");
-    c_t_neg_residual->SaveAs("c_t_neg_residual.png");
-    c_t_neg_residual->SaveAs("c_t_neg_residual.pdf");
-        h_t_neg_residual->Write();
+
+    canvas(h_t_neg_residual, "c_t_neg_residual");
     delete h_t_neg_residual;
-    delete c_t_neg_residual;
     
     
     delete h_t_pos;
@@ -1503,15 +1295,8 @@ int main(int argc, char* argv[])
     delete f_t_neg;
     
     std::cout << "\n>>> f_t_cor" << std::endl;
-    TCanvas *c_t_cor = new TCanvas("c_t_cor", "c_t_cor", 800, 600);
-    h_t_cor->Fit("f_t_cor");
-    h_t_cor->Draw("colz");
-    c_t_cor->SaveAs("c_t_cor.C");
-    c_t_cor->SaveAs("c_t_cor.png");
-    c_t_cor->SaveAs("c_t_cor.pdf");
-        h_t_cor->Write();
+    canvas_fit(h_t_cor, "c_t_cor", "f_t_cor");
     //delete h_t_cor;
-    delete c_t_cor;
     
     // create residuals plot
     for(Int_t j = 1; j <= h_t_cor->GetNbinsY(); ++ j)
@@ -1529,28 +1314,14 @@ int main(int argc, char* argv[])
             }
         }
     }
-    
-    TCanvas *c_t_cor_residual = new TCanvas("c_t_cor_residual", "c_t_cor_residual", 800, 600);
-    h_t_cor_residual->Draw("colz");
-    c_t_cor_residual->SaveAs("c_t_cor_residual.C");
-    c_t_cor_residual->SaveAs("c_t_cor_residual.png");
-    c_t_cor_residual->SaveAs("c_t_cor_residual.pdf");
-        h_t_cor_residual->Write();
+   
+    canvas(h_t_cor_residual, "c_t_cor_residual");
     delete h_t_cor_residual;
-    delete c_t_cor_residual;
     
     delete h_t_cor;
     
     
     /*
-    std::cout << "chisq=" << f_t_cor->GetChisquare() / f_t_cor->GetNDF() << std::endl;
-    std::cout << "p0 = " << f_t_cor->GetParameter(0) << " +- " << f_t_cor->GetParError(0) << std::endl;
-    std::cout << "p1 = " << f_t_cor->GetParameter(1) << " +- " << f_t_cor->GetParError(1) << std::endl;
-    std::cout << "p2 = " << f_t_cor->GetParameter(2) << " +- " << f_t_cor->GetParError(2) << std::endl;
-    std::cout << "p3 = " << f_t_cor->GetParameter(3) << " +- " << f_t_cor->GetParError(3) << std::endl;
-    std::cout << "p4 = " << f_t_cor->GetParameter(4) << " +- " << f_t_cor->GetParError(4) << std::endl;
-    std::cout << "p5 = " << f_t_cor->GetParameter(5) << " +- " << f_t_cor->GetParError(5) << std::endl;
-
     Double_t A{f_t_cor->GetParameter(0)};
     Double_t x0{f_t_cor->GetParameter(1)};
     Double_t y0{f_t_cor->GetParameter(2)};
@@ -1561,15 +1332,6 @@ int main(int argc, char* argv[])
     
     fit_param_print(std::cout, f_t_cor);
     std::cout << std::endl;
-    /*
-    std::cout << "chisq=" << f_t_cor->GetChisquare() / f_t_cor->GetNDF() << std::endl;
-    std::cout << "p0 = " << f_t_cor->GetParameter(0) << " +- " << f_t_cor->GetParError(0) << std::endl;
-    std::cout << "p1 = " << f_t_cor->GetParameter(1) << " +- " << f_t_cor->GetParError(1) << std::endl;
-    std::cout << "p2 = " << f_t_cor->GetParameter(2) << " +- " << f_t_cor->GetParError(2) << std::endl;
-    std::cout << "p3 = " << f_t_cor->GetParameter(3) << " +- " << f_t_cor->GetParError(3) << std::endl;
-    std::cout << "p4 = " << f_t_cor->GetParameter(4) << " +- " << f_t_cor->GetParError(4) << std::endl;
-    std::cout << "p5 = " << f_t_cor->GetParameter(5) << " +- " << f_t_cor->GetParError(5) << std::endl;
-    */
     
     Double_t A_cor{f_t_cor->GetParameter(0)};
     Double_t x0_cor{f_t_cor->GetParameter(1)};
@@ -1599,28 +1361,11 @@ int main(int argc, char* argv[])
     }
     
     std::cout << "\n>>> f_t_cor_mc" << std::endl;
-    TCanvas *c_t_cor_mc = new TCanvas("c_t_cor_mc", "c_t_cor_mc", 800, 600);
-    h_t_cor_mc->Fit("f_t_cor_mc");
-    h_t_cor_mc->Draw("colz");
-    c_t_cor_mc->SaveAs("c_t_cor_mc.C");
-    c_t_cor_mc->SaveAs("c_t_cor_mc.png");
-    c_t_cor_mc->SaveAs("c_t_cor_mc.pdf");
-        h_t_cor_mc->Write();
+    canvas_fit(h_t_cor_mc, "c_t_cor_mc", "f_t_cor_mc");
     delete h_t_cor_mc;
-    delete c_t_cor_mc;
     
     fit_param_print(std::cout, f_t_cor_mc);
     std::cout << std::endl;
-    /*
-    std::cout << "chisq=" << f_t_cor_mc->GetChisquare() / f_t_cor_mc->GetNDF() << std::endl;
-    std::cout << "p0 = " << f_t_cor_mc->GetParameter(0) << " +- " << f_t_cor_mc->GetParError(0) << std::endl;
-    std::cout << "p1 = " << f_t_cor_mc->GetParameter(1) << " +- " << f_t_cor_mc->GetParError(1) << std::endl;
-    std::cout << "p2 = " << f_t_cor_mc->GetParameter(2) << " +- " << f_t_cor_mc->GetParError(2) << std::endl;
-    std::cout << "p3 = " << f_t_cor_mc->GetParameter(3) << " +- " << f_t_cor_mc->GetParError(3) << std::endl;
-    std::cout << "p4 = " << f_t_cor_mc->GetParameter(4) << " +- " << f_t_cor_mc->GetParError(4) << std::endl;
-    std::cout << "p5 = " << f_t_cor_mc->GetParameter(5) << " +- " << f_t_cor_mc->GetParError(5) << std::endl;
-    */
-    
     delete f_t_cor_mc;
     
     
@@ -1629,34 +1374,15 @@ int main(int argc, char* argv[])
     // Z POSITION CATHODE TIME CORRELATION HISTOGRAMS
     ////////////////////////////////////////////////////////////////////////////
 
-    TCanvas *c_position = new TCanvas("c_position", "c_position", 800, 600);
-    h_position->Draw();
-    c_position->SaveAs("c_position.C");
-    c_position->SaveAs("c_position.png");
-    c_position->SaveAs("c_position.pdf");
-    h_position->Write();
+    canvas(h_position, "c_position");
     delete h_position;
-    delete c_position;
 
-    TCanvas *c_half_position = new TCanvas("c_half_position", "c_half_position", 800, 600);
-    h_half_position->Draw();
-    c_half_position->SaveAs("c_half_position.C");
-    c_half_position->SaveAs("c_half_position.png");
-    c_half_position->SaveAs("c_half_position.pdf");
-    h_half_position->Write();
+    canvas(h_half_position , "c_half_position");
     delete h_half_position;
-    delete c_half_position;
 
     std::cout << "\n>>> f_zpos_cathode_time" << std::endl;
-    TCanvas *c_zpos_cathode_time = new TCanvas("c_zpos_cathode_time", "c_zpos_cathode_time", 800, 600);
-    h_zpos_cathode_time->Fit("f_zpos_cathode_time");
-    h_zpos_cathode_time->Draw("colz"); 
-    c_zpos_cathode_time->SaveAs("c_zpos_cathode_time.C");
-    c_zpos_cathode_time->SaveAs("c_zpos_cathode_time.png");
-    c_zpos_cathode_time->SaveAs("c_zpos_cathode_time.pdf");
-    h_zpos_cathode_time->Write(); 
+    canvas_fit(h_zpos_cathode_time, "c_zpos_cathode_time", "f_zpos_cathode_time");
     //delete h_zpos_cathode_time;
-    delete c_zpos_cathode_time;
 
     fit_param_print(std::cout, f_zpos_cathode_time);
     std::cout << std::endl;
@@ -1740,44 +1466,21 @@ int main(int argc, char* argv[])
     delete h_zpos_cathode_time;
     delete f_zpos_cathode_time;
     
-    TCanvas *c_zpos_cathode_time_shift = new TCanvas("c_zpos_cathode_time_shift", "c_zpos_cathode_time_shift", 800, 600);
-    h_zpos_cathode_time_shift->Draw("colz");
-    c_zpos_cathode_time_shift->SaveAs("c_zpos_cathode_time_shift.C");
-    c_zpos_cathode_time_shift->SaveAs("c_zpos_cathode_time_shift.png");
-    c_zpos_cathode_time_shift->SaveAs("c_zpos_cathode_time_shift.pdf");
-        h_zpos_cathode_time_shift->Write();
+    canvas(h_zpos_cathode_time_shift, "c_zpos_cathode_time_shift");
     delete h_zpos_cathode_time_shift;
-    delete c_zpos_cathode_time_shift;
-   //here HERE
-    canvas(h_zpos_cathode_time_residual, "c_z_pos_cathode_time_residual", 
-    //TCanvas *c_zpos_cathode_time_residual = new TCanvas("c_zpos_cathode_time_residual", "c_zpos_cathode_time_residual", 800, 600);
-    //h_zpos_cathode_time_residual->Draw("colz");
-    //c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.C");
-    //c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.png");
-    //c_zpos_cathode_time_residual->SaveAs("c_zpos_cathode_time_residual.pdf");
-    //h_zpos_cathode_time_residual->Write();
+
+    canvas(h_zpos_cathode_time_residual, "c_z_pos_cathode_time_residual"); 
     delete h_zpos_cathode_time_residual;
-    //delete c_zpos_cathode_time_residual;
    
     std::cout << "\n>>> f_zpos_cathode_time_profile" << std::endl;
     canvas_fit(h_zpos_cathode_time_profile, "c_zpos_cathode_time_profile", "f_zpos_cathode_time_profile");
-    //TCanvas *c_zpos_cathode_time_profile = new TCanvas("c_zpos_cathode_time_profile", "c_zpos_cathode_time_profile", 800, 600);
-    //h_zpos_cathode_time_profile->Fit("f_zpos_cathode_time_profile");
-    //h_zpos_cathode_time_profile->Draw();
-    //c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.C");
-    //c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.png");
-    //c_zpos_cathode_time_profile->SaveAs("c_zpos_cathode_time_profile.pdf");
-    //h_zpos_cathode_time_profile->Write();
     delete h_zpos_cathode_time_profile;
-    //delete c_zpos_cathode_time_profile;
 
     fit_param_print(std::cout, f_zpos_cathode_time_profile);
     std::cout << std::endl;
+    delete f_zpos_cathode_time_profile;
 
-    //delete h_t_cor;
 
-
-    //delete t2;
     f2->Close();
     delete f2;
     
