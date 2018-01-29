@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "***** RUNNING: EXECUTABLE *****"
 #ln -s ./bin/run.out .
-cd bin
+cd output
 ./run.out
 cd ..
