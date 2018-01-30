@@ -62,7 +62,7 @@ Double_t double_gaussian_fitf(Double_t *x_, Double_t *par);
 // TCANVAS FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-void canvas(TH1F* const histogram_, const std::string& canvas_name_);
+void canvas(TH1F* const histogram_, const std::string& canvas_name_, const std::string& draw_opt_ = "");
 
 void canvas(TH2F* const histogram_, const std::string& canvas_name_);
 

@@ -263,10 +263,10 @@ Double_t double_gaussian_fitf(Double_t *x_, Double_t *par)
 
 // TODO: get histogram name auto
 
-void canvas(TH1F* const histogram_, const std::string& canvas_name_)
+void canvas(TH1F* const histogram_, const std::string& canvas_name_, const std::string& draw_opt_)
 {
     TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
-    histogram_->Draw();
+    histogram_->Draw(draw_opt_.c_str());
     c_c->SaveAs((canvas_name_ + std::string(".C")).c_str());
     c_c->SaveAs((canvas_name_ + std::string(".eps")).c_str());
     c_c->SaveAs((canvas_name_ + std::string(".png")).c_str());
@@ -280,7 +280,7 @@ void canvas(TH1F* const histogram_, const std::string& canvas_name_)
 void canvas(TH2F* const histogram_, const std::string& canvas_name_)
 {
     TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
-    histogram_->Draw();
+    histogram_->Draw("colz");
     c_c->SaveAs((canvas_name_ + std::string(".C")).c_str());
     c_c->SaveAs((canvas_name_ + std::string(".eps")).c_str());
     c_c->SaveAs((canvas_name_ + std::string(".png")).c_str());

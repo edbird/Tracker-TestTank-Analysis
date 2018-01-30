@@ -131,8 +131,17 @@ int main(int argc, char* argv[])
     // HISTOGRAMS GENERIC
     ////////////////////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////////////////////
+    // PLASMA PROPAGATION TIME HISTOGRAMS
+    ////////////////////////////////////////////////////////////////////////////
+
     TH1F *h_plasma_propagation_time = new TH1F("h_plasma_propagation_time", "h_plasma_propagation_time", 50, 0.0, 70.0); //35.0, 45.0);
     h_plasma_propagation_time->SetStats(0);
+
+    TH2F *h_cathode_time_plasma_propagation_time = new TH2F("h_cathode_time_plasma_propagation_time", "h_cathode_time_plasma_propagation_time", 50, -20.0, 80.0, 50, 0.0, 70.0);
+    h_cathode_time_plasma_propagation_time->SetStats(0);
+
+    //TH2F *h_position_
 
     ////////////////////////////////////////////////////////////////////////////
     // FIT FUNCTION FOR PLASMA PROPAGATION TIME
@@ -574,6 +583,8 @@ int main(int argc, char* argv[])
         //std::cin.get();
         h_plasma_propagation_time->Fill(store.plasma_propagation_time);
         
+        h_cathode_time_plasma_propagation_time->Fill(store.cathode_time, store.plasma_propagation_time);
+
         // check anode and cathode peaks - only for real data
         bool event_check_flag{true};
         if(falaise_mc_ == false)
@@ -950,6 +961,19 @@ int main(int argc, char* argv[])
     //f2->Close();
     
     //Double_t integral;
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // CATHODE TIME PLASMA PROPAGATION TIME
+    ////////////////////////////////////////////////////////////////////////////
+
+    canvas(h_cathode_time_plasma_propagation_time, "h_cathode_time_plasma_propagation_time");
+    delete h_cathode_time_plasma_propagation_time;
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BASIC RAW TIMESTAMP HISTOGRAMS AND PLASMA PROPAGATION TIME HISTOGRAM
+    ////////////////////////////////////////////////////////////////////////////
 
     #define TIMESTAMP_CANVAS_ENABLE 1 // TODO:move
     #if TIMESTAMP_CANVAS_ENABLE
