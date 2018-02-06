@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
     TestTankStorage_init(&store);
     
     // SetBranchAddress for TTree t
-    TestTankStorage_setbranchaddress(&store, t);
+    TestTankStorage_setbranchaddress(&store, t, falaise_mc_);
     
     // Output file
     std::string filename_out{filename.substr(0, filename.rfind(".")) + std::string("_out") + filename.substr(filename.rfind("."))};
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
     t2->SetDirectory(f2);
 
     // Branch for TTree t2
-    TestTankStorage_branch(&store, t2);
+    TestTankStorage_branch(&store, t2, falaise_mc_);
     
     ////////////////////////////////////////////////////////////////////////////
     // HISTOGRAMS GENERIC
@@ -447,9 +447,11 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
 
     TH1F *h_position = new TH1F("h_position", "h_position", 50, -1.0, 1.0);
+    TH1F *h_truth_position = new TH1F("h_truth_position", "h_truth_position", 50, -1.5, 1.5);
     TH1F *h_half_position = new TH1F("h_half_position", "h_half_position", 50, 0.0, 1.0);
 
     h_position->SetStats(0);
+    h_truth_position->SetStats(0);
     h_half_position->SetStats(0);
 
     TH2F *h_zpos_cathode_time = new TH2F("h_zpos_cathode_time", "h_zpos_cathode_time", 20, -1.0, 1.0, 200, 0.0, 45.0);
@@ -584,6 +586,33 @@ int main(int argc, char* argv[])
         h_plasma_propagation_time->Fill(store.plasma_propagation_time);
         
         h_cathode_time_plasma_propagation_time->Fill(store.cathode_time, store.plasma_propagation_time);
+
+        // Can only fill for MC, because otherwise store.truth_position contains
+        // zero
+        // Note: Fill anyway, but histogram contains only zero
+        if(falaise_mc_ == true)
+        {
+            h_truth_position->Fill(store.truth_position);
+        }
+        else
+        {
+            h_truth_position->Fill(0.0);
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        // NOTE TO SELF: POSITION VARIABLE NOW WRONG
+        // 
+        // store.position is now obtained from the MC directly, so all previous
+        // use of position must be replaced by a computation of the variable
+        ////////////////////////////////////////////////////////////////////////
+
+        // Now OVERWRITE the store.position variable with the previous value
+        // which is obtained from a new variable which is only present in the
+        // mc files
+        //store.position = -(store.top_cathode_time);
+
+        // EDIT: leave position alone and introduce new variable
+        // store.truth_position
 
         // check anode and cathode peaks - only for real data
         bool event_check_flag{true};
@@ -967,7 +996,7 @@ int main(int argc, char* argv[])
     // CATHODE TIME PLASMA PROPAGATION TIME
     ////////////////////////////////////////////////////////////////////////////
 
-    canvas(h_cathode_time_plasma_propagation_time, "h_cathode_time_plasma_propagation_time");
+    canvas(h_cathode_time_plasma_propagation_time, "c_cathode_time_plasma_propagation_time");
     delete h_cathode_time_plasma_propagation_time;
 
 
@@ -1400,6 +1429,9 @@ int main(int argc, char* argv[])
 
     canvas(h_position, "c_position");
     delete h_position;
+
+    canvas(h_truth_position, "c_truth_position");
+    delete h_truth_position;
 
     canvas(h_half_position , "c_half_position");
     delete h_half_position;

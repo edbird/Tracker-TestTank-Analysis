@@ -9,6 +9,8 @@
 // TEST TANK DATA STRUCTURE
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Move this to a header file somewhere else so that both TestModule
+// and TrackerTestTankAnalysis can see it (only 1 copy of code)
 typedef struct TestTankStorage
 {
     Float_t time = 0;
@@ -41,13 +43,15 @@ typedef struct TestTankStorage
     TH1F *anode_histo = (TH1F*)0;
     TH1F *deriv_histo = (TH1F*)0;
     TH1F *cathode_histo = (TH1F*)0;
+
+    Float_t truth_position = 0;
 };
 
 
 // Helper functions
 void TestTankStorage_init(TestTankStorage * const testtankstorage_);
-void TestTankStorage_setbranchaddress(TestTankStorage * const testtankstorage_, TTree * const tree_);
-void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * const tree_);
+void TestTankStorage_setbranchaddress(TestTankStorage * const testtankstorage_, TTree * const tree_, bool mc);
+void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * const tree_, bool mc);
 
 ////////////////////////////////////////////////////////////////////////////////
 // PRINT TIMESTAMPS

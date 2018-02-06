@@ -36,11 +36,12 @@ void TestTankStorage_init(TestTankStorage * const testtankstorage_)
     store.anode_histo = (TH1F*)0;
     store.deriv_histo = (TH1F*)0;
     store.cathode_histo = (TH1F*)0;
-    
+
+    store.truth_position = 0;
 }
 
 
-void TestTankStorage_setbranchaddress(TestTankStorage * const testtankstorage_, TTree * const tree_)
+void TestTankStorage_setbranchaddress(TestTankStorage * const testtankstorage_, TTree * const tree_, bool mc = false)
 {
 
     TTree * const t = tree_;
@@ -77,9 +78,13 @@ void TestTankStorage_setbranchaddress(TestTankStorage * const testtankstorage_, 
     t->SetBranchAddress("deriv_histo", &store.deriv_histo);
     t->SetBranchAddress("cathode_histo", &store.cathode_histo);
 
+    if(mc == true)
+    {
+        t->SetBranchAddress("truth_position", &store.truth_position);
+    }
 }
 
-void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * const tree_)
+void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * const tree_, bool mc = false)
 {
 
     TTree * const t2 = tree_;
@@ -116,6 +121,10 @@ void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * co
     t2->Branch("deriv_histo", &store.deriv_histo);
     t2->Branch("cathode_histo", &store.cathode_histo);
 
+    if(mc == true)
+    {
+        t2->Branch("truth_position", &store.truth_position);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
