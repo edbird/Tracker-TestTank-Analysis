@@ -310,7 +310,7 @@ void canvas_fit(TH2F* const histogram_, const std::string& canvas_name_, const s
 {
     TCanvas *c_c = new TCanvas(canvas_name_.c_str(), canvas_name_.c_str(), 800, 600);
     histogram_->Fit(fit_name_.c_str());
-    histogram_->Draw();
+    histogram_->Draw("colz");
     c_c->SaveAs((canvas_name_ + std::string(".C")).c_str());
     c_c->SaveAs((canvas_name_ + std::string(".eps")).c_str());
     c_c->SaveAs((canvas_name_ + std::string(".png")).c_str());

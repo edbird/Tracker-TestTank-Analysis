@@ -1007,7 +1007,7 @@ int main(int argc, char* argv[])
     #define TIMESTAMP_CANVAS_ENABLE 1 // TODO:move
     #if TIMESTAMP_CANVAS_ENABLE
         std::cout << "\n>>> f_plasma_propagation_time" << std::endl;
-        canvas_scale_fit(h_plasma_propagation_time, "h_plasma_propagation_time", "f_plasma_propagation_time");
+        canvas_scale_fit(h_plasma_propagation_time, "c_plasma_propagation_time", "f_plasma_propagation_time");
         delete h_plasma_propagation_time;
         
         fit_param_print(std::cout, f_plasma_propagation_time);
@@ -1229,7 +1229,7 @@ int main(int argc, char* argv[])
     {
         for(Int_t i = 1; i <= h_t_correlation->GetNbinsX(); ++ i)
         {
-            if(h_zpos_cathode_time->GetBinError(i, j) > 0.0) // check "empty"
+            if(h_t_correlation->GetBinError(i, j) > 0.0) // check "empty"
             {
                 Double_t func_x = h_t_correlation_residual->GetXaxis()->GetBinCenter(i);
                 Double_t func_y = h_t_correlation_residual->GetYaxis()->GetBinCenter(j);
