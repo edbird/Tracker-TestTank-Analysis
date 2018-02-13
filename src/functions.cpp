@@ -9,6 +9,7 @@
 void histogram_differentiate(TH1F* const differential_histo, const TH1F* const histo, Int_t method)
 {
     if(method == differentiate_method_simple) histogram_differentiate_simple(differential_histo, histo);
+    else if(method == differentiate_method_simple_with_smooth) histogram_differentiate_simple_with_smooth(differential_histo, histo);
     else if(method == differentiate_method_filter_simulation) histogram_differentiate_filter_simulation(differential_histo, histo);
     else throw "invalid differentiation method flag";
 }
@@ -21,6 +22,7 @@ void histogram_differentiate_simple(TH1F* const differential_histo, const TH1F* 
 {
     if(differential_histo->GetNbinsX() != histo->GetNbinsX()) throw "error histogram nbinsx differ";
     if(histo->GetNbinsX() < 2) throw "error histogram nbinsx < 2";
+
     Double_t prev_y{histo->GetBinContent(1)};
     const Double_t delta_t{histo->GetBinLowEdge(2) - histo->GetBinLowEdge(1)};
     for(Int_t ix{1 + 1}; ix <= histo->GetNbinsX(); ++ ix)
@@ -32,6 +34,41 @@ void histogram_differentiate_simple(TH1F* const differential_histo, const TH1F* 
     }
     // set final bin to zero
     differential_histo->SetBinContent(histo->GetNbinsX(), 0.0);
+}
+
+
+// compute derivative using trivial differentiation method with smoothing
+void histogram_differentiate_simple_with_smooth(TH1F* const differential_histo, const TH1F* const histo)
+{
+    // TODO: CHECK INDICES
+    std::cout << "a" << std::endl;
+
+    if(differential_histo->GetNbinsX() != histo->GetNbinsX()) throw "error histogram nbinsx differ";
+    if(histo->GetNbinsX() < 2) throw "error histogram nbinsx < 2";
+
+    // average of 3 numbers either side
+    const Int_t average_count{3};
+    Double_t sum{0};
+    const Double_t delta_t{histo->GetBinLowEdge(2) - histo->GetBinLowEdge(1)};
+    for(Int_t ix{1 + average_count}; ix <= histo->GetNbinsX() - average_count; ++ ix)
+    {
+        for(Int_t jx{1}; jx <= average_count; ++ jx)
+        {
+            sum += histo->GetBinContent(ix + jx) - histo->GetBinContent(ix - jx);
+        }
+        differential_histo->SetBinContent(ix, sum / (Double_t)(2 * average_count));
+    }
+    // set edge bins to zero
+    for(Int_t ix{1}; ix < 1 + average_count; ++ ix)
+    {
+        differential_histo->SetBinContent(ix, 0.0);
+    }
+    for(Int_t ix{histo->GetNbinsX() - average_count + 1}; ix < histo->GetNbinsX(); ++ ix)
+    {
+        differential_histo->SetBinContent(ix, 0.0);
+    }
+
+    std::cout << "b" << std::endl;
 }
 
 

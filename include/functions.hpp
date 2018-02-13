@@ -17,9 +17,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 const Int_t differentiate_method_simple{0};
-const Int_t differentiate_method_filter_simulation{0};
+const Int_t differentiate_method_simple_with_smooth{1};
+const Int_t differentiate_method_filter_simulation{2};
 void histogram_differentiate(TH1F* const differential_histo, const TH1F* const histo, Int_t method);
 void histogram_differentiate_simple(TH1F* const differential_histo, const TH1F* const histo);
+void histogram_differentiate_simple_with_smooth(TH1F* const differential_histo, const TH1F* const histo);
 void histogram_differentiate_filter_simulation(TH1F* const differential_histo, const TH1F* const histo);
 
 ////////////////////////////////////////////////////////////////////////////////

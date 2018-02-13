@@ -577,6 +577,7 @@ int main(int argc, char* argv[])
     //std::cout << "num_entry=" << num_entry << std::endl;
     for(Long64_t ix = 0; ix < num_entry; ++ ix)
     {    
+        std::cout << "ix=" << ix << std::endl;
         byte_count_entry = t->GetEntry(ix);
         if(byte_count_entry <= 0)
             continue;
@@ -832,6 +833,8 @@ int main(int argc, char* argv[])
                     store.anode_histo->SetStats(0);
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
 
+                    ix_copy = ix;
+
                     Double_t xlow{store.anode_histo->GetBinLowEdge(1)};
                     Double_t xhigh{store.anode_histo->GetBinLowEdge(store.anode_histo->GetNbinsX()) + store.anode_histo->GetBinWidth(store.anode_histo->GetNbinsX())};
                     Int_t nbinsx{store.anode_histo->GetNbinsX()};
@@ -839,6 +842,7 @@ int main(int argc, char* argv[])
                     histogram_differentiate(differential_histo, store.anode_histo, differentiate_method_simple);
                     store.differential_histo = differential_histo;
                     waveform_print(differential_histo, ix_copy, output_file_name_differential, "differential_histo_good");
+                    //delete differential_histo;
                 #endif
                 
                 
@@ -887,6 +891,8 @@ int main(int argc, char* argv[])
                 #if WAVEFORM_PRINT_FAIL
                     store.anode_histo->SetStats(0);
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_fail");
+                    
+                    ix_copy = ix;
 
                     Double_t xlow{store.anode_histo->GetBinLowEdge(1)};
                     Double_t xhigh{store.anode_histo->GetBinLowEdge(store.anode_histo->GetNbinsX()) + store.anode_histo->GetBinWidth(store.anode_histo->GetNbinsX())};
@@ -895,6 +901,7 @@ int main(int argc, char* argv[])
                     histogram_differentiate(differential_histo, store.anode_histo, differentiate_method_simple);
                     store.differential_histo = differential_histo;
                     waveform_print(differential_histo, ix_copy, output_file_name_differential, "differential_histo_fail");
+                    //delete differential_histo;
                 #endif
         
                 // NOTE: This isn't the fail part of the first if statement

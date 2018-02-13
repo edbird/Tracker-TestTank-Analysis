@@ -82,6 +82,9 @@ void TestTankStorage_setbranchaddress(TestTankStorage * const testtankstorage_, 
     t->SetBranchAddress("deriv_histo", &store.deriv_histo);
     t->SetBranchAddress("cathode_histo", &store.cathode_histo);
 
+    // added 2018-02-13
+    //t->SetBranchAddress("differential_histo", &store.differential_histo);
+
     // only for mc data
     if(mc == true)
     {
@@ -125,6 +128,9 @@ void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * co
     t2->Branch("anode_histo", &store.anode_histo);
     t2->Branch("deriv_histo", &store.deriv_histo);
     t2->Branch("cathode_histo", &store.cathode_histo);
+
+    // added 2018-02-13
+    t2->Branch("differential_histo", &store.differential_histo);
 
     // only for mc data
     if(mc == true)
