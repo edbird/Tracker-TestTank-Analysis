@@ -554,8 +554,8 @@ int main(int argc, char* argv[])
     #define COUT_TIMESTAMP_GOOD 0 // 0
     #define COUT_TIMESTAMP_FAIL 0 // 1
     #define COUT_TIMESTAMP_WAIT 0 // 0
-    #define WAVEFORM_PRINT_GOOD 0
-    #define WAVEFORM_PRINT_FAIL 0
+    #define WAVEFORM_PRINT_GOOD 1
+    #define WAVEFORM_PRINT_FAIL 1
 
     Long64_t canvas_name_counter{0};
     
@@ -600,19 +600,9 @@ int main(int argc, char* argv[])
         }
 
         ////////////////////////////////////////////////////////////////////////
-        // NOTE TO SELF: POSITION VARIABLE NOW WRONG
-        // 
-        // store.position is now obtained from the MC directly, so all previous
-        // use of position must be replaced by a computation of the variable
+        // NOTE TO SELF: New varaible store.truth_position introduced. This
+        // variable is only valid for MC (falaise simulation) data.
         ////////////////////////////////////////////////////////////////////////
-
-        // Now OVERWRITE the store.position variable with the previous value
-        // which is obtained from a new variable which is only present in the
-        // mc files
-        //store.position = -(store.top_cathode_time);
-
-        // EDIT: leave position alone and introduce new variable
-        // store.truth_position
 
         // check anode and cathode peaks - only for real data
         bool event_check_flag{true};
@@ -835,10 +825,20 @@ int main(int argc, char* argv[])
                 h_t_cor->Fill(*sort_me_neg.rbegin(), *sort_me_pos.begin());
                 
                 std::string output_file_name("anode_");
+                std::string output_file_name_differential("differential_");
                 //canvas_name_counter = ix;
                 Long64_t ix_copy{ix};
                 #if WAVEFORM_PRINT_GOOD
+                    store.anode_histo->SetStats(0);
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
+
+                    Double_t xlow{store.anode_histo->GetBinLowEdge(1)};
+                    Double_t xhigh{store.anode_histo->GetBinLowEdge(store.anode_histo->GetNbinsX()) + store.anode_histo->GetBinWidth(store.anode_histo->GetNbinsX())};
+                    Int_t nbinsx{store.anode_histo->GetNbinsX()};
+                    TH1F *differential_histo = new TH1F("differential_histo", "differential_histo", nbinsx, xlow, xhigh);
+                    histogram_differentiate(differential_histo, store.anode_histo, differentiate_method_simple);
+                    store.differential_histo = differential_histo;
+                    waveform_print(differential_histo, ix_copy, output_file_name_differential, "differential_histo_good");
                 #endif
                 
                 
@@ -880,11 +880,21 @@ int main(int argc, char* argv[])
                 ++ count_reject_timestamp; 
 
                 std::string output_file_name("anode_");
+                std::string output_file_name_differential("differential_");
                 //canvas_name_counter = ix;
                 Long64_t ix_copy{ix};
                 //waveform_print(ix_copy /*canvas_name_counter*/, cathode_histo, output_file_name);
                 #if WAVEFORM_PRINT_FAIL
+                    store.anode_histo->SetStats(0);
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_fail");
+
+                    Double_t xlow{store.anode_histo->GetBinLowEdge(1)};
+                    Double_t xhigh{store.anode_histo->GetBinLowEdge(store.anode_histo->GetNbinsX()) + store.anode_histo->GetBinWidth(store.anode_histo->GetNbinsX())};
+                    Int_t nbinsx{store.anode_histo->GetNbinsX()};
+                    TH1F *differential_histo = new TH1F("differential_histo", "differential_histo", nbinsx, xlow, xhigh);
+                    histogram_differentiate(differential_histo, store.anode_histo, differentiate_method_simple);
+                    store.differential_histo = differential_histo;
+                    waveform_print(differential_histo, ix_copy, output_file_name_differential, "differential_histo_fail");
                 #endif
         
                 // NOTE: This isn't the fail part of the first if statement

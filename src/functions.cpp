@@ -3,6 +3,46 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// HISTOGRAM DIFFERENTIATION FUNCTIONS
+////////////////////////////////////////////////////////////////////////////////
+
+void histogram_differentiate(TH1F* const differential_histo, const TH1F* const histo, Int_t method)
+{
+    if(method == differentiate_method_simple) histogram_differentiate_simple(differential_histo, histo);
+    else if(method == differentiate_method_filter_simulation) histogram_differentiate_filter_simulation(differential_histo, histo);
+    else throw "invalid differentiation method flag";
+}
+
+
+// trivial / simple differentation method
+// dy/dt = Delta_y / Delta_t
+// first order
+void histogram_differentiate_simple(TH1F* const differential_histo, const TH1F* const histo)
+{
+    if(differential_histo->GetNbinsX() != histo->GetNbinsX()) throw "error histogram nbinsx differ";
+    if(histo->GetNbinsX() < 2) throw "error histogram nbinsx < 2";
+    Double_t prev_y{histo->GetBinContent(1)};
+    const Double_t delta_t{histo->GetBinLowEdge(2) - histo->GetBinLowEdge(1)};
+    for(Int_t ix{1 + 1}; ix <= histo->GetNbinsX(); ++ ix)
+    {
+        Double_t this_y{histo->GetBinContent(ix)};
+        Double_t content{(this_y - prev_y) / delta_t};
+        differential_histo->SetBinContent(ix - 1, content);
+        prev_y = this_y;
+    }
+    // set final bin to zero
+    differential_histo->SetBinContent(histo->GetNbinsX(), 0.0);
+}
+
+
+// compute differential using high pass filter method
+void histogram_differentiate_filter_simulation(TH1F* const differential_histo, const TH1F* const histo)
+{
+
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 // CUT FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 

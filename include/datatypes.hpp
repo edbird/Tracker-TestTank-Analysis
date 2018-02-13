@@ -44,6 +44,9 @@ typedef struct TestTankStorage
     TH1F *deriv_histo = (TH1F*)0;
     TH1F *cathode_histo = (TH1F*)0;
 
+    // added 2018-02-13
+    TH1F *differential_histo = (TH1F*)0;
+
     Float_t truth_position = 0;
 };
 
