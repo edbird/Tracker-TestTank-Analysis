@@ -18,10 +18,44 @@ TH1F* histogram_create_copy_limits(TH1F* histo, const std::string& name)
 }
 
 
+TH1F *histogram_create_copy_limits_average(TH1F* histo, const std::string& name, const Int_t level)
+{
+    // get limits and number of bins
+    Double_t xlow{histo->GetBinLowEdge(1)};
+    Double_t xhigh{histo->GetBinLowEdge(histo->GetNbinsX()) + histo->GetBinWidth(histo->GetNbinsX())};
+    Int_t nbinsx{histo->GetNbinsX() / level};
+    // create new histogram
+    return new TH1F(name.c_str(), name.c_str(), nbinsx, xlow, xhigh);
+}
+
+
 void histogram_destroy(TH1F* histo)
 {
     delete histo;
     histo = nullptr;
+}
+
+
+void histogram_average(TH1F* const output, TH1F* const input, const Int_t level)
+{
+    Int_t ix_max{output->GetNbinsX()};
+    if(ix_max * level - 1 > input->GetNbinsX())
+    {
+        -- ix_max; // TODO: can this still overflow?
+    }
+    for(Int_t ix{1}; ix <= ix_max; ++ ix)
+    {
+        Double_t content{0.0};
+        Double_t content_square{0.0};
+        for(Int_t jx{0}; jx < level; ++ jx)
+        {
+            Int_t input_bin{jx + ix * level};
+            content += input->GetBinContent(input_bin);
+            content_square += input->GetBinContent(input_bin) * input->GetBinContent(input_bin);
+        }
+        output->SetBinContent(ix, content);
+        //output->SetBinError(ix, std::sqrt(content_square - content * content));
+    }
 }
 
 
@@ -481,6 +515,43 @@ void canvas_scale_fit(TH2F* const histogram_, const std::string& canvas_name_, c
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// DIFFERENTIAL HISTOGRAM FIT FUNCTIONS
+////////////////////////////////////////////////////////////////////////////////
+
+Double_t differential_fitf(Double_t *x_, Double_t *par)
+{
+    Int_t par_ix{0};
+    Double_t A{par[par_ix]}; ++ par_ix; // first peak point
+    Double_t B{par[par_ix]}; ++ par_ix; // before second peak point
+    Double_t C{par[par_ix]}; ++ par_ix; // second peak point
+    Double_t D{par[par_ix]}; ++ par_ix; // before third peak point
+    Double_t E{par[par_ix]}; ++ par_ix; // third peak point
+
+    Double_t x{x_[0]};
+    if((A <= x) && (x < B))
+    {
+        Double_t A0{par[par_ix]}; ++ par_ix;
+        Double_t x0{A};
+        Double_t k{par[par_ix]}; ++ par_ix;
+        Double_t exp_decay_par[3] = {x0, A0, k};
+        return exp_decay(x_, exp_decay_par);
+    }
+    return 0.0;
+}
+
+
+Double_t exp_decay(Double_t *x_, Double_t *par)
+{
+    Double_t x{x_[0]};
+    Double_t x0{par[0]};
+    Double_t A0{par[1]};
+    Double_t k{par[2]};
+    return A0 * std::exp(k * (x - x0);
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRINT FIT FUNCTION OUTPUT PARAMETERS
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -518,7 +589,7 @@ void fit_param_print(std::ostream& os, TF2* func)
 // WAVEFORM OUTPUT TO FILE
 ////////////////////////////////////////////////////////////////////////////////
 
-void waveform_print(TH1F* histo, Long64_t &canvas_name_counter, std::string &output_file_name, const std::string &output_file_directory)
+void waveform_print(TH1F* histo, Long64_t &canvas_name_counter, std::string &output_file_name, const std::string &output_file_directory, const std::string& draw_opt_)
 {
 
     if(histo != nullptr)
@@ -528,7 +599,7 @@ void waveform_print(TH1F* histo, Long64_t &canvas_name_counter, std::string &out
         const std::string canvas_name_base(output_file_name);
         std::string canvas_name(canvas_name_base + int_to_string(canvas_name_counter, 6));
         TCanvas *c = new TCanvas(canvas_name.c_str(), canvas_name.c_str(), 800, 600);
-        histo->Draw();
+        histo->Draw(draw_opt_.c_str());
         output_file_name = std::string("./") + output_file_directory + std::string("/") + canvas_name + std::string(".png");
         c->SaveAs(output_file_name.c_str());
         delete c;

@@ -46,7 +46,9 @@ typedef struct TestTankStorage
 
     // added 2018-02-13
     TH1F *anode_smooth_histo = (TH1F*)0;
+    TH1F *anode_average_histo = (TH1F*)0;
     TH1F *anode_differential_histo = (TH1F*)0;
+    TH1F *anode_average_differential_histo = (TH1F*)0;
 
     Float_t truth_position = 0;
 };

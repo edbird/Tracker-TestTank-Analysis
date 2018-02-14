@@ -546,6 +546,15 @@ int main(int argc, char* argv[])
     
     f_zpos_cathode_time_profile->SetNpx(1000);
 
+    ////////////////////////////////////////////////////////////////////////////
+    // ANODE AVERAGE DIFFERENTIAL FIT FUNCTIONS
+    ////////////////////////////////////////////////////////////////////////////
+
+    // TODO: change endpoint of fit
+    TF1* f_anode_average_differential = new TF1("f_anode_average_differential", differential_fitf, 0.0, 145.0, 8);
+    f_anode_average_differential->SetNpx(1000);
+
+
 
     ////////////////////////////////////////////////////////////////////////////
     // DATA LOOP
@@ -813,6 +822,90 @@ int main(int argc, char* argv[])
             
             std::sort(sort_me_pos.begin(), sort_me_pos.end());
             std::sort(sort_me_neg.begin(), sort_me_neg.end());
+           
+            ////////////////////////////////////////////////////////////////////
+            // ANODE HISTOGRAM ALREADY CREATED
+            ////////////////////////////////////////////////////////////////////
+            TH1F* const anode_histo{store.anode_histo};
+            anode_histo->SetStats(0);
+
+            ////////////////////////////////////////////////////////////////////
+            // CREATE SMOOTHED HISTOGRAM FOR OUTPUT
+            ////////////////////////////////////////////////////////////////////
+            TH1F *anode_smooth_histo = histogram_create_copy_limits(store.anode_histo, "anode_smooth_histo");
+            anode_smooth_histo->SetStats(0);
+            histogram_smooth(anode_smooth_histo, store.anode_histo, 16);
+            store.anode_smooth_histo = anode_smooth_histo;
+            
+            ////////////////////////////////////////////////////////////////////
+            // CREATE SMOOTHED HISTOGRAM FOR OUTPUT
+            ////////////////////////////////////////////////////////////////////
+            //TH1F *anode_smooth_histo = histogram_create_copy_limits(store.anode_histo, "anode_smooth_histo");
+            //histogram_smooth(anode_smooth_histo, store.anode_histo, 16);
+            //store.anode_smooth_histo = anode_smooth_histo;
+            
+            ////////////////////////////////////////////////////////////////////
+            // CREATE AVERAGED HISTOGRAM FOR OUTPUT
+            ////////////////////////////////////////////////////////////////////
+            TH1F* anode_average_histo = histogram_create_copy_limits_average(store.anode_histo, "anode_average_histo", 16);
+            anode_average_histo->SetStats(0);
+            histogram_average(anode_average_histo, store.anode_histo, 16);
+            store.anode_average_histo = anode_average_histo;
+
+            ////////////////////////////////////////////////////////////////////
+            // CREATE AVERAGED HISTOGRAM FOR OUTPUT
+            ////////////////////////////////////////////////////////////////////
+            //TH1F* anode_average_histo = histogram_create_copy_limits_average(store.anode_histo, "anode_average_histo", 16);
+            //histogram_average(anode_average_histo, store.anode_histo, 16);
+            //store.anode_average_histo = anode_average_histo;
+
+            ////////////////////////////////////////////////////////////////////
+            // CREATE ANODE DIFFERENTIAL HISTO
+            ////////////////////////////////////////////////////////////////////
+            TH1F *anode_differential_histo = histogram_create_copy_limits(store.anode_histo, "anode_differential_histo");
+            anode_differential_histo->SetStats(0);
+            histogram_differentiate(anode_differential_histo, store.anode_histo, differentiate_method_simple);
+            store.anode_differential_histo = anode_differential_histo;
+
+            ////////////////////////////////////////////////////////////////////
+            // CREATE ANODE DIFFERENTIAL HISTO
+            ////////////////////////////////////////////////////////////////////
+            //TH1F* anode_differential_histo = histogram_create_copy_limits(store.anode_histo, "anode_differential_histo");
+            //histogram_differentiate(anode_differential_histo, store.anode_histo, differentiate_method_simple);
+            //store.anode_differential_histo = anode_differential_histo;
+    
+           
+            ////////////////////////////////////////////////////////////////////
+            // CREATE DIFFERENTIAL AVERAGE ANODE HISTOGRAM
+            ////////////////////////////////////////////////////////////////////
+            TH1F *anode_average_differential_histo = histogram_create_copy_limits(anode_average_histo, "anode_average_differential_histo");
+            anode_average_differential_histo->SetStats(0);
+            histogram_differentiate(anode_average_differential_histo, anode_average_histo, differentiate_method_simple);
+            store.anode_average_differential_histo = anode_average_differential_histo;
+
+
+            // TODO: set the parameters here
+            f_anode_average_differential->SetParameter(0, 0.0);
+            f_anode_average_differential->SetParameter(1, 0.0);
+            f_anode_average_differential->SetParameter(2, 0.0);
+            f_anode_average_differential->SetParameter(3, 0.0);
+            f_anode_average_differential->SetParameter(4, 0.0);
+            f_anode_average_differential->SetParameter(5, 0.0);
+            f_anode_average_differential->SetParameter(6, 0.0);
+            f_anode_average_differential->SetParameter(7, 0.0);
+            
+            
+    
+    
+            std::string output_file_name("anode_");
+            //std::string output_file_name("anode_");
+            std::string output_file_name_anode_smooth("anode_smooth_");
+            //std::string output_file_name_anode_smooth("anode_smooth_");
+            std::string output_file_name_anode_average("anode_average_");
+            //std::string output_file_name_anode_average("anode_average_");
+            std::string output_file_name_anode_differential("anode_differential_");
+            //std::string output_file_name_anode_differential("anode_differential_");
+            std::string output_file_name_anode_average_differential("anode_average_differential_");
             
             if((sort_me_pos.size() > 0) && (sort_me_neg.size() > 0))
             {
@@ -825,35 +918,25 @@ int main(int argc, char* argv[])
                 
                 h_t_cor->Fill(*sort_me_neg.rbegin(), *sort_me_pos.begin());
                 
-                ////////////////////////////////////////////////////////////////
-                // CREATE SMOOTHED HISTOGRAM FOR OUTPUT
-                ////////////////////////////////////////////////////////////////
-                TH1F *smooth_histo = histogram_create_copy_limits(store.anode_histo, "anode_smooth_histo");
-                histogram_smooth(smooth_histo, store.anode_histo, 16);
-                store.anode_smooth_histo = smooth_histo;
 
                 Long64_t ix_copy{ix};
-                std::string output_file_name("anode_");
-                std::string output_file_name_anode_differential("anode_differential_");
-                std::string output_file_name_anode_smooth("anode_smooth_");
                 //canvas_name_counter = ix;
                 #if WAVEFORM_PRINT_GOOD
-                    store.anode_histo->SetStats(0);
-                    waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
+                    waveform_print(anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
                     ix_copy = ix;
 
-                    store.anode_smooth_histo->SetStats(0);
-                    waveform_print(smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_good");
+                    waveform_print(anode_smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_good");
+                    ix_copy = ix;
+                
+                    waveform_print(anode_average_histo, ix_copy, output_file_name_anode_average, "anode_average_histo_good", "E");
                     ix_copy = ix;
 
-                    ////////////////////////////////////////////////////////////
-                    // CREATE ANODE DIFFERENTIAL HISTO
-                    ////////////////////////////////////////////////////////////
-                    TH1F *anode_differential_histo = histogram_create_copy_limits(store.anode_histo, "anode_differential_histo");
-                    histogram_differentiate(anode_differential_histo, store.anode_histo, differentiate_method_simple);
-                    store.anode_differential_histo = anode_differential_histo;
-                    store.anode_differential_histo->SetStats(0);
                     waveform_print(anode_differential_histo, ix_copy, output_file_name_anode_differential, "anode_differential_histo_good");
+                    ix_copy = ix;
+
+                    waveform_print(anode_average_differential_histo, ix_copy, output_file_name_anode_average_differential, "anode_average_differential_histo_good", "");
+
+
                     //delete differential_histo;
                 #endif
                 
@@ -895,35 +978,25 @@ int main(int argc, char* argv[])
             {
                 ++ count_reject_timestamp; 
 
-                ////////////////////////////////////////////////////////////////
-                // CREATE SMOOTHED HISTOGRAM FOR OUTPUT
-                ////////////////////////////////////////////////////////////////
-                TH1F *anode_smooth_histo = histogram_create_copy_limits(store.anode_histo, "anode_smooth_histo");
-                histogram_smooth(anode_smooth_histo, store.anode_histo, 16);
-                store.anode_smooth_histo = anode_smooth_histo;
 
                 Long64_t ix_copy{ix};
-                std::string output_file_name("anode_");
-                std::string output_file_name_anode_differential("anode_differential_");
-                std::string output_file_name_anode_smooth("anode_smooth_");
                 //canvas_name_counter = ix;
                 //waveform_print(ix_copy /*canvas_name_counter*/, cathode_histo, output_file_name);
                 #if WAVEFORM_PRINT_FAIL
-                    store.anode_histo->SetStats(0);
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_fail");
                     ix_copy = ix;
 
-                    store.anode_smooth_histo->SetStats(0);
                     waveform_print(anode_smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_fail");
                     ix_copy = ix;
                 
-                    ////////////////////////////////////////////////////////////
-                    // CREATE ANODE DIFFERENTIAL HISTO
-                    ////////////////////////////////////////////////////////////
-                    TH1F* anode_differential_histo = histogram_create_copy_limits(store.anode_histo, "anode_differential_histo");
-                    histogram_differentiate(anode_differential_histo, store.anode_smooth_histo, differentiate_method_simple);
-                    store.anode_differential_histo = anode_differential_histo;
+                    waveform_print(anode_average_histo, ix_copy, output_file_name_anode_average, "anode_average_histo_fail", "E");
+                    ix_copy = ix;
+
                     waveform_print(anode_differential_histo, ix_copy, output_file_name_anode_differential, "anode_differential_histo_fail");
+                    ix_copy = ix;
+
+                    waveform_print(anode_average_differential_histo, ix_copy, output_file_name_anode_average_differential, "anode_average_differential_histo_fail", "");
+
                     //delete differential_histo;
                 #endif
         

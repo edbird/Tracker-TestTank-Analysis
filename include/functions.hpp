@@ -19,10 +19,14 @@
 // create a new histogram (including allocation) using the limits and
 // number of bins from another histogram
 TH1F* histogram_create_copy_limits(TH1F* histo, const std::string& name);
+// create a histogram for averaging
+// level is the number of bins per average
+TH1F* histogram_create_copy_limits_average(TH1F* histo, const std::string& name, const Int_t level);
 void histogram_destroy(TH1F* histo);
     
 void histogram_copy_limits(TH1F* const histo);
 void histogram_smooth(TH1F* const output, TH1F* const input, const Int_t level);
+void histogram_average(TH1F* const output, TH1F* const input, const Int_t level);
 
 const Int_t differentiate_method_simple{0};
 const Int_t differentiate_method_simple_with_smooth{1};
@@ -79,6 +83,18 @@ Double_t double_gaussian_fitf(Double_t *x_, Double_t *par);
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// DIFFERENTIAL HISTOGRAM FIT FUNCTIONS
+////////////////////////////////////////////////////////////////////////////////
+
+Double_t differential_fitf(Double_t *x_, Double_t *par);
+
+Double_t exp_decay(Double_t *x_, Double_t *par);
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 // TCANVAS FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -108,6 +124,6 @@ void fit_param_print(std::ostream& os, TF2* func);
 // WAVEFORM OUTPUT TO FILE
 ////////////////////////////////////////////////////////////////////////////////
 
-void waveform_print(TH1F* histo, Long64_t &canvas_name_counter, std::string &output_file_name, const std::string &output_file_directory);
+void waveform_print(TH1F* histo, Long64_t &canvas_name_counter, std::string &output_file_name, const std::string &output_file_directory, const std::string& draw_opt_ = "");
 
 #endif
