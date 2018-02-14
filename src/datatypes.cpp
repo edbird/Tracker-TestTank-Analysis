@@ -38,7 +38,8 @@ void TestTankStorage_init(TestTankStorage * const testtankstorage_)
     store.cathode_histo = (TH1F*)0;
 
     // added 2018-02-13
-    store.differential_histo = (TH1F*)0;
+    store.anode_smooth_histo = (TH1F*)0;
+    store.anode_differential_histo = (TH1F*)0;
 
     // this only for MC data
     store.truth_position = 0;
@@ -130,7 +131,8 @@ void TestTankStorage_branch(TestTankStorage * const testtankstorage_, TTree * co
     t2->Branch("cathode_histo", &store.cathode_histo);
 
     // added 2018-02-13
-    t2->Branch("differential_histo", &store.differential_histo);
+    t2->Branch("anode_smooth_histo", &store.anode_smooth_histo);
+    t2->Branch("anode_differential_histo", &store.anode_differential_histo);
 
     // only for mc data
     if(mc == true)

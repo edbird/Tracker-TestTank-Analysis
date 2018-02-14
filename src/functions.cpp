@@ -6,6 +6,53 @@
 // HISTOGRAM DIFFERENTIATION FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
+
+TH1F* histogram_create_copy_limits(TH1F* histo, const std::string& name)
+{
+    // get limits and number of bins
+    Double_t xlow{histo->GetBinLowEdge(1)};
+    Double_t xhigh{histo->GetBinLowEdge(histo->GetNbinsX()) + histo->GetBinWidth(histo->GetNbinsX())};
+    Int_t nbinsx{histo->GetNbinsX()};
+    // create new histogram
+    return new TH1F(name.c_str(), name.c_str(), nbinsx, xlow, xhigh);
+}
+
+
+void histogram_destroy(TH1F* histo)
+{
+    delete histo;
+    histo = nullptr;
+}
+
+
+void histogram_smooth(TH1F* const output, TH1F* const input, const Int_t level)
+{
+    if(input->GetNbinsX() != output->GetNbinsX()) throw "error histogram nbinsx differ";
+    if(output->GetNbinsX() < level) throw "error histogram nbinsx < level";
+    
+    const Int_t half_level{level / 2};
+    const Int_t level_minus_half_level{level - half_level};
+    for(Int_t ix{1 + level_minus_half_level}; ix <= input->GetNbinsX() - half_level; ++ ix)
+    {
+        Double_t sum{0.0};
+        for(Int_t jx{-level_minus_half_level}; jx <= half_level; ++ jx)
+        {
+            sum += input->GetBinContent(ix + jx);
+        }
+        sum /= (Double_t)level;
+        output->SetBinContent(ix, sum);
+    }
+    for(Int_t ix{1}; ix < 1 - level_minus_half_level; ++ ix)
+    {
+        output->SetBinContent(ix, 0.0);
+    }
+    for(Int_t ix{input->GetNbinsX() - half_level + 1}; ix <= input->GetNbinsX(); ++ ix)
+    {
+        output->SetBinContent(ix, 0.0);
+    }
+}
+
+
 void histogram_differentiate(TH1F* const differential_histo, const TH1F* const histo, Int_t method)
 {
     if(method == differentiate_method_simple) histogram_differentiate_simple(differential_histo, histo);

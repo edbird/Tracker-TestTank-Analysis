@@ -825,23 +825,35 @@ int main(int argc, char* argv[])
                 
                 h_t_cor->Fill(*sort_me_neg.rbegin(), *sort_me_pos.begin());
                 
-                std::string output_file_name("anode_");
-                std::string output_file_name_differential("differential_");
-                //canvas_name_counter = ix;
+                ////////////////////////////////////////////////////////////////
+                // CREATE SMOOTHED HISTOGRAM FOR OUTPUT
+                ////////////////////////////////////////////////////////////////
+                TH1F *smooth_histo = histogram_create_copy_limits(store.anode_histo, "anode_smooth_histo");
+                histogram_smooth(smooth_histo, store.anode_histo, 16);
+                store.anode_smooth_histo = smooth_histo;
+
                 Long64_t ix_copy{ix};
+                std::string output_file_name("anode_");
+                std::string output_file_name_anode_differential("anode_differential_");
+                std::string output_file_name_anode_smooth("anode_smooth_");
+                //canvas_name_counter = ix;
                 #if WAVEFORM_PRINT_GOOD
                     store.anode_histo->SetStats(0);
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
-
                     ix_copy = ix;
 
-                    Double_t xlow{store.anode_histo->GetBinLowEdge(1)};
-                    Double_t xhigh{store.anode_histo->GetBinLowEdge(store.anode_histo->GetNbinsX()) + store.anode_histo->GetBinWidth(store.anode_histo->GetNbinsX())};
-                    Int_t nbinsx{store.anode_histo->GetNbinsX()};
-                    TH1F *differential_histo = new TH1F("differential_histo", "differential_histo", nbinsx, xlow, xhigh);
-                    histogram_differentiate(differential_histo, store.anode_histo, differentiate_method_simple);
-                    store.differential_histo = differential_histo;
-                    waveform_print(differential_histo, ix_copy, output_file_name_differential, "differential_histo_good");
+                    store.anode_smooth_histo->SetStats(0);
+                    waveform_print(smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_good");
+                    ix_copy = ix;
+
+                    ////////////////////////////////////////////////////////////
+                    // CREATE ANODE DIFFERENTIAL HISTO
+                    ////////////////////////////////////////////////////////////
+                    TH1F *anode_differential_histo = histogram_create_copy_limits(store.anode_histo, "anode_differential_histo");
+                    histogram_differentiate(anode_differential_histo, store.anode_histo, differentiate_method_simple);
+                    store.anode_differential_histo = anode_differential_histo;
+                    store.anode_differential_histo->SetStats(0);
+                    waveform_print(anode_differential_histo, ix_copy, output_file_name_anode_differential, "anode_differential_histo_good");
                     //delete differential_histo;
                 #endif
                 
@@ -883,24 +895,35 @@ int main(int argc, char* argv[])
             {
                 ++ count_reject_timestamp; 
 
-                std::string output_file_name("anode_");
-                std::string output_file_name_differential("differential_");
-                //canvas_name_counter = ix;
+                ////////////////////////////////////////////////////////////////
+                // CREATE SMOOTHED HISTOGRAM FOR OUTPUT
+                ////////////////////////////////////////////////////////////////
+                TH1F *anode_smooth_histo = histogram_create_copy_limits(store.anode_histo, "anode_smooth_histo");
+                histogram_smooth(anode_smooth_histo, store.anode_histo, 16);
+                store.anode_smooth_histo = anode_smooth_histo;
+
                 Long64_t ix_copy{ix};
+                std::string output_file_name("anode_");
+                std::string output_file_name_anode_differential("anode_differential_");
+                std::string output_file_name_anode_smooth("anode_smooth_");
+                //canvas_name_counter = ix;
                 //waveform_print(ix_copy /*canvas_name_counter*/, cathode_histo, output_file_name);
                 #if WAVEFORM_PRINT_FAIL
                     store.anode_histo->SetStats(0);
                     waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_fail");
-                    
                     ix_copy = ix;
 
-                    Double_t xlow{store.anode_histo->GetBinLowEdge(1)};
-                    Double_t xhigh{store.anode_histo->GetBinLowEdge(store.anode_histo->GetNbinsX()) + store.anode_histo->GetBinWidth(store.anode_histo->GetNbinsX())};
-                    Int_t nbinsx{store.anode_histo->GetNbinsX()};
-                    TH1F *differential_histo = new TH1F("differential_histo", "differential_histo", nbinsx, xlow, xhigh);
-                    histogram_differentiate(differential_histo, store.anode_histo, differentiate_method_simple);
-                    store.differential_histo = differential_histo;
-                    waveform_print(differential_histo, ix_copy, output_file_name_differential, "differential_histo_fail");
+                    store.anode_smooth_histo->SetStats(0);
+                    waveform_print(anode_smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_fail");
+                    ix_copy = ix;
+                
+                    ////////////////////////////////////////////////////////////
+                    // CREATE ANODE DIFFERENTIAL HISTO
+                    ////////////////////////////////////////////////////////////
+                    TH1F* anode_differential_histo = histogram_create_copy_limits(store.anode_histo, "anode_differential_histo");
+                    histogram_differentiate(anode_differential_histo, store.anode_smooth_histo, differentiate_method_simple);
+                    store.anode_differential_histo = anode_differential_histo;
+                    waveform_print(anode_differential_histo, ix_copy, output_file_name_anode_differential, "anode_differential_histo_fail");
                     //delete differential_histo;
                 #endif
         

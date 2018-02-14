@@ -16,6 +16,14 @@
 // HISTOGRAM DIFFERENTIATION FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
+// create a new histogram (including allocation) using the limits and
+// number of bins from another histogram
+TH1F* histogram_create_copy_limits(TH1F* histo, const std::string& name);
+void histogram_destroy(TH1F* histo);
+    
+void histogram_copy_limits(TH1F* const histo);
+void histogram_smooth(TH1F* const output, TH1F* const input, const Int_t level);
+
 const Int_t differentiate_method_simple{0};
 const Int_t differentiate_method_simple_with_smooth{1};
 const Int_t differentiate_method_filter_simulation{2};
