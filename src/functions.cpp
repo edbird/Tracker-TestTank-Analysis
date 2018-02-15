@@ -518,6 +518,96 @@ void canvas_scale_fit(TH2F* const histogram_, const std::string& canvas_name_, c
 // DIFFERENTIAL HISTOGRAM FIT FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
+Double_t get_timestamps(const TH1F* const histo, const Double_t VLN, const Double_t VHN, const Double_t VHP, Double_t &R0, Double_t &R1, Double_t &R2, Double_t &R3, Double_t &R4)
+{
+    // set to invalid values
+    R0 = -1.0;
+    R1 = -1.0;
+    R2 = -1.0;
+    R3 = -1.0;
+    R4 = -1.0;
+
+    Int_t ix{1};
+    // get R0
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(content <= VLN)
+        {
+            R0 = histo->GetBinCenter(ix);
+            std::cout << "R0: VLN=" << VLN << " VALUE=" << content << " TIME=" << R0 << std::endl; 
+            ++ ix;
+            break;
+        }
+        ++ ix;
+    }
+    // seek to when signal passes VLN again
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(content > VLN)
+        {
+            ++ ix;
+            break;
+        }
+        ++ ix;
+    }
+    // get R1
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(content <= VHN)
+        {
+            R1 = histo->GetBinCenter(ix);
+            std::cout << "R1: VHN=" << VHN << " VALUE=" << content << " TIME=" << R1 << std::endl; 
+            ++ ix;
+            break;
+        }
+        ++ ix;
+    }
+    // get R3
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(content >= VHP)
+        {
+            R3 = histo->GetBinCenter(ix);
+            std::cout << "R3: VHP=" << VHP << " VALUE=" << content << " TIME=" << R3 << std::endl; 
+            ++ ix;
+            break;
+        }
+        ++ ix;
+    }
+    // get R2
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(content <= VHN)
+        {
+            R2 = histo->GetBinCenter(ix);
+            std::cout << "R2: VHN=" << VHN << " VALUE=" << content << " TIME=" << R2 << std::endl; 
+            ++ ix;
+            break;
+        }
+        ++ ix;
+    }
+    // get R4
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(content >= VHP)
+        {
+            R4 = histo->GetBinCenter(ix);
+            std::cout << "R4: VLN=" << VHP << " VALUE=" << content << " TIME=" << R4 << std::endl; 
+            ++ ix;
+            break;
+        }
+        ++ ix;
+    }
+    // R0 to R4 are either invalid or set to valid values
+
+}
+
 Double_t differential_fitf(Double_t *x_, Double_t *par)
 {
     Int_t par_ix{0};
@@ -530,10 +620,18 @@ Double_t differential_fitf(Double_t *x_, Double_t *par)
     Double_t x{x_[0]};
     if((A <= x) && (x < B))
     {
-        Double_t A0{par[par_ix]}; ++ par_ix;
         Double_t x0{A};
-        Double_t k{par[par_ix]}; ++ par_ix;
-        Double_t exp_decay_par[3] = {x0, A0, k};
+        Double_t A0{par[par_ix]}; ++ par_ix;
+        Double_t k0{par[par_ix]}; ++ par_ix;
+        Double_t exp_decay_par[3] = {x0, A0, k0};
+        return exp_decay(x_, exp_decay_par);
+    }
+    else if((B <= x) && (x < C))
+    {
+        Double_t x1{C};
+        Double_t A1{par[par_ix]}; ++ par_ix;
+        Double_t k1{par[par_ix]}; ++ par_ix;
+        Double_t exp_decay_par[3] = {x1, A1, k1};
         return exp_decay(x_, exp_decay_par);
     }
     return 0.0;
@@ -545,8 +643,8 @@ Double_t exp_decay(Double_t *x_, Double_t *par)
     Double_t x{x_[0]};
     Double_t x0{par[0]};
     Double_t A0{par[1]};
-    Double_t k{par[2]};
-    return A0 * std::exp(k * (x - x0);
+    Double_t k0{par[2]};
+    return A0 * std::exp(k0 * (x - x0));
 }
 
 

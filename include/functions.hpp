@@ -24,7 +24,7 @@ TH1F* histogram_create_copy_limits(TH1F* histo, const std::string& name);
 TH1F* histogram_create_copy_limits_average(TH1F* histo, const std::string& name, const Int_t level);
 void histogram_destroy(TH1F* histo);
     
-void histogram_copy_limits(TH1F* const histo);
+//void histogram_copy_limits(TH1F* const histo, const Int_t level);
 void histogram_smooth(TH1F* const output, TH1F* const input, const Int_t level);
 void histogram_average(TH1F* const output, TH1F* const input, const Int_t level);
 
@@ -85,6 +85,8 @@ Double_t double_gaussian_fitf(Double_t *x_, Double_t *par);
 ////////////////////////////////////////////////////////////////////////////////
 // DIFFERENTIAL HISTOGRAM FIT FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
+
+Double_t get_timestamps(const TH1F* const histo, const Double_t VLN, const Double_t VHN, const Double_t VHP, Double_t &R0, Double_t &R1, Double_t &R2, Double_t &R3, Double_t &R4);
 
 Double_t differential_fitf(Double_t *x_, Double_t *par);
 

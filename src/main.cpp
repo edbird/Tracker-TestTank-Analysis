@@ -551,7 +551,7 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
 
     // TODO: change endpoint of fit
-    TF1* f_anode_average_differential = new TF1("f_anode_average_differential", differential_fitf, 0.0, 145.0, 8);
+    TF1* f_anode_average_differential = new TF1("f_anode_average_differential", differential_fitf, 0.0, 145.0, 7);
     f_anode_average_differential->SetNpx(1000);
 
 
@@ -847,9 +847,9 @@ int main(int argc, char* argv[])
             ////////////////////////////////////////////////////////////////////
             // CREATE AVERAGED HISTOGRAM FOR OUTPUT
             ////////////////////////////////////////////////////////////////////
-            TH1F* anode_average_histo = histogram_create_copy_limits_average(store.anode_histo, "anode_average_histo", 16);
+            TH1F* anode_average_histo = histogram_create_copy_limits_average(store.anode_histo, "anode_average_histo", 4 * 16);
             anode_average_histo->SetStats(0);
-            histogram_average(anode_average_histo, store.anode_histo, 16);
+            histogram_average(anode_average_histo, store.anode_histo, 4 * 16);
             store.anode_average_histo = anode_average_histo;
 
             ////////////////////////////////////////////////////////////////////
@@ -883,18 +883,66 @@ int main(int argc, char* argv[])
             histogram_differentiate(anode_average_differential_histo, anode_average_histo, differentiate_method_simple);
             store.anode_average_differential_histo = anode_average_differential_histo;
 
+            // these values obtained from diagram
+            // featured in my presentation 2017-01-??
+            //const Double_t VLN{-50.0}; // mV
+            //const Double_t VHP{150.0}; // mV
+            //const Double_t VHN{-150.0}; // mV
+            const Double_t VLN{-3000.0}; // mV
+            const Double_t VHP{2000.0}; // mV
+            const Double_t VHN{-1000.0}; // mV
+
+            Double_t R0, R1, R2, R3, R4;
+            get_timestamps(anode_average_differential_histo, VLN, VHN, VHP, R0, R1, R2, R3, R4);
+
+            Double_t A{0.0};
+            Double_t B{0.0};
+            Double_t C{0.0};
+            Double_t D{0.0};
+            Double_t E{0.0};
+
+            Double_t A0{0.0};
+            Double_t k0{0.0};
+            Double_t A1{0.0};
+            Double_t k1{0.0};
+
+            // set initial guesses
+            A = R0;
+            C = R3;
+            E = R4;
+            B = 0.5 * (A + C);
+            D = 0.5 * (B + D);
+            
+            std::cout << "R0=" << R0 << " R1=" << R1 << " R2=" << R2 << " R3=" << R3 << " R4=" << R4 << std::endl;
+            std::cout << "A=" << A << " B=" << B << " C=" << C << " D=" << D << " E=" << E << std::endl;
+            
+            A0 = 2.0 * VHN;
+            k0 = 1.0; // no clue about this one? good guess?
+            A1 = 2.0 * VHN;
+            k1 = -1.0; // no clue about this one? good guess?
 
             // TODO: set the parameters here
-            f_anode_average_differential->SetParameter(0, 0.0);
-            f_anode_average_differential->SetParameter(1, 0.0);
-            f_anode_average_differential->SetParameter(2, 0.0);
-            f_anode_average_differential->SetParameter(3, 0.0);
-            f_anode_average_differential->SetParameter(4, 0.0);
-            f_anode_average_differential->SetParameter(5, 0.0);
-            f_anode_average_differential->SetParameter(6, 0.0);
-            f_anode_average_differential->SetParameter(7, 0.0);
+            f_anode_average_differential->SetParameter(0, A);
+            f_anode_average_differential->SetParameter(1, B);
+            f_anode_average_differential->SetParameter(2, C);
+            f_anode_average_differential->SetParameter(3, D);
+            f_anode_average_differential->SetParameter(4, E);
+            f_anode_average_differential->SetParameter(5, A0);
+            f_anode_average_differential->SetParameter(6, k0);
+            f_anode_average_differential->SetParameter(7, A1);
+            f_anode_average_differential->SetParameter(8, k1);
             
-            
+            // TODO: GOOD / FAIL histograms to different DIRS
+            const std::string canvas_name("c_anode_average_differential_");
+            const std::string canvas_filename(canvas_name + int_to_string(canvas_name_counter, 6));
+            const std::string canvas_directory("anode_average_differential_histo");
+            const std::string canvas_dir_filename(std::string("./") + canvas_directory + std::string("/") + canvas_filename);
+            TCanvas *c = new TCanvas(canvas_name.c_str(), canvas_name.c_str(), 800, 600);
+            anode_average_differential_histo->Fit("f_anode_average_differential");
+            anode_average_differential_histo->Draw("E");
+            c->SaveAs((canvas_dir_filename + std::string(".png")).c_str());
+            std::cout << "SaveAs: " << canvas_dir_filename << std::endl;
+            delete c;
     
     
             std::string output_file_name("anode_");
@@ -920,7 +968,7 @@ int main(int argc, char* argv[])
                 
 
                 Long64_t ix_copy{ix};
-                //canvas_name_counter = ix;
+                canvas_name_counter = ix;
                 #if WAVEFORM_PRINT_GOOD
                     waveform_print(anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
                     ix_copy = ix;
