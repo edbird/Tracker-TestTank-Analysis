@@ -830,6 +830,12 @@ int main(int argc, char* argv[])
             anode_histo->SetStats(0);
 
             ////////////////////////////////////////////////////////////////////
+            // DERIV HISTOGRAM ALREADY CREATED
+            ////////////////////////////////////////////////////////////////////
+            TH1F* const deriv_histo{store.deriv_histo};
+            deriv_histo->SetStats(0);
+
+            ////////////////////////////////////////////////////////////////////
             // CREATE SMOOTHED HISTOGRAM FOR OUTPUT
             ////////////////////////////////////////////////////////////////////
             TH1F *anode_smooth_histo = histogram_create_copy_limits(store.anode_histo, "anode_smooth_histo");
@@ -945,8 +951,9 @@ int main(int argc, char* argv[])
             delete c;
     
     
-            std::string output_file_name("anode_");
+            std::string output_file_name_anode("anode_");
             //std::string output_file_name("anode_");
+            std::string output_file_name_deriv("deriv_");
             std::string output_file_name_anode_smooth("anode_smooth_");
             //std::string output_file_name_anode_smooth("anode_smooth_");
             std::string output_file_name_anode_average("anode_average_");
@@ -970,7 +977,7 @@ int main(int argc, char* argv[])
                 Long64_t ix_copy{ix};
                 canvas_name_counter = ix;
                 #if WAVEFORM_PRINT_GOOD
-                    waveform_print(anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_good");
+                    waveform_print(anode_histo, ix_copy /*canvas_name_counter*/, output_file_name_anode, "anode_histo_good");
                     ix_copy = ix;
 
                     waveform_print(anode_smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_good");
@@ -983,7 +990,9 @@ int main(int argc, char* argv[])
                     ix_copy = ix;
 
                     waveform_print(anode_average_differential_histo, ix_copy, output_file_name_anode_average_differential, "anode_average_differential_histo_good", "");
+                    ix_copy = ix;
 
+                    waveform_print(deriv_histo, ix_copy, output_file_name_deriv, "deriv_histo_good");
 
                     //delete differential_histo;
                 #endif
@@ -1031,7 +1040,7 @@ int main(int argc, char* argv[])
                 //canvas_name_counter = ix;
                 //waveform_print(ix_copy /*canvas_name_counter*/, cathode_histo, output_file_name);
                 #if WAVEFORM_PRINT_FAIL
-                    waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name, "anode_histo_fail");
+                    waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name_deriv, "anode_histo_fail");
                     ix_copy = ix;
 
                     waveform_print(anode_smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_fail");
@@ -1044,6 +1053,9 @@ int main(int argc, char* argv[])
                     ix_copy = ix;
 
                     waveform_print(anode_average_differential_histo, ix_copy, output_file_name_anode_average_differential, "anode_average_differential_histo_fail", "");
+                    ix_copy = ix;
+
+                    waveform_print(deriv_histo, ix_copy, output_file_name_deriv, "deriv_histo_fail");
 
                     //delete differential_histo;
                 #endif
@@ -1051,7 +1063,7 @@ int main(int argc, char* argv[])
                 // NOTE: This isn't the fail part of the first if statement
                 std::cout << "Rejecting event with no timestamp either side" << std::endl;
                 std::cout << "Event index is: " << ix << std::endl;
-                std::cout << "Printing event to file: " << output_file_name << std::endl;
+                std::cout << "Printing event to file: " << output_file_name_anode << std::endl;
                 std::cout << "sort_me_neg.size() = " << sort_me_neg.size() << std::endl;
                 std::cout << "sort_me_pos.size() = " << sort_me_pos.size() << std::endl;
                 
