@@ -38,21 +38,33 @@ void histogram_destroy(TH1F* histo)
 
 void histogram_average(TH1F* const output, TH1F* const input, const Int_t level)
 {
+    // TODO: bin range check
     Int_t ix_max{output->GetNbinsX()};
-    if(ix_max * level - 1 > input->GetNbinsX())
+    if((ix_max - 1) * level + level > input->GetNbinsX())
     {
+        std::cout << "correcting for overflow" << std::endl;
         -- ix_max; // TODO: can this still overflow?
+        if(ix_max & level - 1 > input->GetNbinsX())
+        {
+            std::cout << "error in histogram_average" << std::endl;
+        }
     }
+    // TODO: fix this (bin input/output ranges) [re-enable couts]
+    //std::cout << "input->GetNbinsX()=" << input->GetNbinsX() << std::endl;
+    //std::cout << "output->GetNbinsX()=" << output->GetNbinsX() << std::endl;
     for(Int_t ix{1}; ix <= ix_max; ++ ix)
     {
         Double_t content{0.0};
         Double_t content_square{0.0};
-        for(Int_t jx{0}; jx < level; ++ jx)
+        for(Int_t jx{1}; jx <= level; ++ jx)
         {
-            Int_t input_bin{jx + ix * level};
+            Int_t input_bin{jx + (ix - 1) * level};
+            //std::cout << "input_bin=" << input_bin << " ";
             content += input->GetBinContent(input_bin);
             content_square += input->GetBinContent(input_bin) * input->GetBinContent(input_bin);
         }
+        //std::cout << "\noutput_bin=" << ix << std::endl;
+        content /= (Double_t)(level);
         output->SetBinContent(ix, content);
         //output->SetBinError(ix, std::sqrt(content_square - content * content));
     }
@@ -109,7 +121,8 @@ void histogram_differentiate_simple(TH1F* const differential_histo, const TH1F* 
     for(Int_t ix{1 + 1}; ix <= histo->GetNbinsX(); ++ ix)
     {
         Double_t this_y{histo->GetBinContent(ix)};
-        Double_t content{(this_y - prev_y) / delta_t};
+        //Double_t content{(this_y - prev_y) / delta_t}; // TODO: delta_t here is small
+        Double_t content{(this_y - prev_y)};
         differential_histo->SetBinContent(ix - 1, content);
         prev_y = this_y;
     }
@@ -157,6 +170,10 @@ void histogram_differentiate_simple_with_smooth(TH1F* const differential_histo, 
 void histogram_differentiate_filter_simulation(TH1F* const differential_histo, const TH1F* const histo)
 {
 
+    // differentiator circuit
+    // (high pass filter)
+    double R; // RC filter resistance
+    double C; // RC filter impedance
 }
 
 
@@ -518,6 +535,192 @@ void canvas_scale_fit(TH2F* const histogram_, const std::string& canvas_name_, c
 // DIFFERENTIAL HISTOGRAM FIT FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
+Double_t get_timestamps_and_peaks(const TH1F* const histo, const Double_t VLN, const Double_t VHN, const Double_t VHP, Double_t &R0, Double_t &R1, Double_t &R2, Double_t &R3, Double_t &R4, Double_t &A0, Double_t& A1, Double_t& A2, Double_t& A3, Double_t& A4)
+{
+    // set to invalid values
+    R0 = -1.0;
+    R1 = -1.0;
+    R2 = -1.0;
+    R3 = -1.0;
+    R4 = -1.0;
+
+    bool have_R0{false};
+    bool have_R1{false};
+    bool have_R2{false};
+    bool have_R3{false};
+    bool have_R4{false};
+
+    Int_t ix{1};
+    // get R0
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(!have_R0)
+        {
+            if(content <= VLN)
+            {
+                R0 = histo->GetBinCenter(ix);
+                A0 = content; // set A0 to some initial value
+                //std::cout << "R0: VLN=" << VLN << " VALUE=" << content << " TIME=" << R0 << std::endl; 
+                //++ ix;
+                //break;
+                have_R0 = true;
+            }
+        }
+        else
+        {
+            // search for minimum A0, stop searching
+            // when content reaches threshold for below loop
+            if(content < A0)
+            {
+                A0 = content;
+            }
+
+            if(content > VLN)
+            {
+                ++ ix;
+                break;
+            }
+        }
+        ++ ix;
+    }
+    // seek to when signal passes VLN again
+    //for(; ix <= histo->GetNbinsX(); )
+    //{
+    //    const Double_t content{histo->GetBinContent(ix)};
+    //    if(content > VLN)
+    //    {
+    //        ++ ix;
+    //        break;
+    //    }
+    //    ++ ix;
+    //}
+    // get R1
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(!have_R1)
+        {
+            if(content <= VHN)
+            {
+                R1 = histo->GetBinCenter(ix);
+                A1 = content;
+                have_R1 = true;
+                //std::cout << "R1: VHN=" << VHN << " VALUE=" << content << " TIME=" << R1 << std::endl; 
+                //++ ix;
+                //break;
+            }
+        }
+        else
+        {
+            if(content < A1)
+            {
+                A1 = content;
+            }
+
+            if(content > 0.0)
+            {
+                ++ ix; // TODO: should this be here?
+                break;
+            }
+        }
+        ++ ix;
+    }
+    // get R3
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(!have_R3)
+        {
+            if(content >= VHP)
+            {
+                R3 = histo->GetBinCenter(ix);
+                A3 = content;
+                have_R3 = true;
+                //std::cout << "R3: VHP=" << VHP << " VALUE=" << content << " TIME=" << R3 << std::endl; 
+                //++ ix;
+                //break;
+            }
+        }
+        else
+        {
+            if(content > A3)
+            {
+                A3 = content;
+            }
+
+            if(content < 0.0)
+            {
+                ++ ix;
+                break; // TODO
+            }
+        }
+        ++ ix;
+    }
+    // get R2
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(!have_R2)
+        {
+            if(content <= VHN)
+            {
+                R2 = histo->GetBinCenter(ix);
+                A2 = content;
+                have_R2 = true;
+                //std::cout << "R2: VHN=" << VHN << " VALUE=" << content << " TIME=" << R2 << std::endl; 
+                //++ ix;
+                //break;
+            }
+        }
+        else
+        {
+            if(content < A2)
+            {
+                A2 = content;
+            }
+
+            if(content > 0.0)
+            {
+                ++ ix;
+                break; // TODO
+            }
+        }
+        ++ ix;
+    }
+    // get R4
+    for(; ix <= histo->GetNbinsX(); )
+    {
+        const Double_t content{histo->GetBinContent(ix)};
+        if(!have_R4)
+        {
+            if(content >= VHP)
+            {
+                R4 = histo->GetBinCenter(ix);
+                A4 = content;
+                have_R4 = true;
+                //std::cout << "R4: VLN=" << VHP << " VALUE=" << content << " TIME=" << R4 << std::endl; 
+                //++ ix;
+                //break;
+            }
+        }
+        else
+        {
+            if(content > A4)
+            {
+                A4 = content;
+            }
+
+            // no break statement here - search to end
+        }
+        ++ ix;
+    }
+    // R0 to R4 are either invalid or set to valid values
+
+}
+
+
+// this is not robust to noise! TODO
 Double_t get_timestamps(const TH1F* const histo, const Double_t VLN, const Double_t VHN, const Double_t VHP, Double_t &R0, Double_t &R1, Double_t &R2, Double_t &R3, Double_t &R4)
 {
     // set to invalid values
@@ -617,21 +820,83 @@ Double_t differential_fitf(Double_t *x_, Double_t *par)
     Double_t D{par[par_ix]}; ++ par_ix; // before third peak point
     Double_t E{par[par_ix]}; ++ par_ix; // third peak point
 
+    // TODO: change from piecewise to continuous
     Double_t x{x_[0]};
+    
+    Double_t x0{A};
+    Double_t A0{par[par_ix]}; ++ par_ix;
+    Double_t k0{par[par_ix]}; ++ par_ix;
+    //std::cout << "x0=" << x0 << " A0=" << A0 << " k0=" << k0 << std::endl;
+    
+    Double_t x1{C};
+    Double_t A1{par[par_ix]}; ++ par_ix;
+    Double_t k1{par[par_ix]}; ++ par_ix;
+    //std::cout << "x1=" << x1 << " A1=" << A1 << " k1=" << k1 << std::endl;
+
+    Double_t x2{C};
+    Double_t A2{par[par_ix]}; ++ par_ix;
+    Double_t k2{par[par_ix]}; ++ par_ix;
+    //std::cout << "x2=" << x2 << " A2=" << A2 << " k2=" << k2 << std::endl;
+
+    Double_t x3{E};
+    Double_t A3{par[par_ix]}; ++ par_ix;
+    Double_t k3{par[par_ix]}; ++ par_ix;
+    //std::cout << "x3=" << x3 << " A3=" << A3 << " k3=" << k3 << std::endl;
+
+    Double_t x4{E};
+    Double_t A4{par[par_ix]}; ++ par_ix;
+    Double_t k4{par[par_ix]}; ++ par_ix;
+    //std::cout << "x4=" << x4 << " A4=" << A4 << " k4=" << k4 << std::endl;
+
+    /*
     if((A <= x) && (x < B))
     {
-        Double_t x0{A};
-        Double_t A0{par[par_ix]}; ++ par_ix;
-        Double_t k0{par[par_ix]}; ++ par_ix;
         Double_t exp_decay_par[3] = {x0, A0, k0};
         return exp_decay(x_, exp_decay_par);
     }
     else if((B <= x) && (x < C))
     {
-        Double_t x1{C};
-        Double_t A1{par[par_ix]}; ++ par_ix;
-        Double_t k1{par[par_ix]}; ++ par_ix;
         Double_t exp_decay_par[3] = {x1, A1, k1};
+        return exp_decay(x_, exp_decay_par);
+    }
+    else if((C <= x) && (x < D))
+    {
+        Double_t exp_decay_par[3] = {x2, A2, k2};
+        return exp_decay(x_, exp_decay_par);
+    }
+    else if((D <= x) && (x < E))
+    {
+        Double_t exp_decay_par[3] = {x3, A3, k3};
+        return exp_decay(x_, exp_decay_par);
+    }
+    else if((E <= x) && (x < 120.0)) // TODO: should not be 120.0
+    {
+        Double_t exp_decay_par[3] = {x4, A4, k4};
+        return exp_decay(x_, exp_decay_par);
+    }
+    return 0.0;
+    */
+    
+    // change to continuous functions between A - C and C - E
+    if((A <= x) && (x < C))
+    {
+        Double_t exp_decay_par_0[3] = {x0, A0, k0};
+        Double_t exp_decay_par_1[3] = {x1, A1, k1};
+        Double_t exp_decay_0 = exp_decay(x_, exp_decay_par_0);
+        Double_t exp_decay_1 = exp_decay(x_, exp_decay_par_1);
+        return exp_decay_0 + exp_decay_1;
+    }
+    else if((C <= x) && (x < E))
+    {
+        Double_t exp_decay_par_2[3] = {x2, A2, k2};
+        Double_t exp_decay_par_3[3] = {x3, A3, k3};
+        Double_t exp_decay_2 = exp_decay(x_, exp_decay_par_2);
+        Double_t exp_decay_3 = exp_decay(x_, exp_decay_par_3);
+        return exp_decay_2 + exp_decay_3;
+    }
+    else if((E <= x) && (x < 120.0)) // TODO: should not be 120.0
+    {
+        Double_t exp_decay_par[3] = {x4, A4, k4};
         return exp_decay(x_, exp_decay_par);
     }
     return 0.0;
@@ -687,21 +952,24 @@ void fit_param_print(std::ostream& os, TF2* func)
 // WAVEFORM OUTPUT TO FILE
 ////////////////////////////////////////////////////////////////////////////////
 
-void waveform_print(TH1F* histo, Long64_t &canvas_name_counter, std::string &output_file_name, const std::string &output_file_directory, const std::string& draw_opt_)
+std::string waveform_print(TH1F* histo, const Long64_t canvas_name_counter, const std::string& canvas_name, const std::string& canvas_directory, const std::string& draw_opt_)
 {
 
     if(histo != nullptr)
     {
         // print out the waveform of the t0 events for inspection
         //const std::string canvas_name_base("cathode_event_");
-        const std::string canvas_name_base(output_file_name);
-        std::string canvas_name(canvas_name_base + int_to_string(canvas_name_counter, 6));
-        TCanvas *c = new TCanvas(canvas_name.c_str(), canvas_name.c_str(), 800, 600);
+        //const std::string canvas_name_base(output_name);
+        //std::string canvas_name(canvas_name_base + int_to_string(canvas_name_counter, 6));
+        std::string canvas_name_base(canvas_name + int_to_string(canvas_name_counter, 6));
+        TCanvas *c = new TCanvas(canvas_name_base.c_str(), canvas_name_base.c_str(), 800, 600);
         histo->Draw(draw_opt_.c_str());
-        output_file_name = std::string("./") + output_file_directory + std::string("/") + canvas_name + std::string(".png");
-        c->SaveAs(output_file_name.c_str());
+        std::string output_file_name(std::string("./") + canvas_directory + std::string("/") + canvas_name_base);
+        c->SaveAs((output_file_name + std::string(".png")).c_str());
         delete c;
-        ++ canvas_name_counter;
+        //++ canvas_name_counter;
+    
+        return output_file_name;
     }
 
 }
