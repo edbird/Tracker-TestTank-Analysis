@@ -90,6 +90,11 @@ Double_t get_timestamps(const TH1F* const histo, const Double_t VLN, const Doubl
 
 Double_t get_timestamps_and_peaks(const TH1F* const histo, const Double_t VLN, const Double_t VHN, const Double_t VHP, Double_t &R0, Double_t &R1, Double_t &R2, Double_t &R3, Double_t &R4, Double_t &A0, Double_t& A1, Double_t& A2, Double_t& A3, Double_t& A4);
 
+Double_t anode_fitf(Double_t *x_, Double_t *p_);
+Double_t anode_fitf_0(Double_t x, Double_t A0, Double_t k0, Double_t x0/*, Double_t C0*/);
+Double_t anode_fitf_1(Double_t x, Double_t A1, Double_t k1, Double_t x1, Double_t C1);
+Double_t anode_fitf_2(Double_t x, Double_t A2, Double_t k2, Double_t x2, Double_t C2);
+
 Double_t differential_fitf(Double_t *x_, Double_t *par);
 
 Double_t exp_decay(Double_t *x_, Double_t *par);
@@ -129,6 +134,6 @@ void fit_param_print(std::ostream& os, TF2* func);
 ////////////////////////////////////////////////////////////////////////////////
 
 //void waveform_print(TH1F* histo, Long64_t &canvas_name_counter, std::string &output_file_name, const std::string &output_file_directory, const std::string& draw_opt_ = "");
-std::string waveform_print(TH1F*, const Long64_t canvas_name_counter, const std::string& canvas_name, const std::string& canvas_directory, const std::string& draw_opt = "");
+std::string waveform_print(TH1F*, const Long64_t canvas_name_counter, const std::string& canvas_name, const std::string& canvas_directory, const std::string& draw_opt = "", const Int_t width = 800, const Int_t height = 600);
 
 #endif

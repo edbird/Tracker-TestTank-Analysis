@@ -552,7 +552,10 @@ int main(int argc, char* argv[])
 
     // TODO: change endpoint of fit
     TF1* f_anode_average_differential = new TF1("f_anode_average_differential", differential_fitf, 0.0, 145.0, 15);
-    f_anode_average_differential->SetNpx(1000);
+    f_anode_average_differential->SetNpx(100000);
+
+    TF1 *f_anode = new TF1("f_anode", anode_fitf, 0.0, 145.0, 14);
+    f_anode->SetNpx(100000);
 
 
 
@@ -967,7 +970,45 @@ int main(int argc, char* argv[])
             f_anode_average_differential->FixParameter(12, k2);
             f_anode_average_differential->FixParameter(13, A4);
             f_anode_average_differential->FixParameter(14, k4);
-            
+
+            ////////////////////////////////////////////////////////////////////
+            // NOTES
+            //
+            // THE CURRENT MODEL IS WRONG. (Double exponentials with some
+            // forwards and some backwards.) Change to anode model, however
+            // use code here to obtain timestamps and peaks. R0-R4, A0-A4.
+            ////////////////////////////////////////////////////////////////////
+
+            // computer parameters
+            Double_t anode_A0{-220.0};
+            Double_t anode_A1{-150.0};
+            Double_t anode_A2{-190.0};
+            Double_t anode_k0{0.4};
+            Double_t anode_k1{0.7};
+            Double_t anode_k2{0.3};
+            Double_t anode_x0{R0};
+            Double_t anode_x1{R1}; // TODO: change to B
+            Double_t anode_x2{R2}; // TODO: change to D
+            Double_t anode_C1{-120.0};
+
+            // Set anode model parameters here
+            f_anode->FixParameter(0, R0);
+            f_anode->FixParameter(1, R1); // TODO
+            f_anode->FixParameter(2, R2); // TODO
+            f_anode->FixParameter(3, 140.0);
+
+            f_anode->SetParameter(4, anode_A0);
+            f_anode->SetParameter(5, anode_k0);
+            f_anode->SetParameter(6, anode_x0);
+            f_anode->SetParameter(7, anode_A1);
+            f_anode->SetParameter(8, anode_k1);
+            f_anode->SetParameter(9, anode_x1);
+            f_anode->SetParameter(10, anode_C1);
+            f_anode->SetParameter(11, anode_A2);
+            f_anode->SetParameter(12, anode_k2);
+            f_anode->SetParameter(13, anode_x2);
+
+
             // TODO: GOOD / FAIL histograms to different DIRS
             //const std::string canvas_name("c_anode_average_differential_");
             //const std::string canvas_filename(canvas_name + int_to_string(canvas_name_counter, 6));
@@ -977,6 +1018,7 @@ int main(int argc, char* argv[])
             if(A >= 0.0 && B >= 0.0 && C >= 0.0 && D >= 0.0 && E >= 0.0)
             {
                 anode_average_differential_histo->Fit("f_anode_average_differential");
+                anode_histo->Fit("f_anode");
             }
             //anode_average_differential_histo->Draw("E");
             //c->SaveAs((canvas_dir_filename + std::string(".png")).c_str());
@@ -1017,7 +1059,7 @@ int main(int argc, char* argv[])
                 //Long64_t ix_copy{ix};
                 //canvas_name_counter = ix;
                 #if WAVEFORM_PRINT_GOOD
-                    waveform_print(anode_histo, ix_copy /*canvas_name_counter*/, output_file_name_anode, "anode_histo_good");
+                    waveform_print(anode_histo, ix_copy /*canvas_name_counter*/, output_file_name_anode, "anode_histo_good", "", 2000, 1500);
                     //ix_copy = ix;
 
                     waveform_print(anode_smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_good");
@@ -1081,7 +1123,7 @@ int main(int argc, char* argv[])
                 //canvas_name_counter = ix;
                 //waveform_print(ix_copy /*canvas_name_counter*/, cathode_histo, output_file_name);
                 #if WAVEFORM_PRINT_FAIL
-                    waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name_deriv, "anode_histo_fail");
+                    waveform_print(store.anode_histo, ix_copy /*canvas_name_counter*/, output_file_name_deriv, "anode_histo_fail", "E", 2000, 1500);
                     //ix_copy = ix;
 
                     waveform_print(anode_smooth_histo, ix_copy, output_file_name_anode_smooth, "anode_smooth_histo_fail");

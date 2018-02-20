@@ -824,6 +824,98 @@ Double_t get_timestamps(const TH1F* const histo, const Double_t VLN, const Doubl
 
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// FIT FUNCTIONS FOR ANODE HISTOGRAM
+////////////////////////////////////////////////////////////////////////////////
+
+Double_t anode_fitf(Double_t *x_, Double_t *p_)
+{
+
+    Double_t x{*x_};
+    Double_t *p{p_};
+    Int_t p_ix{0};
+
+    Double_t A{p[p_ix ++]}; // start
+    Double_t B{p[p_ix ++]}; // first discontinuous change (cathode 1)
+    Double_t C{p[p_ix ++]}; // second discontinuous change (cathode 2)
+    Double_t D{p[p_ix ++]}; // end
+
+    // first function
+    Double_t A0{p[p_ix ++]};
+    Double_t k0{p[p_ix ++]};
+    Double_t x0{p[p_ix ++]};
+    
+    // second function
+    Double_t A1{p[p_ix ++]};
+    Double_t k1{p[p_ix ++]};
+    Double_t x1{p[p_ix ++]};
+    Double_t C1{p[p_ix ++]};
+    
+    // third function
+    Double_t A2{p[p_ix ++]};
+    Double_t k2{p[p_ix ++]};
+    Double_t x2{p[p_ix ++]};
+
+    if(A <= x && x < B)
+    {
+        //std::cout << "A0=" << A0 << std::endl;
+        return anode_fitf_0(x, A0, k0, x0/*, -1.0*/); // C0 = 1.0
+    }
+    else if(B <= x && x < C)
+    {
+        return anode_fitf_1(x, A1, k1, x1, C1);
+    }
+    else if(C <= x && x < D)
+    {
+        //std::cout << "evaluating between C and D" << std::endl;
+        //std::cout << "x=" << x << std::endl;
+        Double_t sum{anode_fitf_2(x, A2, k2, x2, -C1)};
+        //std::cout << "sum=" << sum << std::endl;
+        sum += anode_fitf_1(x, A1, k1, x1, C1);
+        //std::cout << "sum=" << sum << std::endl;
+        //std::cin.get();
+        return sum;
+    }
+    else
+    {
+        //std::cout << "ERROR" << std::endl;
+    }
+    return 0.0;
+
+}
+
+Double_t anode_fitf_0(Double_t x, Double_t A0, Double_t k0, Double_t x0/*, Double_t C0*/)
+{
+    //std::cout << A0 << " " << k0 << " " << x0 << std::endl;
+    Double_t arg{k0 * (x - x0)};
+    //std::cout << "arg=" << arg << std::endl;
+    //std::cout << "exp=" << std::exp(-arg) << std::endl;
+    //return A0 * (std::exp(-arg) + C0);
+    //return A0 * (std::exp(-arg) - 1.0);
+    return A0 * (1.0 - std::exp(-arg));
+}
+
+Double_t anode_fitf_1(Double_t x, Double_t A1, Double_t k1, Double_t x1, Double_t C1)
+{
+    Double_t arg{k1 * (x - x1)};
+    //return A1 * (std::exp(-arg) + C1);
+    return A1 * (std::exp(-arg)) + C1;
+}
+
+// TODO: oscillatory version
+Double_t anode_fitf_2(Double_t x, Double_t A2, Double_t k2, Double_t x2, Double_t C2)
+{
+    Double_t arg{k2 * (x - x2)};
+    //return A2 * (std::exp(-arg) + C2); 
+    return A2 * (std::exp(-arg) /*- 1.0*/) + C2; 
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// FIT FUNCTIONS FOR DIFFERENTIAL HISTOGRAM
+////////////////////////////////////////////////////////////////////////////////
+
 Double_t differential_fitf(Double_t *x_, Double_t *par)
 {
     Int_t par_ix{0};
@@ -965,7 +1057,7 @@ void fit_param_print(std::ostream& os, TF2* func)
 // WAVEFORM OUTPUT TO FILE
 ////////////////////////////////////////////////////////////////////////////////
 
-std::string waveform_print(TH1F* histo, const Long64_t canvas_name_counter, const std::string& canvas_name, const std::string& canvas_directory, const std::string& draw_opt_)
+std::string waveform_print(TH1F* histo, const Long64_t canvas_name_counter, const std::string& canvas_name, const std::string& canvas_directory, const std::string& draw_opt_, const Int_t width, const Int_t height)
 {
 
     if(histo != nullptr)
@@ -975,7 +1067,7 @@ std::string waveform_print(TH1F* histo, const Long64_t canvas_name_counter, cons
         //const std::string canvas_name_base(output_name);
         //std::string canvas_name(canvas_name_base + int_to_string(canvas_name_counter, 6));
         std::string canvas_name_base(canvas_name + int_to_string(canvas_name_counter, 6));
-        TCanvas *c = new TCanvas(canvas_name_base.c_str(), canvas_name_base.c_str(), 800, 600);
+        TCanvas *c = new TCanvas(canvas_name_base.c_str(), canvas_name_base.c_str(), width, height);
         histo->Draw(draw_opt_.c_str());
         std::string output_file_name(std::string("./") + canvas_directory + std::string("/") + canvas_name_base);
         c->SaveAs((output_file_name + std::string(".png")).c_str());
