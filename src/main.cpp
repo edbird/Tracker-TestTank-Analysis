@@ -551,7 +551,7 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
 
     // TODO: change endpoint of fit
-    TF1* f_anode_average_differential = new TF1("f_anode_average_differential", differential_fitf, 0.0, 145.0, 16);
+    TF1* f_anode_average_differential = new TF1("f_anode_average_differential", differential_fitf, 0.0, 145.0, 15);
     f_anode_average_differential->SetNpx(1000);
 
 
@@ -935,10 +935,10 @@ int main(int argc, char* argv[])
             //A1 = -60.0;
             k1 = 1.0;
             //A2 = 60.0;
-            k2 = -1.0;
+            k2 = 1.0;
 
             //A3 = -60.0;
-            k3 = 1.0;
+            k3 = -1.0;
             //A4 = 60.0;
             k4 = -1.0;
             
@@ -961,10 +961,10 @@ int main(int argc, char* argv[])
             f_anode_average_differential->FixParameter(6, k0);
             f_anode_average_differential->FixParameter(7, A1);
             f_anode_average_differential->FixParameter(8, k1);
-            f_anode_average_differential->FixParameter(9, A2);
-            f_anode_average_differential->FixParameter(10, k2);
-            f_anode_average_differential->FixParameter(11, A3);
-            f_anode_average_differential->FixParameter(12, k3);
+            f_anode_average_differential->FixParameter(9, A3);
+            f_anode_average_differential->FixParameter(10, k3);
+            f_anode_average_differential->FixParameter(11, A2);
+            f_anode_average_differential->FixParameter(12, k2);
             f_anode_average_differential->FixParameter(13, A4);
             f_anode_average_differential->FixParameter(14, k4);
             

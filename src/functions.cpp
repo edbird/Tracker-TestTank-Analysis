@@ -578,7 +578,7 @@ Double_t get_timestamps_and_peaks(const TH1F* const histo, const Double_t VLN, c
 
             if(content > VLN)
             {
-                ++ ix;
+                //++ ix;
                 break;
             }
         }
@@ -620,7 +620,7 @@ Double_t get_timestamps_and_peaks(const TH1F* const histo, const Double_t VLN, c
 
             if(content > 0.0)
             {
-                ++ ix; // TODO: should this be here?
+                //++ ix; // TODO: should this be here?
                 break;
             }
         }
@@ -629,13 +629,18 @@ Double_t get_timestamps_and_peaks(const TH1F* const histo, const Double_t VLN, c
     // get R3
     for(; ix <= histo->GetNbinsX(); )
     {
+        //std::cout << "enter to continue..." << std::endl;
+        //std::cin.get();
         const Double_t content{histo->GetBinContent(ix)};
         if(!have_R3)
         {
+            //std::cout << "don't have R3" << std::endl;
             if(content >= VHP)
             {
+                //std::cout << ">= VHP" << std::endl;
                 R3 = histo->GetBinCenter(ix);
                 A3 = content;
+                //std::cout << "setting A3=" << A3 << std::endl;
                 have_R3 = true;
                 //std::cout << "R3: VHP=" << VHP << " VALUE=" << content << " TIME=" << R3 << std::endl; 
                 //++ ix;
@@ -644,14 +649,17 @@ Double_t get_timestamps_and_peaks(const TH1F* const histo, const Double_t VLN, c
         }
         else
         {
+            //std::cout << "have R3" << std::endl;
             if(content > A3)
             {
+                //std::cout << "A3=" << content << std::endl;
                 A3 = content;
             }
 
             if(content < 0.0)
             {
-                ++ ix;
+                //std::cout << "break" << std::endl;
+                //++ ix;
                 break; // TODO
             }
         }
@@ -682,7 +690,7 @@ Double_t get_timestamps_and_peaks(const TH1F* const histo, const Double_t VLN, c
 
             if(content > 0.0)
             {
-                ++ ix;
+                //++ ix;
                 break; // TODO
             }
         }
@@ -717,6 +725,11 @@ Double_t get_timestamps_and_peaks(const TH1F* const histo, const Double_t VLN, c
     }
     // R0 to R4 are either invalid or set to valid values
 
+    //std::cout << "R0: VLN=" << VLN << " VALUE=" << A0 << " TIME=" << R0 << std::endl; 
+    //std::cout << "R1: VHN=" << VHN << " VALUE=" << A1 << " TIME=" << R1 << std::endl; 
+    //std::cout << "R3: VHP=" << VHP << " VALUE=" << A3 << " TIME=" << R3 << std::endl; 
+    //std::cout << "R2: VHN=" << VHN << " VALUE=" << A2 << " TIME=" << R2 << std::endl; 
+    //std::cout << "R4: VLN=" << VHP << " VALUE=" << A4 << " TIME=" << R4 << std::endl; 
 }
 
 
